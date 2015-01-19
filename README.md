@@ -5,7 +5,10 @@ Another aim is clean, structured result.
 
 Spectro supports web components. Tested with polymer, x-tag and vanilla js components.
 
-## Sheme
+### Demo
+Live demo avaible at http://dev.bekrin.me/spectro/.
+
+### Sheme
 Scheme is intuitive `*.xml` file, which describes possible element structure. It is required to be loaded before editing. See simple [scheme.xml](./example/scheme.xml).
 
 Special attributes are:
