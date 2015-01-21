@@ -10,11 +10,10 @@
 				<i spectro-label="Italic Text"></i>
 			</p>
 			<img src="http://placehold.it/100" alt="" spectro-label="Image" spectro-classes="[['Round corners','round']]" spectro-attributes="[['Source','src','url'],['Alternative Text','alt','text']]" />
-			<blockquote spectro-label="Quote" spectro-attributes="[['Source','cite','text']]"></blockquote>
+			<blockquote cite="Someone" spectro-label="Quote" spectro-attributes="[['Source','cite','text']]"></blockquote>
 			<ul spectro-label="Unordered List" spectro-classes="[['Zebra','zebra']]">
 				<li spectro-label="List item"></li>
 			</ul>
 		</div>
 	</div>
-	<hr spectro-label="Horizontal Line" />
 </article>

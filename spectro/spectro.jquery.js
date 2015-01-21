@@ -139,9 +139,8 @@
 				}
 
 				// Show menu
-				$menu
-				.attr('active', true)
-				.get(0).setup(this);
+				$menu.attr('active', true);
+				$menu.get(0).focusOn(this);
 			})
 			.on('blur.spectro', function (event) {
 				var $element = $(this);
@@ -149,6 +148,8 @@
 				$element
 				.removeAttr('contenteditable')
 				.removeClass(window.spectro.ELEMENT_CLASS_ACTIVE);
+
+				$menu.get(0).focusOut(this);
 			})
 			.on('keydown.spectro', function (event) {
 				var $this = $(this);
@@ -295,7 +296,8 @@
 
 					freshDummyInsertion($dummy);
 				}
-			});
+			})
+			.focus();
 		});
 	};
 

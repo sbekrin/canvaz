@@ -122,7 +122,7 @@
 			top: -2px;
 		}
 
-		.path-card .card-list li:last-of-type {
+		.path-card .card-list li.active {
 			background: #4281f4;
 			color: white;
 		}
@@ -154,6 +154,7 @@
 			-moz-user-select: none;
 			user-select: none;
 			border: 2px dashed #ddd;
+			background: #fcfcfc;
 			border-radius: 2px;
 			margin-bottom: 4px;
 			position: relative;

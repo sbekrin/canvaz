@@ -26,24 +26,47 @@
 
 			link.remove();
 		});
-	};
 
-	customElement.setup = function (element) {
-		var $element = $(element),
-			scheme = $element.data('scheme'),
-			$scheme = $(scheme),
-			shadowRoot = this.shadowRoot,
-			menu = this;
+		// Add proximity slide-out
+		/*
+		var $menu = $(this);
+
+		$(window).on('mousemove', function (event) {
+			if ($menu.attr('active') == 'true') {
+				$menu.css('transform', 'none');
+				return;
+			}
+
+			var cursor = {
+					x: event.clientX,
+					y: event.clientY
+				},
+				$window = $(window),
+				windowWidth = $window.width(),
+				menuWidth = $menu.width();
+
+			if (cursor.x > (windowWidth - menuWidth * 2)) {
+				var translation = -Math.min(cursor.x - windowWidth + menuWidth * 2, menuWidth);
+				
+				$menu.css('transform', 'translateX(' + translation  + 'px)');
+			} else {
+				$menu.css('transform', 'none');
+			}
+		});
+		*/
 
 		// Controls
+		var $menu = $(this);
+
 		$(shadowRoot.querySelector('.close-controls')).on('click', function ( ) {
-			$(menu).removeAttr('active');
+			$menu.removeAttr('active');
 		});
 
+		/*
 		$(shadowRoot.querySelector('.save-controls')).on('click', function ( ) {
 
 			// Find spectro root container
-			$root = $element;
+			var $root = $element;
 
 			while ($root.parent().hasClass(window.spectro.ELEMENT_CLASS)) {
 				$root = $root.parent();
@@ -54,6 +77,15 @@
 				html: $root.prop('outerHTML')
 			});
 		});
+		*/
+	};
+
+	customElement.focusOn = function (element) {
+		var $element = $(element),
+			scheme = $element.data('scheme'),
+			$scheme = $(scheme),
+			shadowRoot = this.shadowRoot,
+			menu = this;
 
 		var $pathCard = $(shadowRoot.querySelector('.path-card')),
 			$classesCard = $(shadowRoot.querySelector('.classes-card')),
@@ -80,17 +112,21 @@
 			$tree.html('');
 
 			// Compile tree
+			var $item;
+
 			$(path).each(function ( ) {
 				var $element = $(this),
 					$scheme = $($element.data('scheme'));
 
-				var $item = $('<li />')
+				$item = $('<li />')
 				.text($scheme.attr('spectro-label') || this.nodeName.toLowerCase())
 				.on('click', function (event) {
 					$element.focus();
 				})
 				.appendTo($tree);
 			});
+
+			$item.addClass('active');
 		})();
 
 		// Setup classes
@@ -307,7 +343,9 @@
 
 						$dummy
 						.attr('class', $dummyScheme.attr('class'))
-						.spectro({ scheme: dummyScheme });
+						.spectro({
+							scheme: dummyScheme
+						});
 
 						// Add text if not container
 						if ($dummyScheme.children().length <= 0) {
@@ -316,16 +354,26 @@
 
 						// Set up drag and drop
 						dataTransfer.dropEffect = 'move';
-						dataTransfer.setData('text/html', $dummy.get(0).outerHTML);
+						dataTransfer.setData('text/html', $dummy.prop('outerHTML'));
 
 						window.spectro.$lastDraggedElement = $dummy;
 					})
-					.on('dragend.spectro', function (event) {					
+					.on('dragend.spectro', function (event) {
+						$('.' + window.spectro.DROPZONE_CLASS).remove();		
 						window.spectro.$lastDraggedElement = null;
 					});
 				});
 			}
 		})();
+	};
+
+	customElement.focusOut = function (element) {
+		var shadowRoot = this.shadowRoot;
+
+		var $pathCard = $(shadowRoot.querySelector('.path-card'));
+
+		// Highlight last item in path
+		$pathCard.find('.card-list li').last().removeClass('active');
 	};
 
 	document.registerElement('spectro-menu', {
