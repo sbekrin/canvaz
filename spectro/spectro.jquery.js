@@ -13,8 +13,11 @@
 		DROPZONE_HOVER_CLASS:	'spectro-dropzone-hover',
 		DROPZONE_BEFORE_CLASS:	'spectro-dropzone-before',
 		DROPZONE_AFTER_CLASS:	'spectro-dropzone-after',
-		$lastDraggedElement: null,
-		$lastActiveElement: null // Note: not used so far
+		POPOVER_CLASS:			'spectro-popover',
+		POPOVER_TOP_CLASS:		'spectro-popover-top',
+		POPOVER_BOTTOM_CLASS:	'spectro-popover-bottom',
+		$lastDraggedElement:	null,
+		$lastActiveElement:		null // Note: not used so far
 	};
 
 	// Helpers
@@ -79,11 +82,23 @@
 			throw new Error('Spectro: invalid structure or *.xml scheme');
 		}
 
-		// Helpers
+		// Menu
 		var $menu = $('spectro-menu')
 
 		if ($menu.length <= 0) {
 			$menu = $('<spectro-menu />').appendTo('body');
+		}
+
+		// Popover
+		var $popover = $('.spectro-popover');
+
+		if ($popover.length <= 0) {
+			$popover = $('<div />');
+
+			$popover
+			.addClass(window.spectro.POPOVER_CLASS)
+			.append('<ul>')
+			.appendTo('body');
 		}
 
 		var $scheme = $(scheme);
@@ -150,6 +165,11 @@
 				.removeClass(window.spectro.ELEMENT_CLASS_ACTIVE);
 
 				$menu.get(0).focusOut(this);
+
+				// Prevent popover blink
+				window.setTimeout(function ( ) {
+					$popover.removeClass('active');
+				}, 200);
 			})
 			.on('keydown.spectro', function (event) {
 				var $this = $(this);
@@ -163,7 +183,6 @@
 						// clone element instead of <p>, <div>
 						// or <br /> insertion
 						event.preventDefault();
-						event.stopPropagation();
 
 						// Prevent army of empty duplicates
 						if ($this.is(':empty')) {
@@ -193,6 +212,124 @@
 
 						break;
 				}
+			})
+			.on('mouseup.spectro', function (event) {
+
+				event.stopPropagation();
+
+				// Remove prev. popovers
+				$popover.removeClass('active');
+
+				// Show popovers only:
+				// 1. in contenteditable elements
+				// 2. in active elements
+				if ($scheme.attr('spectro-editable') != 'true' ||
+					document.activeElement != this) {
+					return;
+				}
+
+				// Get selection position
+				var selection, range,
+					width = 0, height = 0,
+					top = 0, left = 0,
+					scrollTop = $(document).scrollTop();
+
+				if (document.selection) {
+					selection = document.selection;
+
+					if (selection.type != 'Control') {
+						range = selection.createRange();
+						width = range.boundingWidth;
+						height = range.boundingHeight,
+						left = range.boundingLeft,
+						top = range.boundingTop;
+					}
+				} else if (window.getSelection) {
+					selection = window.getSelection();
+
+					if (selection.rangeCount) {
+						range = selection.getRangeAt(0).cloneRange();
+
+						if (range.getBoundingClientRect) {
+							var box = range.getBoundingClientRect();
+
+							width = box.right - box.left;
+							height = box.bottom - box.top;
+							left = box.left;
+							top = box.top;
+						}
+					}
+				}
+
+				if (selection.toString().length <= 0 ||
+					top <= 0 ||
+					left <= 0) {
+					return;
+				}
+
+				// Setup popover
+				$popover
+				.html('')
+				.addClass('active');
+
+				var $list = $('<ul />');
+
+				$list.appendTo($popover);
+
+				// Append possible elements
+				$scheme.children().each(function ( ) {
+					var	child = this,
+						$child = $(child),
+						childTagName = $child.prop('tagName'),
+						$li = $('<li />');
+
+					// Copy styles
+					var $ghost = $('<' + childTagName + ' />').appendTo($element),
+						$preview = $('<span />');
+
+					$([ 'color', 'font', 'font-family', 'font-size',
+						'background', 'text-decoration', 'border', 'list-style' ]).each(function ( ) {
+						$preview.css(this, $ghost.css(this));
+					});
+
+					$ghost.remove();
+
+					// Use spectro label or selected text if not empty
+					var label = selection.toString().replace(/\s+/g, '').length <= 0 ? $child.attr('spectro-label') : selection;
+
+					$preview.text(label);
+
+					// Add popover item
+					$li
+					.append($preview)
+					.on('click', function (event) {
+						var $newNode = $('<' + childTagName + ' />');
+
+						// TODO: Add multi-wrap ability
+						try {
+							range.surroundContents($newNode.get(0));
+
+							$newNode.spectro({ scheme: child });
+						} catch (exception) { }
+					})
+					.appendTo($list);
+				});
+
+				// Check if enough place
+				if (top - height - $popover.height() < scrollTop) {
+					$popover.addClass(window.spectro.POPOVER_BOTTOM_CLASS);
+					$popover.removeClass(window.spectro.POPOVER_TOP_CLASS);
+
+					top += $element.height() + $popover.height() + height;
+				} else {
+					$popover.removeClass(window.spectro.POPOVER_BOTTOM_CLASS);
+					$popover.addClass(window.spectro.POPOVER_TOP_CLASS);
+				}
+
+				$popover.css({
+					left: (left + width / 2 - $popover.width() / 2) + 'px',
+					top: top + 'px'
+				});
 			})
 			.on('paste.spectro', function (event) {
 
