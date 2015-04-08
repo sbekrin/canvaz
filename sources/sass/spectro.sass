@@ -1,0 +1,502 @@
+@import ./spectro/variables.sass
+@import ./spectro/mixins.sass
+@import ./spectro/animations.sass
+
+@keyframes placeholder-pulse
+	+placeholder-pulse-animation-keyframes
+
+@keyframes element-pulse
+	+element-pulse-animation-keyframes
+
+.spectro
+
+	// Common
+	&-hidden
+		display: none
+
+	&-input
+		&--focus &-label,
+		&--focus &-control
+			border-color: $color-primary
+
+		&--focus &-label
+			color: $color-text
+
+		&-label
+			transition: border-color $animation-speed-default ease
+			border: $border-width solid $color-input-border
+			background-color: $color-input-background
+			color: lighten($color-text, 20%)
+			border-radius: 4px 4px 0 0
+			display: inline-block
+			border-bottom: none
+			position: relative
+			padding: 2px 6px
+			font-size: 80%
+			bottom: -2px
+			z-index: 2
+
+		&-control
+			transition: color $animation-speed-default ease, border-color $animation-speed-default ease
+			border: $border-width solid $color-input-border
+			background-color: $color-input-background
+			box-sizing: border-box
+			border-radius: 4px
+			color: $color-text
+			padding: 4px 6px
+			font: inherit
+			outline: none
+			width: 100%
+
+		&-label + &-control
+			border-radius: 0 4px 4px 4px
+
+	// Document related
+	&--dragged body
+		cursor: move
+		cursor: grabbing
+
+	&--dragged &-controls
+		opacity: 0
+
+	// Element related
+	&-element
+		box-shadow: 0 0 0 $border-width fade-out($color-primary, 1)
+		transition: all $animation-speed-default ease
+		border-radius: 4px
+
+		&:empty
+			position: relative
+
+		&:empty:before
+			font-family: Arial, Helvetica, sans-serif
+			content: attr(aria-label)
+			color: rgba(0, 0, 0, .4)
+
+		&--hover,
+		&--active
+			box-shadow: 0 0 0 $border-width $color-primary
+			outline: none
+
+		&--hover[contenteditable="true"]:empty 
+			&:after
+				border-color: $color-primary
+
+		&--active
+			animation: element-pulse $animation-speed-long infinite
+
+			&[contenteditable="true"]
+				cursor: text
+
+				&:empty:after
+					transition: border-color $animation-speed-default ease
+					border: none
+
+		&--removed
+			opacity: 0
+			clip: rect(0, 0, 0)
+			clip: rect(0, 0, 0, 0)
+
+		&--dragged
+			opacity: .2
+
+	// Helpers related
+	&-helper
+		font: 14px Arial, Helvetica, sans-serif
+		position: fixed
+
+	&-switcher
+		background: $color-background-primary
+		@include helper-box-shadow()
+		border-radius: 0 0 0 4px
+		border-right: none
+		user-select: none
+		line-height: 28px
+		border-top: none
+		z-index: 999
+		height: 28px
+		right: 0
+		top: 0
+
+		&--active &__component
+			&-control
+				border-color: $color-primary
+
+				&-bullet
+					background-color: $color-primary
+					margin-left: 0
+					left: 2px
+
+		&__component
+			list-style: none
+			height: inherit
+			padding: 0
+			margin: 0
+
+			&-label,
+			&-control
+				color: $color-text
+				cursor: pointer
+				height: inherit
+				padding: 0 10px
+				display: block
+				float: left
+
+			&-control
+				transition: border-color $animation-speed-default ease
+				border: $border-width solid lighten($color-text, 50%)
+				border-radius: 20px
+				position: relative
+				overflow: hidden
+				cursor: default
+				height: 14px
+				width: 20px
+				top: 5px
+
+				&-bullet
+					transition: background-color $animation-speed-default ease, left $animation-speed-default ease, margin-left $animation-speed-default ease
+					background: lighten($color-text, 50%)
+					border-radius: 14px
+					margin-left: -14px
+					position: absolute
+					display: block
+					height: 12px
+					width: 12px
+					left: 100%
+					top: 1px
+
+	&-breadcrumbs
+		transition: top $animation-speed-default ease
+		border-bottom-right-radius: 4px
+		@include helper-box-shadow()
+		overflow: hidden
+		z-index: 998
+		padding: 0
+		top: -30px
+
+		&--active
+			top: 0
+
+		&__list
+			line-height: 28px
+			list-style: none
+			height: 28px
+			padding: 0
+			margin: 0
+
+			&-item,
+			&-item:after
+				transition: all $animation-speed-default ease
+
+			&-item
+				background: $color-background-primary
+				padding: 0 20px 0 30px
+				position: relative
+				color: $color-text
+				user-select: none
+				cursor: pointer
+				display: block
+				outline: none
+				float: left
+
+				&:hover,
+				&:hover:after,
+				&:focus,
+				&:focus:after
+					background: darken($color-background-primary, 5%)
+					color: darken($color-text, 50%)
+
+				&:first-child
+					padding-left: 20px
+
+				&:last-child
+					border-color: $color-primary
+					background: $color-primary
+					border-radius: 0 0 4px 0
+					color: white
+					cursor: default
+
+					&:after
+						background: $color-primary
+						content: none
+				
+				&:after
+					border: $border-width solid $color-border-primary
+					transform: scale(.707) rotate(45deg)
+					background: $color-background-primary
+					border-radius: 0 2px 0 28px
+					border-bottom: none
+					position: absolute
+					border-left: none
+					right: -15px
+					height: 28px
+					width: 28px
+					content: ''
+					z-index: 1
+					top: -1px
+
+	&-sidebar
+		transition: all $animation-speed-default ease
+		color: $color-text
+		width: 200px
+		left: -200px
+		height: 100%
+		z-index: 997
+		top: 30px
+
+		&--animated
+			position: absolute
+
+		&--active
+			position: fixed
+			left: 0
+
+		&__section
+			transition: max-height $animation-speed-default ease
+			background: $color-background-primary
+			@include helper-box-shadow()
+			border-radius: 0 4px 4px 0
+			position: relative
+			overflow: hidden
+			margin: 10px 0
+			border: none
+
+			&-title
+				color: $color-text
+				font-size: inherit
+				position: relative
+				user-select: none
+				font-weight: bold
+				padding: 6px 10px
+				display: block
+				margin: 12px
+				padding: 0
+
+			&-contents
+				list-style: none
+				margin: 12px
+				padding: 0
+
+				&__item
+					background-color: darken($color-background-primary, 5%)
+					border-radius: 4px
+					margin-top: 4px
+					display: block
+					cursor: move
+					padding: 6px
+
+					&:first-child
+						margin-top: 0
+
+					&[draggable="true"]
+						border: $border-width dashed transparent
+
+						&:hover
+							border-color: $color-primary
+				
+				&__property
+					display: block
+					margin-top: 6px
+
+	&-placeholder
+		pointer-events: none
+		text-align: center
+		position: absolute
+		user-select: none
+		display: none
+
+		&--active
+			display: block
+
+		&__line
+			animation: placeholder-pulse $animation-speed-long infinite
+			background: $color-primary
+			display: block
+			border: none
+			padding: 0
+			margin: 0
+
+			&:before,
+			&:after
+				border: solid rgba(66, 129, 244, 0)
+				position: absolute
+				border-width: 10px
+				content: ''
+				height: 0
+				width: 0
+
+		&--vertical &__line
+			width: $border-width
+			height: 100%
+
+			&:before,
+			&:after
+				margin-left: -10px
+
+			&:before
+				border-top-color: #4281f4
+				top: 0
+
+			&:after
+				border-bottom-color: #4281f4
+				margin-top: -12px
+				top: 100%
+
+		&--horizontal &__line
+			height: $border-width
+			width: 100%
+
+			&:before,
+			&:after
+				margin-top: -10px
+				top: 50%
+
+			&:before
+				border-left-color: #4281f4
+				left: 0
+
+			&:after
+				border-right-color: #4281f4
+				right: 0
+
+	&-popover
+		@include helper-box-shadow()
+		transition: transform $animation-speed-default ease, opacity $animation-speed-default ease
+		background-color: $color-background-primary
+		border: $border-width solid $color-primary
+		transform: scale(0)
+		position: absolute
+		border-radius: 4px
+		user-select: none
+		margin-top: -42px
+		z-index: 998
+		opacity: 0
+
+		&--active
+			transform-origin: 50% 100%
+			transform: scale(1)
+			opacity: 1
+
+		&__list
+			list-style: none
+			padding: 0
+			margin: 0
+
+			&:after,
+			&:before
+				border-color: fade-out($color-background-primary, 1)
+				border: solid transparent
+				pointer-events: none
+				position: absolute
+				content: ''
+				top: 100%
+				left: 50%
+				height: 0
+				width: 0
+
+			&:before
+				border-top-color: $color-primary
+				border-width: 13px
+				margin-left: -13px
+
+			&:after
+				border-top-color: $color-background-primary
+				border-width: 10px
+				margin-left: -10px
+
+			&-item
+				transition: background-color $animation-speed-default ease
+				display: inline-block
+				border-radius: 2px
+				line-height: 28px
+				cursor: pointer
+				padding: 0 8px
+				height: 28px
+				margin: 2px
+
+				> *
+					line-height: inherit !important
+
+				&:hover
+					background-color: darken($color-background-primary, 5%)
+
+	&-controls
+		transition: opacity $animation-speed-default ease
+		transition-delay: $animation-speed-default / 2
+		visibility: hidden
+		position: absolute
+		margin-left: -20px
+		margin-top: -20px
+		user-select: none
+		padding: 20px
+		padding-bottom: 0
+		z-index: 991
+		opacity: 0
+
+		&--active
+			visibility: visible
+			transform: none
+			opacity: 1
+
+		&--active &__toolbar
+			top: 0
+
+		&__toolbar
+			transition: top $animation-speed-default ease
+			position: relative
+			list-style: none
+			height: inherit
+			width: inherit
+			padding: 0
+			margin: 0
+			top: -100%
+
+			&__tool
+				border: $border-width solid $color-primary
+				background: $color-background-primary
+				@include helper-box-shadow()
+				box-sizing: border-box
+				border-radius: 4px
+				position: absolute
+				display: block
+				padding: 0 4px
+				height: 20px
+				top: -12px
+
+				&--label,
+				&--remove
+					transition: background-color $animation-speed-default ease
+					cursor: pointer
+
+					&:hover
+						background-color: darken($color-background-primary, 5%)
+
+				&--label
+					background-image: url('../../assets/icon-properties.svg')
+					background-repeat: no-repeat
+					background-position: 1px 0
+					text-transform: uppercase
+					color: $color-primary
+					letter-spacing: 1px
+					padding-left: 18px
+					line-height: 16px
+					font-weight: bold
+					font-size: 80%
+					left: -8px
+
+				&--handle
+					background-image: url('../../assets/icon-move.svg')
+					background-position: 50% 50%
+					background-repeat: no-repeat
+					margin-left: -30px
+					cursor: move
+					cursor: grab
+					width: 60px
+					left: 50%
+
+				&--remove
+					background-image: url('../../assets/icon-remove.svg')
+					text-align: center
+					right: -8px
+					width: 21px
+					padding: 0

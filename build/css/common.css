@@ -1,0 +1,20 @@
+html, body {
+  height: 100%; }
+
+body {
+  font: 20px 'PT Serif', Georgia, serif;
+  cursor: default;
+  margin: 0; }
+  body main {
+    display: block; }
+    body main article {
+      max-width: 720px;
+      margin: 0 auto;
+      width: 90%; }
+      body main article img {
+        max-width: 100%;
+        display: block;
+        margin: 0 auto; }
+
+
+/*# sourceMappingURL=maps/common.css.map */

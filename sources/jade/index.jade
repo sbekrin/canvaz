@@ -1,0 +1,70 @@
+- var tabindex = 0
+
+doctype html
+html(lang='en')
+	head
+		meta(name='viewport', content='width=device-width')
+		meta(charset='utf-8')
+		title Spectro Demo
+		link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=PT+Serif:400,700,400italic|Open+Sans:300,800')
+		link(rel='stylesheet', href='./css/common.css')
+		link(rel='stylesheet', href='./css/spectro.css')
+		script(src='//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js')
+		script(src='./js/spectro.js')
+		script(src='./js/common.js')
+
+	body
+		// Demo content
+		main
+			section
+				article(data-spectro-scheme="./scheme.xml")
+					h2 How And Why To Make Side Projects Work At A Digital Agency
+					p It’s no secret that the digital industry is booming. From exciting startups to global brands, companies are reaching out to digital agencies, responding to the new possibilities available. However, the industry is fast becoming overcrowded, heaving with agencies offering similar services — on the surface, at least.
+					p Producing creative, fresh projects is the key to standing out. Unique side projects are the best place to innovate, but balancing commercially and creatively lucrative work is tricky. So, this article looks at how to make side projects work and #[b why they’re worthwhile], drawing on lessons learned from our development of the #[a(href="http://www.uxcompanion.com/") UX Companion] app.
+					img(src="http://media.mediatemple.netdna-cdn.com/wp-content/uploads/2014/12/01-UXCBooks-opt-small.jpg" alt="")
+					h2 Why Integrate Side Projects?
+					p Being creative within the constraints of client briefs, budgets and timelines is the norm for most agencies. However, investing in research and development (R&D) as a true, creative outlet is a powerful addition. In these side projects alone, your team members can pool their expertise to create and shape their own vision — a powerful way to develop motivation, interdisciplinary skills and close relationships.
+					p Building R&D into the identity and culture of an agency can also lead to new client work. These projects act as a road map, showing clients exciting new technologies and ideas that will differentiate you from competitors. One of our earliest projects turned our website into a brochure, optimized for the first iPad’s touch interactions. By demonstrating the final product, we went on to win a project to create a similar product for a new client.
+					h2 How To Make Side Projects Work
+					p At #[a(href="http://www.cyber-duck.co.uk/") Cyber-Duck], we’re still working on achieving that perfect balance between commerce and creativity. But we have fresh inspiration on how it’s done from having worked on UX Companion. The app gained a popular following in early October, as one of the first native apps to offer a full glossary of user experience (UX) terms and theory — but the development process was definitely a learning process.
+					h2 Ensure The Project Is Worth It
+					p Commercializing side projects alongside client work isn’t easy. Even if such projects are intended to generate additional revenue streams, they are not directly related to your core business. Those with a more qualitative aim, such as promoting expertise or technological experimentation, are even harder to justify.
+					p A significant shift in mindset is required to support either type of side project — weighing the longer-term, incremental benefits against committing what would otherwise be immediately billable time. Many agencies do this with a time-bound model of 80% client time versus 20% R&amp;D time, inspired by Google’s successes with Gmail and Google Reader — which they have since (tellingly) phased out. I’d instead recommend the following guidelines.
+					img(src="http://media.mediatemple.netdna-cdn.com/wp-content/uploads/2014/12/02-UXCUse-opt-small.jpg" alt="")
+					h2 Conclusion
+					p Given the crowded, competitive nature of the digital space, investing in creative side projects is a powerful way to stand out, experiment and feed innovation back into client work.
+					p Many of the tips covered in this article share some common ground — if you manage your side projects with as much professionalism as you manage client projects, then you’re likely to succeed. Achieving the perfect balance with client work isn’t easy, but we’re confident that following these lessons will be great for our next project, and hopefully they’ll help you on your way.
+
+		// Switcher component
+		div.spectro-switcher.spectro-helper
+			label.spectro-switcher__component(tabindex='#{++tabindex}')
+				input#spectro-switcher.spectro-hidden(type='checkbox')
+				span#spectro-edit.spectro-switcher__component-label Edit
+				span.spectro-switcher__component-control
+					span.spectro-switcher__component-control-bullet
+				span#spectro-view.spectro-switcher__component-label View
+
+		// Sidebar component
+		div.spectro-sidebar.spectro-helper
+			section.spectro-sidebar__section
+				h2.spectro-sidebar__section-title Styles
+				div.spectro-sidebar__section-contents
+					label.spectro-sidebar__section-contents__property
+						input(type='checkbox')
+						| Use alternative style 
+			section.spectro-sidebar__section
+				h2.spectro-sidebar__section-title Attributes
+				div.spectro-sidebar__section-contents
+					label.spectro-sidebar__section-contents__property.spectro-input(tabindex='#{++tabindex}')
+						span.spectro-input-label Text property
+						input.spectro-input-control(type='text')
+					label.spectro-sidebar__section-contents__property.spectro-input(tabindex='#{++tabindex}')
+						span.spectro-input-label List property
+						select.spectro-input-control
+							option Value
+			section.spectro-sidebar__section
+				h2.spectro-sidebar__section-title Content
+				ul.spectro-sidebar__section-contents
+					li.spectro-sidebar__section-contents__item(draggable='true', tabindex='0') Heading
+					li.spectro-sidebar__section-contents__item(draggable='true', tabindex='0') Paragraph
+					li.spectro-sidebar__section-contents__item(draggable='true', tabindex='0') List
