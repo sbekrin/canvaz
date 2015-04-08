@@ -19,7 +19,7 @@ Live demo avaible at http://dev.bekrin.me/spectro/.
 - [ ] Commit to master
 
 ### Sheme
-Scheme is intuitive `*.xml` file, which describes possible element structure. It is required to be loaded before editing. See simple [scheme.xml](./example/scheme.xml).
+Scheme is intuitive `*.xml` file, which describes possible element structure. It is required to be loaded before editing. See simple [scheme.xml](./build/scheme.xml).
 
 Special attributes are:
 - `spectro-label` is human-readable label for element, which will be shown in path tree.
@@ -32,7 +32,6 @@ All other attributes will be copied to new element as defaults.
 
 # Requirements
 - jquery.js
-- webcomponents.js
 
 # Usage
-See [example](./example/) for simple use case.
+See [example](./build/) for simple use case.
