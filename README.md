@@ -1,3 +1,5 @@
+![Spectro Logotype](http://i.imgur.com/SIhsB0y.jpg)
+
 # About
 Spectro is jQuery plugin with awesome features for visual, drag'n'drop, modular content editing across the web.
 It mainly must-have replacement for WYSIWYG editors for news, blog or other content websites.
@@ -7,6 +9,14 @@ Spectro supports web components. Tested with polymer, x-tag and vanilla js compo
 
 ### Demo
 Live demo avaible at http://dev.bekrin.me/spectro/.
+
+### Plans
+- [x] Move to gulp
+- [x] Rewrite project via SASS, Jade and CoffeScript
+- [x] Enhance jQuery plugin structure quality
+- [ ] Replace web component elements with regular markup
+- [ ] Create test schemes
+- [ ] Commit to master
 
 ### Sheme
 Scheme is intuitive `*.xml` file, which describes possible element structure. It is required to be loaded before editing. See simple [scheme.xml](./example/scheme.xml).
