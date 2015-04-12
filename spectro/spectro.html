@@ -1,0 +1,248 @@
+<link rel="import" href="spectro-menu.html" />
+<style>
+	/* Animations */
+	@-webkit-keyframes pulse {
+		0% {
+			opacity: 1;
+		}
+
+		50% {
+			-webkit-transform: scale(1.1);
+			opacity: 0.2;
+		}
+
+		100% {
+			opacity: 1;
+		}
+	}
+
+	@keyframes pulse {
+		0% {
+			opacity: 1;
+		}
+
+		50% {
+			transform: scale(1.1);
+			opacity: 0.2;
+		}
+
+		100% {
+			opacity: 1;
+		}
+	}
+
+	/* Elements related */
+	.spectro-element {
+		-webkit-transition: all 0.2s ease;
+		-moz-transition: all 0.2s ease;
+		transition: all 0.2s ease;
+	}
+
+	.spectro-element:hover {
+		box-shadow: 0 0 0 2px #eee;
+	}
+
+	.spectro-element:empty:before {
+		font-family: Arial, Helvetica, sans-serif;
+		content: attr(data-label);
+		border: 2px dashed;
+		text-align: center;
+		font-weight: bold;
+		margin-left: -2px;
+		position: static;
+		font-size: 16px;
+		display: block;
+		width: 100%;
+		opacity: 0.2;
+	}
+
+	.spectro-self-closing:empty:before,
+	.spectro-self-closing:empty:after {
+		display: none;
+	}
+
+	.spectro-element[contenteditable="true"] {
+		cursor: text;
+	}
+
+	.spectro-element-active,
+	.spectro-element:focus {
+		box-shadow: 0 0 0 2px #4281f4;
+		position: relative;
+		outline: none;
+		z-index: 9;
+	}
+
+	/* Popover related */
+	.spectro-popover {
+		-webkit-transition: all 0.2s ease;
+		-moz-transition: all 0.2s ease;
+		transition: all 0.2s ease;
+		position: absolute;
+		margin-top: -48px;
+		display: none;
+		z-index: 11;
+		left: 0;
+		top: 0;
+	}
+
+	.spectro-popover.active {
+		display: block;
+	}
+
+		.spectro-popover ul {
+			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+			border: 2px solid #4281f4;
+			background: #fcfcfc;
+			position: relative;
+			list-style: none;
+			line-height: 36px;
+			height: 36px;
+			padding: 0;
+			margin: 0;
+		}
+
+			.spectro-popover ul li {
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+				height: inherit;
+				max-width: 80px;
+				padding: 0 8px;
+				display: block;
+				float: left;
+			}
+
+			.spectro-popover ul li:hover {
+				background: #eee;
+			}
+
+		.spectro-popover ul:before,
+		.spectro-popover ul:after {
+			left: 50%;
+			border: solid transparent;
+			content: '';
+			height: 0;
+			width: 0;
+			position: absolute;
+			pointer-events: none;
+		}
+
+		.spectro-popover-top ul:before,
+		.spectro-popover-top ul:after { top: 100%; }
+
+		.spectro-popover-bottom ul:before,
+		.spectro-popover-bottom ul:after { bottom: 100%; }
+
+		.spectro-popover ul:after {
+			border-color: rgba(252, 252, 252, 0);
+			border-width: 10px;
+			margin-left: -10px;
+		}
+
+		.spectro-popover-top ul:after { border-top-color: #fcfcfc; }
+		.spectro-popover-bottom ul:after { border-bottom-color: #fcfcfc; }
+
+		.spectro-popover ul:before {
+			border-color: rgba(66, 129, 244, 0);
+			border-width: 13px;
+			margin-left: -13px;
+		}
+
+		.spectro-popover-top ul:before { border-top-color: #4281f4; }
+		.spectro-popover-bottom ul:before { border-bottom-color: #4281f4; }
+
+	/* Dropzones related */
+	.spectro-dropzone {
+		background: transparent;
+		position: absolute;
+		z-index: 10;
+		left: 0;
+		top: 0;
+	}
+
+	.spectro-dropzone-before {
+		-webkit-transform: translateY(-50%);
+		-moz-transform: translateY(-50%);
+		transform: translateY(-50%);
+	}
+
+	.spectro-dropzone-after {
+		-webkit-transform: translateY(50%);
+		-moz-transform: translateY(50%);
+		transform: translateY(50%);
+	}
+
+	.spectro-dropzone {
+		z-index: 11;
+	}
+
+		.spectro-dropzone hr {
+			-webkit-animation: pulse 1s infinite;
+			animation: pulse 1s infinite;
+			pointer-events: none;
+			background: #4281f4;
+			position: relative;
+			margin-top: -2px;
+			display: none;
+			border: none;
+			width: 100%;
+			height: 2px;
+			top: 50%;
+		}
+
+		.spectro-dropzone hr:after,
+		.spectro-dropzone hr:before {
+			border-color: rgba(66, 129, 244, 0);
+			border: solid transparent;
+			pointer-events: none;
+			position: absolute;
+			border-width: 10px;
+			content: ' ';
+			height: 0;
+			width: 0;
+			top: 50%;
+		}
+
+		.spectro-dropzone hr:after {
+			border-right-color: #4281f4;
+			margin-top: -10px;
+			right: 0;
+		}
+
+		.spectro-dropzone hr:before {
+			border-left-color: #4281f4;
+			margin-top: -10px;
+			left: 0;
+		}
+
+		.spectro-dropzone-hover hr {
+			display: block;
+		}
+
+	/* Menu related */
+	spectro-menu {
+		font: 14px Arial, Helvetica, sans-serif;
+		-webkit-transition: right 0.2s ease;
+		-moz-transition: right 0.2s ease;
+		transition: right 0.2s ease;
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+		-webkit-perspective: 600px;
+		-moz-perspective: 600px;
+		perspective: 600px;
+		padding: 0 1vh;
+		position: fixed;
+		display: block;
+		height: 100vh;
+		right: -220px;
+		width: 220px;
+		z-index: 12;
+		top: 0;
+	}
+
+	spectro-menu[active="true"] {
+		right: 0;
+	}
+</style>

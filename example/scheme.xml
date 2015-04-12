@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<article class="aligned" spectro-label="Article">
+	<div class="row" spectro-label="Row">
+		<div class="col-12" spectro-label="Column" spectro-classes="[['Width',[['8.33%','col-1'],['16.66%','col-2'],['25%','col-3'],['33.33%','col-4'],['41.66%','col-5'],['50%','col-6'],['58.33%','col-7'],['66.66%','col-8'],['75%','col-9'],['83.33%','col-10'],['91.66%','col-11'],['100%','col-12']]]]">
+			<h2 spectro-label="Heading"></h2>
+			<h3 spectro-label="Subheading"></h3>
+			<p spectro-label="Paragraph" spectro-classes="[['Intro','intro'],['Special','special'],['Tip','tip']]" spectro-editable="true">
+				<a href="url" spectro-label="Link" spectro-attributes="[['Address','href','url']]"></a>
+				<b spectro-label="Bold Text"></b>
+				<i spectro-label="Italic Text"></i>
+			</p>
+			<img src="http://placehold.it/100" alt="" spectro-label="Image" spectro-classes="[['Round corners','round']]" spectro-attributes="[['Source','src','url'],['Alternative Text','alt','text']]" />
+			<blockquote cite="Someone" spectro-label="Quote" spectro-attributes="[['Source','cite','text']]"></blockquote>
+			<ul spectro-label="Unordered List" spectro-classes="[['Zebra','zebra']]">
+				<li spectro-label="List item"></li>
+			</ul>
+		</div>
+	</div>
+</article>
