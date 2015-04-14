@@ -14,7 +14,7 @@ Live demo avaible at http://dev.bekrin.me/spectro/.
 - [x] Move to gulp
 - [x] Rewrite project via SASS, Jade and CoffeScript
 - [x] Enhance jQuery plugin structure quality
-- [ ] Replace web component elements with regular markup
+- [x] Remove web component helpers
 - [ ] Create test schemes
 - [ ] Commit to master
 
