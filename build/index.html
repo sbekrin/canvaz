@@ -14,14 +14,26 @@
   <body>
     <!-- Demo content-->
     <main>
+      <p><br></p>
       <section>
         <article data-spectro-scheme="./scheme.xml">
+          <div class="row">
+            <div class="col">
+              <p>Good afternoon</p>
+            </div>
+            <div class="col">
+              <p>Guten tag</p>
+            </div>
+            <div class="col">
+              <p>Добрый день</p>
+            </div>
+          </div>
           <h2>How And Why To Make Side Projects Work At A Digital Agency</h2>
           <p>It’s no secret that the digital industry is booming. From exciting startups to global brands, companies are reaching out to digital agencies, responding to the new possibilities available. However, the industry is fast becoming overcrowded, heaving with agencies offering similar services — on the surface, at least.</p>
           <p>Producing creative, fresh projects is the key to standing out. Unique side projects are the best place to innovate, but balancing commercially and creatively lucrative work is tricky. So, this article looks at how to make side projects work and <b>why they’re worthwhile</b>, drawing on lessons learned from our development of the <a href="http://www.uxcompanion.com/">UX Companion</a> app.</p><img src="http://media.mediatemple.netdna-cdn.com/wp-content/uploads/2014/12/01-UXCBooks-opt-small.jpg" alt="">
           <h2>Why Integrate Side Projects?</h2>
           <p>Being creative within the constraints of client briefs, budgets and timelines is the norm for most agencies. However, investing in research and development (R&D) as a true, creative outlet is a powerful addition. In these side projects alone, your team members can pool their expertise to create and shape their own vision — a powerful way to develop motivation, interdisciplinary skills and close relationships.</p>
-          <p>Building R&D into the identity and culture of an agency can also lead to new client work. These projects act as a road map, showing clients exciting new technologies and ideas that will differentiate you from competitors. One of our earliest projects turned our website into a brochure, optimized for the first iPad’s touch interactions. By demonstrating the final product, we went on to win a project to create a similar product for a new client.</p>
+          <p>Building R&amp;D into the identity and culture of an agency can also lead to new client work. These projects act as a road map, showing clients exciting new technologies and ideas that will differentiate you from competitors. One of our earliest projects turned our website into a brochure, optimized for the first iPad’s touch interactions. By demonstrating the final product, we went on to win a project to create a similar product for a new client.</p>
           <h2>How To Make Side Projects Work</h2>
           <p>At <a href="http://www.cyber-duck.co.uk/">Cyber-Duck</a>, we’re still working on achieving that perfect balance between commerce and creativity. But we have fresh inspiration on how it’s done from having worked on UX Companion. The app gained a popular following in early October, as one of the first native apps to offer a full glossary of user experience (UX) terms and theory — but the development process was definitely a learning process.</p>
           <h2>Ensure The Project Is Worth It</h2>
@@ -40,34 +52,39 @@
       </label>
     </div>
     <!-- Sidebar component-->
-    <div class="spectro-sidebar spectro-helper">
-      <section class="spectro-sidebar__section">
-        <h2 class="spectro-sidebar__section-title">Styles</h2>
-        <div class="spectro-sidebar__section-contents">
-          <label class="spectro-sidebar__section-contents__property">
-            <input type="checkbox">Use alternative style 
+    <div class="spectro-sidebar spectro-sidebar--active spectro-helper">
+      <div class="spectro-list-menu"><span class="spectro-list-menu__label">Contents</span>
+        <ul role="tablist" class="spectro-list-menu__options spectro-sidebar__tab-list">
+          <li id="tab-contents" aria-controls="panel-contents" role="tab" class="spectro-list-menu__options__item spectro-sidebar__tab-list__item">Contents</li>
+          <li id="tab-attributes" aria-controls="panel-attributes" role="tab" class="spectro-list-menu__options__item spectro-sidebar__tab-list__item">Attributes</li>
+          <li id="tab-classes" aria-controls="panel-classes" role="tab" class="spectro-list-menu__options__item spectro-sidebar__tab-list__item">Classes</li>
+        </ul>
+      </div>
+      <section id="panel-contents" aria-labeledby="tab-contents" role="tabpanel" class="spectro-sidebar__tab-panel">
+        <div class="spectro-sidebar__tab-panel__contents">
+          <label class="spectro-sidebar__tab-panel__contents__property">
+            <input type="checkbox">Use alternative style
           </label>
         </div>
       </section>
-      <section class="spectro-sidebar__section">
-        <h2 class="spectro-sidebar__section-title">Attributes</h2>
-        <div class="spectro-sidebar__section-contents">
-          <label tabindex="2" class="spectro-sidebar__section-contents__property spectro-input"><span class="spectro-input-label">Text property</span>
+      <section id="panel-attributes" aria-labeledby="tab-attributes" role="tabpanel" hidden class="spectro-sidebar__tab-panel">
+        <div class="spectro-sidebar__tab-panel__contents">
+          <label tabindex="2" class="spectro-sidebar__tab-panel__contents__property spectro-input"><span class="spectro-input-label">Text property</span>
             <input type="text" class="spectro-input-control">
           </label>
-          <label tabindex="3" class="spectro-sidebar__section-contents__property spectro-input"><span class="spectro-input-label">List property</span>
+          <label tabindex="3" class="spectro-sidebar__tab-panel__contents__property spectro-input"><span class="spectro-input-label">List property</span>
             <select class="spectro-input-control">
               <option>Value</option>
             </select>
           </label>
         </div>
       </section>
-      <section class="spectro-sidebar__section">
-        <h2 class="spectro-sidebar__section-title">Content</h2>
-        <ul class="spectro-sidebar__section-contents">
-          <li draggable="true" tabindex="0" class="spectro-sidebar__section-contents__item">Heading</li>
-          <li draggable="true" tabindex="0" class="spectro-sidebar__section-contents__item">Paragraph</li>
-          <li draggable="true" tabindex="0" class="spectro-sidebar__section-contents__item">List</li>
+      <section id="panel-classes" aria-labeledby="tab-classes" role="tabpanel" hidden class="spectro-sidebar__tab-panel">
+        <h2 class="spectro-sidebar__tab-panel__title">Content</h2>
+        <ul class="spectro-sidebar__tab-panel__contents">
+          <li tabindex="0" class="spectro-sidebar__tab-panel__contents__item">Heading</li>
+          <li tabindex="0" class="spectro-sidebar__tab-panel__contents__item">Paragraph</li>
+          <li tabindex="0" class="spectro-sidebar__tab-panel__contents__item">List</li>
         </ul>
       </section>
     </div>

@@ -15,6 +15,16 @@ body {
         max-width: 100%;
         display: block;
         margin: 0 auto; }
+    body main .row {
+      position: relative; }
+      body main .row:after, body main .row:before {
+        display: table;
+        content: ' '; }
+      body main .row:after {
+        clear: both; }
+      body main .row .col {
+        width: 33.33333%;
+        float: left; }
 
 
 /*# sourceMappingURL=maps/common.css.map */

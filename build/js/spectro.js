@@ -7,6 +7,10 @@
   Spectro = (function() {
     function Spectro() {}
 
+    Spectro.i18n = function(phraseCode) {
+      return $.fn.spectro.i18n[$.fn.spectro.lang][phraseCode];
+    };
+
     Spectro.Helper = (function() {
       var registry;
 
@@ -61,7 +65,7 @@
         this.$target = _at_$target;
         Controls.__super__.constructor.apply(this, arguments);
         label = this.$target.data('scheme').attr('spectro-label') || this.$target.prop('tagName');
-        this.$container = $("<div class=\"spectro-controls spectro-helper\">\n	<ul class=\"spectro-controls__toolbar\">\n		<li class=\"spectro-controls__toolbar__tool spectro-controls__toolbar__tool--label\" title=\"" + $.fn.spectro.i18n.setup + "\">" + label + "</li>\n		<li class=\"spectro-controls__toolbar__tool spectro-controls__toolbar__tool--handle\" title=\"" + $.fn.spectro.i18n.move + "\"></li>\n		<li class=\"spectro-controls__toolbar__tool spectro-controls__toolbar__tool--remove\" title=\"" + $.fn.spectro.i18n.remove + "\"></li>\n	</ul>\n</div>").appendTo('body').on('mouseover.spectro', (function(_this) {
+        this.$container = $("<div class=\"spectro-controls spectro-helper\">\n	<ul class=\"spectro-controls__toolbar\">\n		<li class=\"spectro-controls__toolbar__tool spectro-controls__toolbar__tool--label\" title=\"" + (Spectro.i18n('setup')) + "\">" + label + "</li>\n		<li class=\"spectro-controls__toolbar__tool spectro-controls__toolbar__tool--handle\" title=\"" + (Spectro.i18n('move')) + "\"></li>\n		<li class=\"spectro-controls__toolbar__tool spectro-controls__toolbar__tool--remove\" title=\"" + (Spectro.i18n('remove')) + "\"></li>\n	</ul>\n</div>").appendTo('body').on('mouseover.spectro', (function(_this) {
           return function() {
             return _this.show();
           };
@@ -84,12 +88,17 @@
         if ($target.is(':spectro-removeable')) {
           $removeAction.on('mousedown touchstart', function(event) {
             event.stopPropagation();
-            $target.addClass($.fn.spectro.defaults.removedElementClass).on('transitionend oTransitionEnd otransitionend webkitTransitionEnd', (function(_this) {
+            return $target.addClass($.fn.spectro.defaults.removedElementClass).on('transitionend oTransitionEnd otransitionend webkitTransitionEnd', (function(_this) {
               return function() {
-                return $target.remove();
+                var $parent;
+                $parent = $target.parent();
+                $target.remove();
+                if ($parent.children().length === 0) {
+                  $parent.html('');
+                }
+                return controls.hide();
               };
             })(this));
-            return controls.hide();
           });
         } else {
           $removeAction.hide();
@@ -104,11 +113,11 @@
             }
             $.fn.spectro.$draggedElement = $target;
             $.fn.spectro.isDrag = true;
-            $.fn.spectro.$draggedElement.addClass($.fn.spectro.defaults.draggedElementClass);
+            $.fn.spectro.$draggedElement.attr('aria-grabbed', true).addClass($.fn.spectro.defaults.draggedElementClass);
             return $('html').addClass($.fn.spectro.defaults.documentDraggedClass);
           };
           $moveAction.on('mousedown touchstart', dragHandler);
-          $target.on('dragstart', dragHandler);
+          $target.on('dragstart.spectro', dragHandler);
         } else {
           $moveAction.hide();
         }
@@ -274,16 +283,31 @@
         }
       };
 
-      Placeholder.show = function($target) {
-        var top;
+      Placeholder.show = function($target, isVertical) {
+        var left, top;
+        if (isVertical == null) {
+          isVertical = false;
+        }
         top = $target.offset().top;
-        if ($.fn.spectro.draggedElementDropBefore === false) {
-          top += $target.outerHeight();
+        left = $target.offset().left;
+        if (isVertical) {
+          if ($.fn.spectro.draggedElementDropBefore === false) {
+            left += $target.outerWidth();
+          }
+          this.$container.addClass('spectro-placeholder--vertical').removeClass('spectro-placeholder--horizontal').css({
+            height: $target.outerHeight()
+          });
+        } else {
+          if ($.fn.spectro.draggedElementDropBefore === false) {
+            top += $target.outerHeight();
+          }
+          this.$container.addClass('spectro-placeholder--horizontal').removeClass('spectro-placeholder--vertical').css({
+            width: $target.outerWidth()
+          });
         }
         return this.$container.addClass('spectro-placeholder--active').css({
           top: top,
-          left: $target.offset().left,
-          width: $target.outerWidth()
+          left: left
         });
       };
 
@@ -399,10 +423,14 @@
       return $(element).spectro('enabled');
     },
     'spectro-editable': function(element) {
-      var $element, $scheme;
+      var $element, $scheme, hasNoChildren, isForcedEditable, isNotVoid, isParentEnabled;
       $element = $(element);
       $scheme = $element.data('scheme');
-      return !$scheme.is(':void') && $element.parent().hasClass($.fn.spectro.defaults.enabledElementClass || $scheme.attr('spectro-editable') === 'true' && $scheme.children().length === 0);
+      isNotVoid = !$scheme.is(':void');
+      isParentEnabled = $element.parent().hasClass($.fn.spectro.defaults.enabledElementClass);
+      isForcedEditable = $scheme.attr('spectro-editable') === 'true';
+      hasNoChildren = $scheme.children().length === 0;
+      return isNotVoid && isParentEnabled && (isForcedEditable || hasNoChildren);
     },
     'spectro-setupable': function(element) {
       return true;
@@ -436,6 +464,16 @@
     }
   });
 
+  $(function() {
+    return $('.spectro-list-menu').each(function() {
+      var $list;
+      $list = $(this);
+      return $list.find('.spectro-list-menu__label').on('click', function() {
+        return $list.toggleClass('spectro-list-menu--active');
+      });
+    });
+  });
+
   if ((_base = String.prototype).startsWith == null) {
     _base.startsWith = function(s) {
       return this.slice(0, s.length) === s;
@@ -465,12 +503,17 @@
   })(jQuery);
 
   (function($) {
-    var methods;
-    $(document).on('mouseup.spectro mouseleave.spectro touchend.spectro touchcancel.spectro', function() {
+    var $document, $html, methods;
+    $document = $(document);
+    $html = $('html');
+    $document.on('mouseup.spectro mouseleave.spectro touchend.spectro touchcancel.spectro', function() {
+      if ($('.' + $.fn.spectro.defaults.enabledElementClass).length === 0) {
+        return;
+      }
       Spectro.Popover.hide();
       if ($.fn.spectro.isDrag && ($.fn.spectro.$draggedElement != null)) {
-        $.fn.spectro.$draggedElement.removeClass($.fn.spectro.defaults.draggedElementClass);
-        $('html').removeClass($.fn.spectro.defaults.documentDraggedClass);
+        $.fn.spectro.$draggedElement.attr('aria-grabbed', false).removeClass($.fn.spectro.defaults.draggedElementClass);
+        $html.removeClass($.fn.spectro.defaults.documentDraggedClass);
         if ($.fn.spectro.$lastDragoveredElement != null) {
           if ($.fn.spectro.draggedElementDropBefore === true) {
             $.fn.spectro.$lastDragoveredElement.before($.fn.spectro.$draggedElement);
@@ -478,6 +521,7 @@
             $.fn.spectro.$lastDragoveredElement.after($.fn.spectro.$draggedElement);
           }
         }
+        $.fn.spectro.$draggedElement.focus();
         Spectro.Placeholder.destroy();
         $.fn.spectro.isDrag = false;
         $.fn.spectro.$draggedElement = null;
@@ -498,11 +542,13 @@
         $this.data('scheme', $scheme);
         if ($scheme.attr('spectro-label') != null) {
           controls = new Spectro.Controls($this);
-          $('html').addClass($.fn.spectro.defaults.documentEnabledClass);
+          if (!$html.hasClass($.fn.spectro.defaults.documentEnabledClass)) {
+            $html.addClass($.fn.spectro.defaults.documentEnabledClass);
+          }
           if ($this.is(':spectro-inline')) {
             return;
           }
-          $this.attr('tabindex', 0).attr('aria-label', $scheme.attr('spectro-label')).addClass($.fn.spectro.defaults.enabledElementClass).trigger('spectro.enable').on('mouseover.spectro', function(event) {
+          $this.attr('tabindex', 0).attr('aria-label', $scheme.attr('spectro-label')).attr('aria-grabbed', false).addClass($.fn.spectro.defaults.enabledElementClass).trigger('spectro.enable').on('mouseover.spectro', function(event) {
             if (!$.fn.spectro.isDrag && $.fn.spectro.$draggedElement === null) {
               if ($this.attr('data-spectro-scheme') != null) {
                 return;
@@ -516,25 +562,33 @@
               }
             }
           }).on('mousemove.spectro touchmove.spectro', function(event) {
-            var placeholder;
-            event.stopPropagation();
+            var isVertical, placeholder;
             placeholder = Spectro.Placeholder.get();
             $this = $(this);
             if ($.fn.spectro.isDrag && $.fn.spectro.$draggedElement !== null && $.fn.spectro.$draggedElement[0] !== $this[0]) {
               if ($this.spectro('accepts', $.fn.spectro.$draggedElement)) {
-                if (event.pageY > $this.offset().top + $this.outerHeight() / 2) {
-                  $.fn.spectro.draggedElementDropBefore = false;
+                isVertical = false;
+                if ($scheme.attr('spectro-orientation') === 'vertical') {
+                  isVertical = true;
+                  if (event.pageX > $this.offset().left + $this.outerWidth() / 2) {
+                    $.fn.spectro.draggedElementDropBefore = false;
+                  } else {
+                    $.fn.spectro.draggedElementDropBefore = true;
+                  }
                 } else {
-                  $.fn.spectro.draggedElementDropBefore = true;
+                  if (event.pageY > $this.offset().top + $this.outerHeight() / 2) {
+                    $.fn.spectro.draggedElementDropBefore = false;
+                  } else {
+                    $.fn.spectro.draggedElementDropBefore = true;
+                  }
                 }
                 $.fn.spectro.$lastDragoveredElement = $this;
-                return placeholder.show($this);
+                return placeholder.show($this, isVertical);
               }
             }
-          }).on('mouseup.spectro touchend.spectro', function(event) {
-            var i, popover, range, selection, spacesCount, string;
+          }).on('dblclick.spectro', function(event) {
+            var i, range, selection, spacesCount, string;
             $this = $(this);
-            popover = Spectro.Popover.get();
             selection = $this.selection();
             if ($this.is(':focus') && selection !== null) {
               event.stopPropagation();
@@ -552,12 +606,19 @@
                 range = selection.getRangeAt(0).cloneRange();
                 range.setEnd(range.endContainer, range.endOffset - spacesCount);
                 selection.removeAllRanges();
-                selection.addRange(range);
+                return selection.addRange(range);
               }
+            }
+          }).on('mouseup.spectro touchend.spectro', function(event) {
+            var popover, selection;
+            $this = $(this);
+            popover = Spectro.Popover.get();
+            selection = $this.selection();
+            if ($this.is(':focus') && selection !== null) {
+              event.stopPropagation();
               return popover.show($this);
             }
           }).on('mouseleave.spectro', function(event) {
-            event.stopPropagation();
             $this = $(this);
             if (!$this.is(':focus')) {
               $this.removeAttr('contenteditable');
@@ -570,7 +631,9 @@
               return;
             }
             $this = $(this);
-            $this.addClass($.fn.spectro.defaults.activeElementClass);
+            if (!$this.hasClass($.fn.spectro.defaults.activeElementClass)) {
+              $this.addClass($.fn.spectro.defaults.activeElementClass);
+            }
             if ($this.is(':spectro-editable') && $this.attr('contenteditable') !== 'true') {
               $this.attr({
                 contenteditable: true
@@ -648,10 +711,17 @@
         return $(this).data('scheme').parent().find('> [spectro-label="' + $element.data('scheme').attr('spectro-label') + '"]').length !== 0;
       },
       disable: function() {
-        $('html').removeClass($.fn.spectro.defaults.documentEnabledClass).off('.spectro');
-        $(this).removeClass($.fn.spectro.defaults.enabledElementClass).removeAttr('tabindex').removeAttr('aria-label').off('.spectro').trigger('spectro.disable').children().each(function() {
+        var $this;
+        $this = $(this);
+        if ($html.hasClass($.fn.spectro.defaults.documentEnabledClass)) {
+          $html.removeClass($.fn.spectro.defaults.documentEnabledClass);
+        }
+        $this.removeClass($.fn.spectro.defaults.enabledElementClass).removeAttr('tabindex').removeAttr('aria-label').removeAttr('aria-grabbed').off('.spectro').trigger('spectro.disable').children().each(function() {
           return $(this).spectro('disable');
         });
+        if ($this.attr('class') === '') {
+          $this.removeAttr('class');
+        }
         Spectro.Helper.clean();
         Spectro.Breadcrumbs.destroy();
         return Spectro.Placeholder.destroy();
@@ -687,13 +757,16 @@
       documentEnabledClass: 'spectro--enabled',
       documentDraggedClass: 'spectro--dragged'
     };
+    $.fn.spectro.lang = $html.attr('lang') || 'en';
     return $.fn.spectro.i18n = {
-      remove: 'Remove element',
-      setup: 'Setup element',
-      move: 'Move element',
-      sidebarStyles: 'Styles',
-      sidebarAttributes: 'Attributes',
-      sidebarContent: 'Content'
+      en: {
+        remove: 'Remove element',
+        setup: 'Setup element',
+        move: 'Move element',
+        sidebarStyles: 'Styles',
+        sidebarAttributes: 'Attributes',
+        sidebarContent: 'Content'
+      }
     };
   })(jQuery);
 

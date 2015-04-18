@@ -18,3 +18,18 @@ body
 				max-width: 100%
 				display: block
 				margin: 0 auto
+
+		.row
+			position: relative
+
+			&:after,
+			&:before
+				display: table
+				content: ' '
+
+			&:after
+				clear: both
+
+			.col
+				width: 33.33333333%
+				float: left

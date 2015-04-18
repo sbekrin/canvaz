@@ -16,16 +16,31 @@ class Spectro.Placeholder extends Spectro.StaticHelper
 			@$container.remove()
 			@$container = null
 
-	@show: ($target) ->
+	@show: ($target, isVertical = false) ->
 		top = $target.offset().top
+		left = $target.offset().left
 
-		# Show placeholder under actual element
-		if $.fn.spectro.draggedElementDropBefore is false
-			top += $target.outerHeight()
+		# Switch orientation
+		if isVertical
+			if $.fn.spectro.draggedElementDropBefore is false
+				left += $target.outerWidth()
 
+			@$container
+				.addClass 'spectro-placeholder--vertical'
+				.removeClass 'spectro-placeholder--horizontal'
+				.css height: $target.outerHeight()
+		else
+			if $.fn.spectro.draggedElementDropBefore is false
+				top += $target.outerHeight()
+
+			@$container
+				.addClass 'spectro-placeholder--horizontal'
+				.removeClass 'spectro-placeholder--vertical'
+				.css width: $target.outerWidth()
+		
+		# Apply styles
 		@$container
 			.addClass 'spectro-placeholder--active'
 			.css
 				top: top
-				left: $target.offset().left
-				width: $target.outerWidth()
+				left: left

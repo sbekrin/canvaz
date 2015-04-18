@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <article spectro-label="Article">
+	<div class="row" spectro-label="Row">
+		<div class="col-md-6" spectro-label="Column" spectro-orientation="vertical">
+			<p spectro-label="Paragraph"></p>
+		</div>
+	</div>
 	<h2 spectro-label="Heading"></h2>
 	<p spectro-label="Paragraph" spectro-editable="true">
 		<b spectro-label="Bold text"></b>
 		<a href="//" spectro-label="Link"></a>
 	</p>
 	<img src="//placehold.it/720x320" alt="" spectro-label="Image" spectro-attributes="{'src':['Source','url'],'alt':['Alternative Text','text']}" />
-	<section itemscope="" itemtype="http://schema.org/ImageGallery" spectro-label="Gallery">
-		<figure itemprop="associatedMedia" itemscope="" itemtype="http://schema.org/ImageObject" spectro-label="Gallery Image">
-			<a href="//placehold.it/720x320" itemprop="contentUrl">
-				<img src="//placehold.it/720x320" itemprop="thumbnail" alt="" spectro-attributes="{'src':['Image Source', 'url'],'alt':['Alternative Text','text']}" />
-			</a>
-			<figcaption itemprop="caption description" spectro-label="Description"></figcaption>
-		</figure>
-	</section>
 </article>

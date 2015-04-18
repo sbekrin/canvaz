@@ -1,4 +1,6 @@
+# Spectro namespace
 class Spectro
+	#= require spectro/i18n.coffee
 	#= require spectro/helper/regular.coffee
 	#= require spectro/helper/regular/controls.coffee
 	#= require spectro/helper/regular/sidebar.coffee
@@ -8,6 +10,7 @@ class Spectro
 	#= require spectro/helper/static/popover.coffee
 
 #= require spectro/selectors.coffee
+#= require spectro/controls.coffee
 
 # String prototype extension
 String::startsWith ?= (s) -> @[...s.length] is s
@@ -35,8 +38,14 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 # Spectro plugin
 (($) ->
 
+	$document = $ document
+	$html = $ 'html'
+
 	# Global document events
-	$(document).on 'mouseup.spectro mouseleave.spectro touchend.spectro touchcancel.spectro', ->
+	$document.on 'mouseup.spectro mouseleave.spectro touchend.spectro touchcancel.spectro', ->
+
+		# Only if any Spectro instance is active
+		if $('.' + $.fn.spectro.defaults.enabledElementClass).length is 0 then return
 
 		# Hide popover
 		Spectro.Popover.hide()
@@ -44,11 +53,13 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 		if $.fn.spectro.isDrag and
 		   $.fn.spectro.$draggedElement?
 
-			# Remove drag class from draggable element
-			$.fn.spectro.$draggedElement.removeClass $.fn.spectro.defaults.draggedElementClass
+			# Remove drag state from draggable element
+			$.fn.spectro.$draggedElement
+				.attr 'aria-grabbed', false
+				.removeClass $.fn.spectro.defaults.draggedElementClass
 
-			# Remove drag class from document to show controls
-			$('html').removeClass $.fn.spectro.defaults.documentDraggedClass
+			# Remove drag class from document to show back controls
+			$html.removeClass $.fn.spectro.defaults.documentDraggedClass
 
 			# Drop drag element after target
 			if $.fn.spectro.$lastDragoveredElement?
@@ -56,6 +67,9 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 					$.fn.spectro.$lastDragoveredElement.before $.fn.spectro.$draggedElement
 				else
 					$.fn.spectro.$lastDragoveredElement.after $.fn.spectro.$draggedElement
+
+			# Focus on dragged element
+			$.fn.spectro.$draggedElement.focus()
 
 			# Remove placeholder
 			Spectro.Placeholder.destroy()
@@ -93,7 +107,8 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 				controls = new Spectro.Controls $this
 
 				# Add class to document
-				$('html').addClass $.fn.spectro.defaults.documentEnabledClass;
+				if not $html.hasClass $.fn.spectro.defaults.documentEnabledClass
+					$html.addClass $.fn.spectro.defaults.documentEnabledClass;
 
 				# No setup required for inline stuff
 				if $this.is ':spectro-inline' then return
@@ -101,6 +116,7 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 				$this
 					.attr 'tabindex', 0
 					.attr 'aria-label', $scheme.attr 'spectro-label'
+					.attr 'aria-grabbed', false
 					.addClass $.fn.spectro.defaults.enabledElementClass
 					.trigger 'spectro.enable'
 
@@ -110,7 +126,7 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 						if not $.fn.spectro.isDrag and
 						   $.fn.spectro.$draggedElement is null
 
-						   # Prevent root element to be focused
+							# Prevent root element to be focused
 							if $this.attr('data-spectro-scheme')? then return
 
 							event.stopPropagation()
@@ -122,7 +138,9 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 								$this.attr contenteditable: true
 
 					.on 'mousemove.spectro touchmove.spectro', (event) ->
-						event.stopPropagation()
+						# Well this is required for vertical components
+						# not a bug or something
+						#event.stopPropagation()
 
 						# Get placeholder singleton
 						placeholder = Spectro.Placeholder.get()
@@ -136,20 +154,34 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 							# If element is allowed here
 							if $this.spectro 'accepts', $.fn.spectro.$draggedElement
 
+								isVertical = false
+
 								# Decide where to drop element (before or after)
-								if event.pageY > $this.offset().top + $this.outerHeight() / 2
-									$.fn.spectro.draggedElementDropBefore = false
+								if $scheme.attr('spectro-orientation') is 'vertical'
+
+									# Vertical insertion
+									isVertical = true
+
+									if event.pageX > $this.offset().left + $this.outerWidth() / 2
+										$.fn.spectro.draggedElementDropBefore = false
+									else
+										$.fn.spectro.draggedElementDropBefore = true
+
 								else
-									$.fn.spectro.draggedElementDropBefore = true
+
+									# Horizontal insertion
+									if event.pageY > $this.offset().top + $this.outerHeight() / 2
+										$.fn.spectro.draggedElementDropBefore = false
+									else
+										$.fn.spectro.draggedElementDropBefore = true
 
 								# This will keep drop target same as palceholder location
 								$.fn.spectro.$lastDragoveredElement = $this
 
-								placeholder.show $this
+								placeholder.show $this, isVertical
 
-					.on 'mouseup.spectro touchend.spectro', (event) ->
+					.on 'dblclick.spectro', (event) ->
 						$this = $ this
-						popover = Spectro.Popover.get()
 						selection = $this.selection()
 
 						# If element is active, contenteditable and has text selected
@@ -179,11 +211,20 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 								selection.removeAllRanges()
 								selection.addRange(range)
 
+					.on 'mouseup.spectro touchend.spectro', (event) ->
+						$this = $ this
+						popover = Spectro.Popover.get()
+						selection = $this.selection()
+
+						if $this.is(':focus') and
+						   selection isnt null
+							event.stopPropagation()
+
 							# Show popover if required
 							popover.show $this
 
 					.on 'mouseleave.spectro', (event) ->
-						event.stopPropagation()
+						#event.stopPropagation()
 
 						$this = $ this
 
@@ -197,7 +238,9 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 						if not $this.is ':spectro-controlable' then return
 
 						$this = $ this
-						$this.addClass $.fn.spectro.defaults.activeElementClass
+
+						if not $this.hasClass $.fn.spectro.defaults.activeElementClass
+							$this.addClass $.fn.spectro.defaults.activeElementClass
 
 						# If element is not contenteditable yet
 						if $this.is(':spectro-editable') and $this.attr('contenteditable') isnt 'true'
@@ -207,7 +250,6 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 						breadcrumbs.reset()
 						controls.show()
 
-						# TODO: Move this to breadcrumbs helper class
 						# Compile parents path
 						$parent = $this
 						path = []
@@ -304,18 +346,25 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 
 		# Disables Spectro chain
 		disable: ->
-			$ 'html'
-				.removeClass $.fn.spectro.defaults.documentEnabledClass
-				.off '.spectro'
+			$this = $ this
 
-			$ this
+			# Disable document once
+			if $html.hasClass $.fn.spectro.defaults.documentEnabledClass
+				$html.removeClass $.fn.spectro.defaults.documentEnabledClass
+
+			$this
 				.removeClass $.fn.spectro.defaults.enabledElementClass
 				.removeAttr 'tabindex'
 				.removeAttr 'aria-label'
+				.removeAttr 'aria-grabbed'
 				.off '.spectro'
 				.trigger 'spectro.disable'
 				.children().each ->
 					$(this).spectro 'disable'
+
+			# Clean up empty class attribute
+			if $this.attr('class') is ''
+				$this.removeAttr 'class'
 
 			# Clean all helpers
 			Spectro.Helper.clean()
@@ -354,11 +403,13 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 		documentDraggedClass: 'spectro--dragged'
 
 	# Spectro localization stuff
+	$.fn.spectro.lang = $html.attr('lang') or 'en'
 	$.fn.spectro.i18n =
-		remove: 'Remove element'
-		setup: 'Setup element'
-		move: 'Move element'
-		sidebarStyles: 'Styles'
-		sidebarAttributes: 'Attributes'
-		sidebarContent: 'Content'
+		en:
+			remove: 'Remove element'
+			setup: 'Setup element'
+			move: 'Move element'
+			sidebarStyles: 'Styles'
+			sidebarAttributes: 'Attributes'
+			sidebarContent: 'Content'
 )(jQuery)

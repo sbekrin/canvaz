@@ -16,15 +16,23 @@ html(lang='en')
 	body
 		// Demo content
 		main
+			p: br
 			section
 				article(data-spectro-scheme="./scheme.xml")
+					div.row
+						div.col
+							p Good afternoon
+						div.col
+							p Guten tag
+						div.col
+							p Добрый день
 					h2 How And Why To Make Side Projects Work At A Digital Agency
 					p It’s no secret that the digital industry is booming. From exciting startups to global brands, companies are reaching out to digital agencies, responding to the new possibilities available. However, the industry is fast becoming overcrowded, heaving with agencies offering similar services — on the surface, at least.
 					p Producing creative, fresh projects is the key to standing out. Unique side projects are the best place to innovate, but balancing commercially and creatively lucrative work is tricky. So, this article looks at how to make side projects work and #[b why they’re worthwhile], drawing on lessons learned from our development of the #[a(href="http://www.uxcompanion.com/") UX Companion] app.
 					img(src="http://media.mediatemple.netdna-cdn.com/wp-content/uploads/2014/12/01-UXCBooks-opt-small.jpg" alt="")
 					h2 Why Integrate Side Projects?
 					p Being creative within the constraints of client briefs, budgets and timelines is the norm for most agencies. However, investing in research and development (R&D) as a true, creative outlet is a powerful addition. In these side projects alone, your team members can pool their expertise to create and shape their own vision — a powerful way to develop motivation, interdisciplinary skills and close relationships.
-					p Building R&D into the identity and culture of an agency can also lead to new client work. These projects act as a road map, showing clients exciting new technologies and ideas that will differentiate you from competitors. One of our earliest projects turned our website into a brochure, optimized for the first iPad’s touch interactions. By demonstrating the final product, we went on to win a project to create a similar product for a new client.
+					p Building R&amp;D into the identity and culture of an agency can also lead to new client work. These projects act as a road map, showing clients exciting new technologies and ideas that will differentiate you from competitors. One of our earliest projects turned our website into a brochure, optimized for the first iPad’s touch interactions. By demonstrating the final product, we went on to win a project to create a similar product for a new client.
 					h2 How To Make Side Projects Work
 					p At #[a(href="http://www.cyber-duck.co.uk/") Cyber-Duck], we’re still working on achieving that perfect balance between commerce and creativity. But we have fresh inspiration on how it’s done from having worked on UX Companion. The app gained a popular following in early October, as one of the first native apps to offer a full glossary of user experience (UX) terms and theory — but the development process was definitely a learning process.
 					h2 Ensure The Project Is Worth It
@@ -45,26 +53,33 @@ html(lang='en')
 				span#spectro-view.spectro-switcher__component-label View
 
 		// Sidebar component
-		div.spectro-sidebar.spectro-helper
-			section.spectro-sidebar__section
-				h2.spectro-sidebar__section-title Styles
-				div.spectro-sidebar__section-contents
-					label.spectro-sidebar__section-contents__property
+		div.spectro-sidebar.spectro-sidebar--active.spectro-helper
+			div.spectro-list-menu
+				span.spectro-list-menu__label Contents
+				ul.spectro-list-menu__options.spectro-sidebar__tab-list(role='tablist')
+					li#tab-contents.spectro-list-menu__options__item.spectro-sidebar__tab-list__item(aria-controls='panel-contents' role='tab') Contents
+					li#tab-attributes.spectro-list-menu__options__item.spectro-sidebar__tab-list__item(aria-controls='panel-attributes' role='tab') Attributes
+					li#tab-classes.spectro-list-menu__options__item.spectro-sidebar__tab-list__item(aria-controls='panel-classes' role='tab') Classes
+
+			section#panel-contents.spectro-sidebar__tab-panel(aria-labeledby='tab-contents' role='tabpanel')
+				div.spectro-sidebar__tab-panel__contents
+					label.spectro-sidebar__tab-panel__contents__property
 						input(type='checkbox')
-						| Use alternative style 
-			section.spectro-sidebar__section
-				h2.spectro-sidebar__section-title Attributes
-				div.spectro-sidebar__section-contents
-					label.spectro-sidebar__section-contents__property.spectro-input(tabindex='#{++tabindex}')
+						| Use alternative style
+
+			section#panel-attributes.spectro-sidebar__tab-panel(aria-labeledby='tab-attributes' role='tabpanel' hidden)
+				div.spectro-sidebar__tab-panel__contents
+					label.spectro-sidebar__tab-panel__contents__property.spectro-input(tabindex='#{++tabindex}')
 						span.spectro-input-label Text property
 						input.spectro-input-control(type='text')
-					label.spectro-sidebar__section-contents__property.spectro-input(tabindex='#{++tabindex}')
+					label.spectro-sidebar__tab-panel__contents__property.spectro-input(tabindex='#{++tabindex}')
 						span.spectro-input-label List property
 						select.spectro-input-control
 							option Value
-			section.spectro-sidebar__section
-				h2.spectro-sidebar__section-title Content
-				ul.spectro-sidebar__section-contents
-					li.spectro-sidebar__section-contents__item(draggable='true', tabindex='0') Heading
-					li.spectro-sidebar__section-contents__item(draggable='true', tabindex='0') Paragraph
-					li.spectro-sidebar__section-contents__item(draggable='true', tabindex='0') List
+
+			section#panel-classes.spectro-sidebar__tab-panel(aria-labeledby='tab-classes' role='tabpanel' hidden)
+				h2.spectro-sidebar__tab-panel__title Content
+				ul.spectro-sidebar__tab-panel__contents
+					li.spectro-sidebar__tab-panel__contents__item(tabindex='0') Heading
+					li.spectro-sidebar__tab-panel__contents__item(tabindex='0') Paragraph
+					li.spectro-sidebar__tab-panel__contents__item(tabindex='0') List

@@ -17,10 +17,13 @@ $.extend $.expr[':'],
 	'spectro-editable': (element) ->
 		$element = $ element
 		$scheme = $element.data 'scheme'
+
+		isNotVoid = not $scheme.is(':void')
+		isParentEnabled = $element.parent().hasClass $.fn.spectro.defaults.enabledElementClass
+		isForcedEditable = $scheme.attr('spectro-editable') is 'true'
+		hasNoChildren = $scheme.children().length is 0
 		
-		return not $scheme.is(':void') and
-			   $element.parent().hasClass $.fn.spectro.defaults.enabledElementClass or
-			   $scheme.attr('spectro-editable') is 'true' and $scheme.children().length is 0
+		return isNotVoid and isParentEnabled and (isForcedEditable or hasNoChildren)
 
 	# TODO:
 	'spectro-setupable': (element) -> true

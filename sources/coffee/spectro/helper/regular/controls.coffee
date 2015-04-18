@@ -11,9 +11,9 @@ class Spectro.Controls extends Spectro.Helper
 		@$container = $ """
 			<div class="spectro-controls spectro-helper">
 				<ul class="spectro-controls__toolbar">
-					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--label" title="#{$.fn.spectro.i18n.setup}">#{label}</li>
-					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--handle" title="#{$.fn.spectro.i18n.move}"></li>
-					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--remove" title="#{$.fn.spectro.i18n.remove}"></li>
+					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--label" title="#{Spectro.i18n('setup')}">#{label}</li>
+					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--handle" title="#{Spectro.i18n('move')}"></li>
+					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--remove" title="#{Spectro.i18n('remove')}"></li>
 				</ul>
 			</div>
 		"""
@@ -37,12 +37,22 @@ class Spectro.Controls extends Spectro.Helper
 			$removeAction.on 'mousedown touchstart', (event) ->
 				event.stopPropagation()
 
+				# Remove target element
 				$target
 					.addClass $.fn.spectro.defaults.removedElementClass
 					.on 'transitionend oTransitionEnd otransitionend webkitTransitionEnd', =>
+
+						$parent = $target.parent()
+
+						# Remove target element
 						$target.remove()
 
-				controls.hide()
+						# Clean whitespaces on parent to fix ':empty' css selector
+						if $parent.children().length is 0
+							$parent.html ''
+
+						# Hide controls
+						controls.hide()
 
 		else $removeAction.hide()
 
@@ -64,12 +74,15 @@ class Spectro.Controls extends Spectro.Helper
 				$.fn.spectro.isDrag = true
 
 				# Visuals
-				$.fn.spectro.$draggedElement.addClass $.fn.spectro.defaults.draggedElementClass
+				$.fn.spectro.$draggedElement
+					.attr 'aria-grabbed', true
+					.addClass $.fn.spectro.defaults.draggedElementClass
+
 				$('html').addClass $.fn.spectro.defaults.documentDraggedClass
 
 			# Better user experience when dragging non-text elements
 			$moveAction.on 'mousedown touchstart', dragHandler
-			$target.on 'dragstart', dragHandler
+			$target.on 'dragstart.spectro', dragHandler
 
 		else $moveAction.hide()
 

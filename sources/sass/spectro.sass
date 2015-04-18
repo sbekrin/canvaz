@@ -51,6 +51,59 @@
 		&-label + &-control
 			border-radius: 0 4px 4px 4px
 
+	&-list-menu
+		position: relative
+		user-select: none
+
+		&--active &__label
+			cursor: default
+
+		&--active &__options
+			visibility: visible
+			transform: none
+			opacity: 1
+
+		&__label
+			border: 2px solid $color-primary
+			color: $color-primary
+			box-sizing: border-box
+			display: inline-block
+			border-radius: 4px
+			padding: 5px 15px
+			cursor: pointer
+			width: 100%
+
+		&__options
+			+helper-box-shadow()
+			transition: transform $animation-speed-default ease, opacity $animation-speed-default ease
+			background: $color-background-primary
+			border: 2px solid $color-primary
+			transform: translateY(-10px)
+			transform-origin: 50% 0
+			border-radius: 0 0 4px 4px
+			box-sizing: border-box
+			visibility: hidden
+			position: absolute
+			margin: 0
+			margin-top: -4px
+			padding: 0
+			padding-top: 4px
+			list-style: none
+			border-top: none
+			display: block
+			opacity: 0
+			width: 100%
+			z-index: 1
+			left: 0
+
+			&__item
+				padding: 5px 15px
+				display: block
+
+				&:hover
+					background-color: $color-primary
+					color: $color-background-primary
+
 	// Document related
 	&--dragged body
 		cursor: move
@@ -65,9 +118,6 @@
 		transition: all $animation-speed-default ease
 		border-radius: 4px
 
-		&:empty
-			position: relative
-
 		&:empty:before
 			font-family: Arial, Helvetica, sans-serif
 			content: attr(aria-label)
@@ -78,7 +128,7 @@
 			box-shadow: 0 0 0 $border-width $color-primary
 			outline: none
 
-		&--hover[contenteditable="true"]:empty 
+		&--hover[contenteditable="true"]:empty
 			&:after
 				border-color: $color-primary
 
@@ -107,7 +157,7 @@
 
 	&-switcher
 		background: $color-background-primary
-		@include helper-box-shadow()
+		+helper-box-shadow()
 		border-radius: 0 0 0 4px
 		border-right: none
 		user-select: none
@@ -168,7 +218,7 @@
 	&-breadcrumbs
 		transition: top $animation-speed-default ease
 		border-bottom-right-radius: 4px
-		@include helper-box-shadow()
+		+helper-box-shadow()
 		overflow: hidden
 		z-index: 998
 		padding: 0
@@ -237,12 +287,15 @@
 
 	&-sidebar
 		transition: all $animation-speed-default ease
+		background: $color-background-primary
+		box-sizing: border-box
 		color: $color-text
+		padding: 0 10px
 		width: 200px
 		left: -200px
-		height: 100%
 		z-index: 997
-		top: 30px
+		bottom: 0
+		top: 60px
 
 		&--animated
 			position: absolute
@@ -251,17 +304,16 @@
 			position: fixed
 			left: 0
 
-		&__section
+		&__tab-panel
 			transition: max-height $animation-speed-default ease
 			background: $color-background-primary
-			@include helper-box-shadow()
 			border-radius: 0 4px 4px 0
 			position: relative
 			overflow: hidden
 			margin: 10px 0
 			border: none
 
-			&-title
+			&__title
 				color: $color-text
 				font-size: inherit
 				position: relative
@@ -272,7 +324,7 @@
 				margin: 12px
 				padding: 0
 
-			&-contents
+			&__contents
 				list-style: none
 				margin: 12px
 				padding: 0
@@ -360,7 +412,7 @@
 				right: 0
 
 	&-popover
-		@include helper-box-shadow()
+		+helper-box-shadow()
 		transition: transform $animation-speed-default ease, opacity $animation-speed-default ease
 		background-color: $color-background-primary
 		border: $border-width solid $color-primary
@@ -454,8 +506,8 @@
 			&__tool
 				border: $border-width solid $color-primary
 				background: $color-background-primary
-				@include helper-box-shadow()
 				box-sizing: border-box
+				+helper-box-shadow()
 				border-radius: 4px
 				position: absolute
 				display: block

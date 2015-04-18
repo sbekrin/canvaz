@@ -9,7 +9,8 @@ var gulp			= require('gulp'),
 	autoprefixer	= require('gulp-autoprefixer'),
 	base64			= require('gulp-base64'),
 	filter			= require('gulp-filter'),
-	browsersync		= require('browser-sync');
+	browsersync		= require('browser-sync'),
+	htmlhint		= require('gulp-htmlhint');
 
 var reload = browsersync.reload;
 
@@ -31,6 +32,7 @@ var paths = {
 gulp.task('jade', function ( ) {
 	gulp.src(paths.jade)
 		.pipe(jade({ pretty: true }).on('error', handler))
+		.pipe(htmlhint())
 		.pipe(gulp.dest('./build/'))
 		.pipe(reload({ stream: true }));
 });

@@ -76,6 +76,62 @@
   width: 100%; }
 .spectro-input-label + .spectro-input-control {
   border-radius: 0 4px 4px 4px; }
+.spectro-list-menu {
+  position: relative;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none; }
+  .spectro-list-menu--active .spectro-list-menu__label {
+    cursor: default; }
+  .spectro-list-menu--active .spectro-list-menu__options {
+    visibility: visible;
+    -webkit-transform: none;
+        -ms-transform: none;
+            transform: none;
+    opacity: 1; }
+  .spectro-list-menu__label {
+    border: 2px solid #4281f4;
+    color: #4281f4;
+    box-sizing: border-box;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 5px 15px;
+    cursor: pointer;
+    width: 100%; }
+  .spectro-list-menu__options {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    -webkit-transition: -webkit-transform 0.2s ease, opacity 0.2s ease;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+    background: #fcfcfc;
+    border: 2px solid #4281f4;
+    -webkit-transform: translateY(-10px);
+        -ms-transform: translateY(-10px);
+            transform: translateY(-10px);
+    -webkit-transform-origin: 50% 0;
+        -ms-transform-origin: 50% 0;
+            transform-origin: 50% 0;
+    border-radius: 0 0 4px 4px;
+    box-sizing: border-box;
+    visibility: hidden;
+    position: absolute;
+    margin: 0;
+    margin-top: -4px;
+    padding: 0;
+    padding-top: 4px;
+    list-style: none;
+    border-top: none;
+    display: block;
+    opacity: 0;
+    width: 100%;
+    z-index: 1;
+    left: 0; }
+    .spectro-list-menu__options__item {
+      padding: 5px 15px;
+      display: block; }
+      .spectro-list-menu__options__item:hover {
+        background-color: #4281f4;
+        color: #fcfcfc; }
 .spectro--dragged body {
   cursor: move;
   cursor: -webkit-grabbing;
@@ -87,8 +143,6 @@
   -webkit-transition: all 0.2s ease;
           transition: all 0.2s ease;
   border-radius: 4px; }
-  .spectro-element:empty {
-    position: relative; }
   .spectro-element:empty:before {
     font-family: Arial, Helvetica, sans-serif;
     content: attr(aria-label);
@@ -238,28 +292,30 @@
 .spectro-sidebar {
   -webkit-transition: all 0.2s ease;
           transition: all 0.2s ease;
+  background: #fcfcfc;
+  box-sizing: border-box;
   color: #444;
+  padding: 0 10px;
   width: 200px;
   left: -200px;
-  height: 100%;
   z-index: 997;
-  top: 30px; }
+  bottom: 0;
+  top: 60px; }
   .spectro-sidebar--animated {
     position: absolute; }
   .spectro-sidebar--active {
     position: fixed;
     left: 0; }
-  .spectro-sidebar__section {
+  .spectro-sidebar__tab-panel {
     -webkit-transition: max-height 0.2s ease;
             transition: max-height 0.2s ease;
     background: #fcfcfc;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     border-radius: 0 4px 4px 0;
     position: relative;
     overflow: hidden;
     margin: 10px 0;
     border: none; }
-    .spectro-sidebar__section-title {
+    .spectro-sidebar__tab-panel__title {
       color: #444;
       font-size: inherit;
       position: relative;
@@ -272,24 +328,24 @@
       display: block;
       margin: 12px;
       padding: 0; }
-    .spectro-sidebar__section-contents {
+    .spectro-sidebar__tab-panel__contents {
       list-style: none;
       margin: 12px;
       padding: 0; }
-      .spectro-sidebar__section-contents__item {
+      .spectro-sidebar__tab-panel__contents__item {
         background-color: #efefef;
         border-radius: 4px;
         margin-top: 4px;
         display: block;
         cursor: move;
         padding: 6px; }
-        .spectro-sidebar__section-contents__item:first-child {
+        .spectro-sidebar__tab-panel__contents__item:first-child {
           margin-top: 0; }
-        .spectro-sidebar__section-contents__item[draggable="true"] {
+        .spectro-sidebar__tab-panel__contents__item[draggable="true"] {
           border: 2px dashed transparent; }
-          .spectro-sidebar__section-contents__item[draggable="true"]:hover {
+          .spectro-sidebar__tab-panel__contents__item[draggable="true"]:hover {
             border-color: #4281f4; }
-      .spectro-sidebar__section-contents__property {
+      .spectro-sidebar__tab-panel__contents__property {
         display: block;
         margin-top: 6px; }
 .spectro-placeholder {
@@ -442,8 +498,8 @@
     .spectro-controls__toolbar__tool {
       border: 2px solid #4281f4;
       background: #fcfcfc;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
       border-radius: 4px;
       position: absolute;
       display: block;
