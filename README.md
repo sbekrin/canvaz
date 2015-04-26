@@ -15,8 +15,8 @@ Live demo avaible at http://dev.bekrin.me/spectro/.
 - [x] Rewrite project via SASS, Jade and CoffeScript
 - [x] Refractor jQuery plugin structure
 - [x] Simple localization (i18n) support
-- [ ] Spectro-related controls as custom elements
 - [ ] Extensions support (Spectro Tabs)
+- [ ] Scheme hotkeys support
 - [ ] Create test schemes
 
 ### Sheme
