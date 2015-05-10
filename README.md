@@ -1,35 +1,41 @@
 ![Spectro Logotype](http://i.imgur.com/SIhsB0y.jpg)
 
 # About
-Spectro is jQuery plugin with awesome features for visual, drag'n'drop, modular content editing across the web.
-It mainly must-have replacement for WYSIWYG editors for news, blog or other content websites.
-Another aim is clean, structured result.
+Spectro is jQuery plugin made for visual, drag'n'drop, modular content management on websites.
 
-Spectro supports web components. Tested with polymer, x-tag and vanilla js components.
+# Features
+- Customizable content structure via scheme file
+- Drag and drop out of the box
+- Clean and tidy HTML result
+- Web components support
 
-### Demo
+# Demo
 Live demo avaible at http://dev.bekrin.me/spectro/.
 
-### Plans
+# Plans
 - [x] Move to gulp
 - [x] Rewrite project via SASS, Jade and CoffeScript
 - [x] Refractor jQuery plugin structure
 - [x] Simple localization (i18n) support
-- [ ] Extensions support (Spectro Tabs)
+- [x] Extensions support
 - [ ] Scheme hotkeys support
 - [ ] Create test schemes
+- [ ] Develop Wordpress plugin
+- [ ] Develop Joomla extension
 
-### Sheme
+# Sheme
 Scheme is intuitive `*.xml` file, which describes possible element structure. It is required to be loaded before editing. See simple [scheme.xml](./build/scheme.xml).
 
-Special attributes are:
-- `spectro-label` is human-readable label for element, which will be shown in path tree.
-- `spectro-classes` is simple json-styled array with possible classes. Both single (checkbox) and group (select) classes possible.
-- `spectro-attributes` is simple json-styled array with attributes avaible to change and their type.
-- `spectro-editable` is boolean attribute, wich tells Spectro what contents of set element are inline and makes element contenteditable (by default only last children of DOM tree are editable).
-- Other attributes with `spectro-*` prefix are reserved for future releases.
+| Attribute Name        | Status     | Description |
+|-----------------------|------------|-------------|
+| `spectro-label`       | ok         | This is human-readable name for element wich will be shown instead of tag name |
+| `spectro-classes`     | deprecated | This attribute have been removed after extensions support added |
+| `spectro-attributes`  | deprecated | This attribute have been removed after extensions support added |
+| `spectro-editable`    | ok         | This is boolean attribute for WYSIWYG-like editing. This attribute applied to parent element in order to make children inline elements |
+| `spectro-orientation` | ok         | This is Enum attribute with possible values of `vertical` and `horizontal` (default) |
+| `spectro-hotkey`      | in work    | `spectro-hotkey` is hotkey set for quick element insertion |
 
-All other attributes will be copied to new element as defaults.
+Other attributes with `spectro-*` prefix are reserved. All other attributes will be copied to new element as defaults.
 
 # Requirements
 - jquery.js
