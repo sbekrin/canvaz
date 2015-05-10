@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <article spectro-label="Article">
 	<div class="row" spectro-label="Row">
-		<div class="col-md-6" spectro-label="Column" spectro-orientation="vertical">
+		<div class="col" spectro-label="Column" spectro-orientation="vertical">
 			<p spectro-label="Paragraph"></p>
 		</div>
 	</div>
@@ -10,5 +10,5 @@
 		<b spectro-label="Bold text"></b>
 		<a href="//" spectro-label="Link"></a>
 	</p>
-	<img src="//placehold.it/720x320" alt="" spectro-label="Image" spectro-attributes="{'src':['Source','url'],'alt':['Alternative Text','text']}" />
+	<img src="//placehold.it/720x320" alt="" spectro-label="Image" />
 </article>

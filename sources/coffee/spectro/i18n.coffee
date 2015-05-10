@@ -1,2 +1,2 @@
 # Shortcut for localization phrases
-@i18n: (phraseCode) -> $.fn.spectro.i18n[$.fn.spectro.lang][phraseCode]
+Spectro.i18n = (phraseCode) -> $.fn.spectro.i18n[$.fn.spectro.lang][phraseCode]

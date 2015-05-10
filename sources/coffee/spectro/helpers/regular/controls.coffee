@@ -11,7 +11,7 @@ class Spectro.Controls extends Spectro.Helper
 		@$container = $ """
 			<div class="spectro-controls spectro-helper">
 				<ul class="spectro-controls__toolbar">
-					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--label" title="#{Spectro.i18n('setup')}">#{label}</li>
+					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--label" title="#{Spectro.i18n('setup')}"><span>#{label}</span></li>
 					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--handle" title="#{Spectro.i18n('move')}"></li>
 					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--remove" title="#{Spectro.i18n('remove')}"></li>
 				</ul>
@@ -39,12 +39,12 @@ class Spectro.Controls extends Spectro.Helper
 
 				# Remove target element
 				$target
-					.addClass $.fn.spectro.defaults.removedElementClass
+					.addClass $.fn.spectro.classes.removedElementClass
 					.on 'transitionend oTransitionEnd otransitionend webkitTransitionEnd', =>
-
 						$parent = $target.parent()
 
 						# Remove target element
+						$target.trigger $.fn.spectro.events.change
 						$target.remove()
 
 						# Clean whitespaces on parent to fix ':empty' css selector
@@ -74,15 +74,15 @@ class Spectro.Controls extends Spectro.Helper
 				$.fn.spectro.isDrag = true
 
 				# Visuals
-				$.fn.spectro.$draggedElement
-					.attr 'aria-grabbed', true
-					.addClass $.fn.spectro.defaults.draggedElementClass
-
-				$('html').addClass $.fn.spectro.defaults.documentDraggedClass
+				$.fn.spectro.$draggedElement.attr 'aria-grabbed', true
+				$('html').addClass $.fn.spectro.classes.documentDraggedClass
 
 			# Better user experience when dragging non-text elements
 			$moveAction.on 'mousedown touchstart', dragHandler
-			$target.on 'dragstart.spectro', dragHandler
+
+			# Direct drag and drop for void elements
+			if $target.is ':void'
+				$target.on 'dragstart.spectro', dragHandler
 
 		else $moveAction.hide()
 
@@ -99,17 +99,17 @@ class Spectro.Controls extends Spectro.Helper
 					width: $label.outerWidth()
 					height: $label.outerHeight()
 
-				sidebar = new Spectro.Sidebar $target, initialLocation
+				new Spectro.Panelset $target, initialLocation
 
 		else $setupAction.hide()
 
 	show: ->
 		controls = this
 
-		# Prevent removed elements, dragged elements and already focused elements to be focused
+		# Prevent removed, dragged and already focused elements to be focused
 		if not @$target.is ':spectro-controlable' then return
 
-		@$target.addClass $.fn.spectro.defaults.hoveredElementClass
+		@$target.addClass $.fn.spectro.classes.hoveredElementClass
 		@$container.addClass @defaults.activeClass
 		@update()
 
@@ -127,4 +127,4 @@ class Spectro.Controls extends Spectro.Helper
 				left: 0
 				top: 0
 
-		@$target.removeClass $.fn.spectro.defaults.hoveredElementClass
+		@$target.removeClass $.fn.spectro.classes.hoveredElementClass

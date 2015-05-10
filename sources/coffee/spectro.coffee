@@ -1,20 +1,18 @@
-# Spectro namespace
-class Spectro
-	#= require spectro/i18n.coffee
-	#= require spectro/helper/regular.coffee
-	#= require spectro/helper/regular/controls.coffee
-	#= require spectro/helper/regular/sidebar.coffee
-	#= require spectro/helper/static.coffee
-	#= require spectro/helper/static/breadcrumbs.coffee
-	#= require spectro/helper/static/placeholder.coffee
-	#= require spectro/helper/static/popover.coffee
+window.Spectro = {}
 
 #= require spectro/selectors.coffee
-#= require spectro/controls.coffee
+#= require spectro/i18n.coffee
+#= require spectro/helpers/regular.coffee
+#= require spectro/helpers/regular/controls.coffee
+#= require spectro/helpers/regular/panelset.coffee
+#= require spectro/helpers/static.coffee
+#= require spectro/helpers/static/breadcrumbs.coffee
+#= require spectro/helpers/static/placeholder.coffee
+#= require spectro/helpers/static/popover.coffee
 
 # String prototype extension
-String::startsWith ?= (s) -> @[...s.length] is s
-String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
+String::startsWith ?= (string) -> @[...string.length] is string
+String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 
 # Text selection polyfill
 (($) ->
@@ -27,8 +25,8 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 			return null
 
 		# Search for editable element
-		$element = $(selection.anchorNode.parentElement)
-		$element = $element.parents('.' + $.fn.spectro.defaults.enabledElementClass).is(':spectro-editable')
+		$element = $ selection.anchorNode.parentElement
+		$element = $element.parents('.' + $.fn.spectro.classes.enabledElementClass).is ':spectro-editable'
 
 		if $element.length is 0 then return null
 
@@ -37,7 +35,6 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 
 # Spectro plugin
 (($) ->
-
 	$document = $ document
 	$html = $ 'html'
 
@@ -45,7 +42,7 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 	$document.on 'mouseup.spectro mouseleave.spectro touchend.spectro touchcancel.spectro', ->
 
 		# Only if any Spectro instance is active
-		if $('.' + $.fn.spectro.defaults.enabledElementClass).length is 0 then return
+		if $('.' + $.fn.spectro.classes.enabledElementClass).length is 0 then return
 
 		# Hide popover
 		Spectro.Popover.hide()
@@ -54,22 +51,30 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 		   $.fn.spectro.$draggedElement?
 
 			# Remove drag state from draggable element
-			$.fn.spectro.$draggedElement
-				.attr 'aria-grabbed', false
-				.removeClass $.fn.spectro.defaults.draggedElementClass
+			$.fn.spectro.$draggedElement.attr 'aria-grabbed', false
 
 			# Remove drag class from document to show back controls
-			$html.removeClass $.fn.spectro.defaults.documentDraggedClass
+			$html.removeClass $.fn.spectro.classes.documentDraggedClass
 
-			# Drop drag element after target
 			if $.fn.spectro.$lastDragoveredElement?
-				if $.fn.spectro.draggedElementDropBefore is true
+
+				# Place element inside target
+				if $.fn.spectro.$lastDragoveredElement.spectro 'accepts', $.fn.spectro.$draggedElement
+					$.fn.spectro.$lastDragoveredElement.append $.fn.spectro.$draggedElement
+
+				# Place element before target
+				else if $.fn.spectro.draggedElementDropBefore is true
 					$.fn.spectro.$lastDragoveredElement.before $.fn.spectro.$draggedElement
+
+				# Place element after target
 				else
 					$.fn.spectro.$lastDragoveredElement.after $.fn.spectro.$draggedElement
 
-			# Focus on dragged element
-			$.fn.spectro.$draggedElement.focus()
+				# Trigger change event on root element
+				$.fn.spectro.$draggedElement.trigger $.fn.spectro.events.change
+
+			# Show controls for dragged element later
+			draggedElement = $.fn.spectro.$draggedElement
 
 			# Remove placeholder
 			Spectro.Placeholder.destroy()
@@ -78,6 +83,9 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 			$.fn.spectro.$draggedElement = null
 			$.fn.spectro.$lastDragoveredElement = null
 			$.fn.spectro.draggedElementDropBefore = false
+
+			# We have to clean up drag data to show controls
+			draggedElement.trigger 'mouseover.spectro'
 
 	# Plugin methods
 	methods =
@@ -107,8 +115,8 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 				controls = new Spectro.Controls $this
 
 				# Add class to document
-				if not $html.hasClass $.fn.spectro.defaults.documentEnabledClass
-					$html.addClass $.fn.spectro.defaults.documentEnabledClass;
+				if not $html.hasClass $.fn.spectro.classes.documentEnabledClass
+					$html.addClass $.fn.spectro.classes.documentEnabledClass;
 
 				# No setup required for inline stuff
 				if $this.is ':spectro-inline' then return
@@ -117,9 +125,8 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 					.attr 'tabindex', 0
 					.attr 'aria-label', $scheme.attr 'spectro-label'
 					.attr 'aria-grabbed', false
-					.addClass $.fn.spectro.defaults.enabledElementClass
-					.trigger 'spectro.enable'
-
+					.addClass $.fn.spectro.classes.enabledElementClass
+					.trigger $.fn.spectro.events.enable
 					.on 'mouseover.spectro', (event) ->
 
 						# If this is not drag action
@@ -127,7 +134,7 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 						   $.fn.spectro.$draggedElement is null
 
 							# Prevent root element to be focused
-							if $this.attr('data-spectro-scheme')? then return
+							#if $this.attr('data-spectro-scheme')? then return
 
 							event.stopPropagation()
 							controls.show()
@@ -136,23 +143,27 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 							# caret to disappear in Firefox
 							if $this.is ':spectro-editable'
 								$this.attr contenteditable: true
+					.on 'mouseover.spectro', (event) ->
+						if $.fn.spectro.isDrag and
+						   $.fn.spectro.$draggedElement isnt null and
+						   $.fn.spectro.$draggedElement[0] isnt $this[0]
 
+							if $this.spectro('accepts', $.fn.spectro.$draggedElement) and
+							   $this.children().length is 0
+								$.fn.spectro.$lastDragoveredElement = $this
 					.on 'mousemove.spectro touchmove.spectro', (event) ->
-						# Well this is required for vertical components
-						# not a bug or something
-						#event.stopPropagation()
 
 						# Get placeholder singleton
 						placeholder = Spectro.Placeholder.get()
 						$this = $ this
 
-						# If this is drag action and element is not drag target
+						# If this is drag action and element is not draggable target
 						if $.fn.spectro.isDrag and
 						   $.fn.spectro.$draggedElement isnt null and
 						   $.fn.spectro.$draggedElement[0] isnt $this[0]
 
-							# If element is allowed here
-							if $this.spectro 'accepts', $.fn.spectro.$draggedElement
+							# If element is allowed inside
+							if $this.spectro 'neighbor', $.fn.spectro.$draggedElement
 
 								isVertical = false
 
@@ -179,13 +190,11 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 								$.fn.spectro.$lastDragoveredElement = $this
 
 								placeholder.show $this, isVertical
-
 					.on 'dblclick.spectro', (event) ->
 						$this = $ this
 						selection = $this.selection()
 
 						# If element is active, contenteditable and has text selected
-						#console.log $this.selection() isnt null
 						if $this.is(':focus') and
 						   selection isnt null
 							event.stopPropagation()
@@ -210,7 +219,6 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 
 								selection.removeAllRanges()
 								selection.addRange(range)
-
 					.on 'mouseup.spectro touchend.spectro', (event) ->
 						$this = $ this
 						popover = Spectro.Popover.get()
@@ -222,16 +230,14 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 
 							# Show popover if required
 							popover.show $this
-
-					.on 'mouseleave.spectro', (event) ->
+					.on 'mouseout.spectro', (event) ->
 						#event.stopPropagation()
 
 						$this = $ this
 
 						if not $this.is ':focus'
 							$this.removeAttr 'contenteditable'
-							controls.hide()
-					
+							controls.hide()					
 					.on 'focus.spectro', (event) ->
 						event.preventDefault()
 
@@ -239,12 +245,12 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 
 						$this = $ this
 
-						if not $this.hasClass $.fn.spectro.defaults.activeElementClass
-							$this.addClass $.fn.spectro.defaults.activeElementClass
+						if not $this.hasClass $.fn.spectro.classes.activeElementClass
+							$this.addClass $.fn.spectro.classes.activeElementClass
 
 						# If element is not contenteditable yet
 						if $this.is(':spectro-editable') and $this.attr('contenteditable') isnt 'true'
-							$this.attr contenteditable: true
+							$this.attr 'contenteditable', true
 
 						# Clean helpers
 						breadcrumbs.reset()
@@ -254,7 +260,7 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 						$parent = $this
 						path = []
 
-						while $parent.hasClass($.fn.spectro.defaults.enabledElementClass) and $parent[0] isnt document
+						while $parent.hasClass($.fn.spectro.classes.enabledElementClass) and $parent[0] isnt document
 							path.push $parent
 							$parent = $parent.parent()
 
@@ -271,39 +277,34 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 
 							breadcrumbs.add label, (-> $item.focus())
 
-						breadcrumbs.show()
-					
-					.on 'blur.spectro', ->
+						breadcrumbs.show()					
+					.on 'blur.spectro', (event) ->
 						controls.hide()
 
 						$ this
 							.removeAttr 'contenteditable'
-							.removeClass $.fn.spectro.defaults.activeElementClass
-					
+							.removeClass $.fn.spectro.classes.activeElementClass					
 					.on 'keydown.spectro', (event) ->
 						$this = $ this
+						$this.trigger $.fn.spectro.events.change
 
-						# Clone element instead of messy markup on `Enter` hit
+						# Clone element instead of messy markup on `Enter`
 						if event.keyCode is 13
 							event.preventDefault()
 							event.stopPropagation()
 							
-							$clone = $ '<' + $this.prop('tagName') + ' />'
+							$clone = $this.spectro 'clone'
 
 							$this.after $clone
-
-							$clone
-								.html ''
-								.spectro 'enable', scheme: $this.data('scheme')
-
+							
 							$clone.focus()
 
 							return false
 
-						# Remove empty element on `Delete` or `Backspace` hit
-						else if (event.keyCode is 46 or event.keyCode is 8) and
-								$this.is ':spectro-removeable' and
-								$.trim($this.html()) is ''
+						# Remove empty element on `Ctrl` + `Delete`
+						else if event.keyCode is 46 and
+								event.ctrlKey is true and
+								$this.is ':spectro-removeable'
 
 							event.preventDefault()
 							event.stopPropagation()
@@ -312,7 +313,7 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 								.blur()
 								.remove()
 
-						# Move element below when `Ctrl` + `Up/Down Arrow` is hit
+						# Move element below when `Ctrl` + `Up/Down Arrow`
 						else if (event.keyCode is 38 or event.keyCode is 40) and
 								event.ctrlKey is true and
 								$this.is ':spectro-draggable'
@@ -325,40 +326,39 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 							else
 								$this.next().after $this
 
-							$this.focus()
-					
+							$this.focus()					
 					.on 'paste.spectro', (event) ->
 						event.preventDefault();
 						event.stopPropagation();
 
 						# Allow plain text insertion only 
-						document.execCommand 'insertHTML', false, event.originalEvent.clipboardData.getData 'text/plain'
+						document.execCommand 'insertHTML', false, event.originalEvent.clipboardData.getData 'text/plain'	
 
 			# Proceed spectro enable for children
-			$this.children().each ->
-				$child = $ this
-				childTagName = $child.prop('tagName').toLowerCase()
+			# Made this async to prevent document lock on huge elements
+			window.setTimeout ->
+				$this.children().each ->
+					$child = $ this
+					childTagName = $child.prop('tagName').toLowerCase()
 
-				$child.spectro 'enable', scheme: $scheme.find('> ' + childTagName).get 0
-
-		# Checks if element accepts another
-		accepts: ($element) -> $(this).data('scheme').parent().find('> [spectro-label="' + $element.data('scheme').attr('spectro-label') + '"]').length isnt 0
+					$child.spectro 'enable', scheme: $scheme.find('> ' + childTagName)
+			, 1
 
 		# Disables Spectro chain
 		disable: ->
 			$this = $ this
 
 			# Disable document once
-			if $html.hasClass $.fn.spectro.defaults.documentEnabledClass
-				$html.removeClass $.fn.spectro.defaults.documentEnabledClass
+			if $html.hasClass $.fn.spectro.classes.documentEnabledClass
+				$html.removeClass $.fn.spectro.classes.documentEnabledClass
 
 			$this
-				.removeClass $.fn.spectro.defaults.enabledElementClass
+				.removeClass $.fn.spectro.classes.enabledElementClass
 				.removeAttr 'tabindex'
 				.removeAttr 'aria-label'
 				.removeAttr 'aria-grabbed'
+				.trigger $.fn.spectro.events.disable
 				.off '.spectro'
-				.trigger 'spectro.disable'
 				.children().each ->
 					$(this).spectro 'disable'
 
@@ -372,10 +372,52 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 			Spectro.Placeholder.destroy()
 
 		# Checks if Spectro chain enabled
-		enabled: -> $(this).hasClass $.fn.spectro.defaults.enabledElementClass
+		enabled: -> $(this).hasClass $.fn.spectro.classes.enabledElementClass
 
 		# Checks if Spectro chain disabled
-		disabled: -> not $element.spectro 'enabled'
+		disabled: -> not $(this).spectro 'enabled'
+
+		# Checks if element accepts another
+		accepts: ($element) ->
+			$this = $ this
+
+			# Check scope
+			if not $this.data('scheme')? then return false
+
+			# Retrieve schemas
+			$elementScheme = $element.data 'scheme'
+			$scheme = $this.data 'scheme'
+
+			# Compare nesting level for alike elments
+			if $elementScheme.parents().length - 1 isnt $scheme.parents().length then return false
+
+			return $scheme
+				.find "> #{$elementScheme.prop 'tagName'}[spectro-label='#{$elementScheme.attr 'spectro-label'}']"
+				.length isnt 0
+
+		# Checks if element is valid near to another
+		neighbor: ($element) ->
+			$this = $ this
+
+			return $this.parent().spectro 'accepts', $element
+
+		# Creates clone of active element
+		clone: ($scheme = null) ->
+			$this = $ this
+
+			$scheme = $scheme or $this.data 'scheme'
+
+			$clone = $ '<' + $scheme.prop('tagName') + ' />'
+
+			# Copy attributes except spectro-* related
+			for attribute in $scheme.get(0).attributes
+				if not attribute.name.startsWith 'spectro-'
+					$clone.attr attribute.name, attribute.value
+
+			# Enable clone element
+			$clone.spectro 'enable', scheme: $scheme
+
+			return $clone
 
 	# Spectro entrypoint method
 	$.fn.spectro = (method, options...) ->
@@ -386,6 +428,13 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 		else
 			console.warn 'Spectro: Unknown method'
 
+	# Extensions object
+	$.fn.spectro.extensions = []
+
+	#= require spectro/extensions/contents.coffee
+	#= require spectro/extensions/attributes.coffee
+	#= require spectro/extensions/styles.coffee
+
 	# Global variables
 	$.fn.spectro.isDrag = false
 	$.fn.spectro.$draggedElement = null
@@ -393,14 +442,19 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 	$.fn.spectro.draggedElementDropBefore = false
 
 	# Spectro defaults
-	$.fn.spectro.defaults =
+	$.fn.spectro.classes =
 		enabledElementClass: 'spectro-element'
 		hoveredElementClass: 'spectro-element--hover'
 		activeElementClass: 'spectro-element--active'
 		removedElementClass: 'spectro-element--removed'
-		draggedElementClass: 'spectro-element--dragged'
 		documentEnabledClass: 'spectro--enabled'
 		documentDraggedClass: 'spectro--dragged'
+
+	# Events list
+	$.fn.spectro.events =
+		enable: 'enable.spectro'
+		disable: 'disable.spectro'
+		change: 'change.spectro'
 
 	# Spectro localization stuff
 	$.fn.spectro.lang = $html.attr('lang') or 'en'
@@ -409,7 +463,21 @@ String::endsWith ?= (s) -> s is '' or @[-s.length..] is s
 			remove: 'Remove element'
 			setup: 'Setup element'
 			move: 'Move element'
-			sidebarStyles: 'Styles'
-			sidebarAttributes: 'Attributes'
-			sidebarContent: 'Content'
+			styles: 'Styles'
+			attributes: 'Properties'
+			contents: 'Contents'
+		de:
+			remove: 'Entfernen element'
+			setup: 'Setup element'
+			move: 'Verschieben element'
+			styles: 'Styles'
+			attributes: 'Eigenschaften'
+			contents: 'Inhalt'
+		ru:
+			remove: 'Удалить элемент'
+			setup: 'Настроить элемент'
+			move: 'Переместить элемент'
+			styles: 'Стили'
+			attributes: 'Свойства'
+			contents: 'Содержимое'
 )(jQuery)

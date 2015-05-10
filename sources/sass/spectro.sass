@@ -51,72 +51,18 @@
 		&-label + &-control
 			border-radius: 0 4px 4px 4px
 
-	&-list-menu
-		position: relative
-		user-select: none
-
-		&--active &__label
-			cursor: default
-
-		&--active &__options
-			visibility: visible
-			transform: none
-			opacity: 1
-
-		&__label
-			border: 2px solid $color-primary
-			color: $color-primary
-			box-sizing: border-box
-			display: inline-block
-			border-radius: 4px
-			padding: 5px 15px
-			cursor: pointer
-			width: 100%
-
-		&__options
-			+helper-box-shadow()
-			transition: transform $animation-speed-default ease, opacity $animation-speed-default ease
-			background: $color-background-primary
-			border: 2px solid $color-primary
-			transform: translateY(-10px)
-			transform-origin: 50% 0
-			border-radius: 0 0 4px 4px
-			box-sizing: border-box
-			visibility: hidden
-			position: absolute
-			margin: 0
-			margin-top: -4px
-			padding: 0
-			padding-top: 4px
-			list-style: none
-			border-top: none
-			display: block
-			opacity: 0
-			width: 100%
-			z-index: 1
-			left: 0
-
-			&__item
-				padding: 5px 15px
-				display: block
-
-				&:hover
-					background-color: $color-primary
-					color: $color-background-primary
-
 	// Document related
 	&--dragged body
 		cursor: move
 		cursor: grabbing
 
 	&--dragged &-controls
-		opacity: 0
+		display: none
 
 	// Element related
 	&-element
+		transition: box-shadow $animation-speed-default ease, opacity $animation-speed-default ease
 		box-shadow: 0 0 0 $border-width fade-out($color-primary, 1)
-		transition: all $animation-speed-default ease
-		border-radius: 4px
 
 		&:empty:before
 			font-family: Arial, Helvetica, sans-serif
@@ -124,9 +70,14 @@
 			color: rgba(0, 0, 0, .4)
 
 		&--hover,
-		&--active
+		&--active,
+		&[aria-grabbed="true"]
 			box-shadow: 0 0 0 $border-width $color-primary
+			border-radius: 4px
 			outline: none
+
+		&[aria-grabbed="true"]
+			animation: placeholder-pulse $animation-speed-long infinite
 
 		&--hover[contenteditable="true"]:empty
 			&:after
@@ -135,8 +86,9 @@
 		&--active
 			animation: element-pulse $animation-speed-long infinite
 
-			&[contenteditable="true"]
-				cursor: text
+			&[contenteditable='true']
+				&:focus
+					cursor: text
 
 				&:empty:after
 					transition: border-color $animation-speed-default ease
@@ -147,65 +99,69 @@
 			clip: rect(0, 0, 0)
 			clip: rect(0, 0, 0, 0)
 
-		&--dragged
-			opacity: .2
-
 	// Helpers related
 	&-helper
 		font: 14px Arial, Helvetica, sans-serif
 		position: fixed
 
+	// View / edit modes switcher
 	&-switcher
-		background: $color-background-primary
-		+helper-box-shadow()
-		border-radius: 0 0 0 4px
-		border-right: none
 		user-select: none
-		line-height: 28px
-		border-top: none
+		line-height: 40px
+		height: 40px
+		width: 200px
 		z-index: 999
-		height: 28px
 		right: 0
 		top: 0
 
-		&--active &__component
-			&-control
-				border-color: $color-primary
-
-				&-bullet
-					background-color: $color-primary
-					margin-left: 0
-					left: 2px
-
 		&__component
-			list-style: none
-			height: inherit
-			padding: 0
-			margin: 0
+			text-align: center
 
-			&-label,
-			&-control
+			&__input
+				display: none
+
+			&__label
 				color: $color-text
 				cursor: pointer
-				height: inherit
-				padding: 0 10px
-				display: block
-				float: left
+				padding: 2px
 
-			&-control
+				&:hover
+					color: $color-primary
+
+			#spectro-mode-edit:checked ~ &__label[for='spectro-mode-edit'],
+			#spectro-mode-view:checked ~ &__label[for='spectro-mode-view']
+				color: lighten($color-text, 20%)
+				cursor: default
+
+			#spectro-mode-edit:checked ~ &__control
+				border-color: $color-primary
+
+			#spectro-mode-edit:checked ~ &__control &__control__bullet
+				background-color: $color-primary
+				margin-left: 0
+				left: 2px
+
+			&__control
+				$control-color: fade-out($color-text, .6)
+
 				transition: border-color $animation-speed-default ease
-				border: $border-width solid lighten($color-text, 50%)
+				border: $border-width solid $control-color
+				vertical-align: middle
+				display: inline-block
 				border-radius: 20px
 				position: relative
 				overflow: hidden
 				cursor: default
+				height: inherit
+				color: $color-text
+				padding: 0 10px
 				height: 14px
 				width: 20px
-				top: 5px
+				top: -1px
 
-				&-bullet
+				&__bullet
 					transition: background-color $animation-speed-default ease, left $animation-speed-default ease, margin-left $animation-speed-default ease
-					background: lighten($color-text, 50%)
+					background: $control-color
 					border-radius: 14px
 					margin-left: -14px
 					position: absolute
@@ -215,6 +171,7 @@
 					left: 100%
 					top: 1px
 
+	// Breadcrumbs set
 	&-breadcrumbs
 		transition: top $animation-speed-default ease
 		border-bottom-right-radius: 4px
@@ -285,132 +242,118 @@
 					z-index: 1
 					top: -1px
 
-	&-sidebar
-		transition: all $animation-speed-default ease
-		background: $color-background-primary
+	// Key tab panel set
+	&-panelset
+		+helper-box-shadow()
+		transition: transform $animation-speed-default ease, opacity $animation-speed-default ease
+		background-color: $color-background-primary
+		transform: scale(.6)
+		transform-origin: 100% 50%
 		box-sizing: border-box
+		padding-top: 40px
 		color: $color-text
-		padding: 0 10px
 		width: 200px
-		left: -200px
+		height: 100%
 		z-index: 997
-		bottom: 0
-		top: 60px
-
-		&--animated
-			position: absolute
+		opacity: 0
+		right: 0
+		top: 0
 
 		&--active
-			position: fixed
-			left: 0
+			transform: none
+			opacity: 1
 
-		&__tab-panel
-			transition: max-height $animation-speed-default ease
-			background: $color-background-primary
-			border-radius: 0 4px 4px 0
-			position: relative
-			overflow: hidden
-			margin: 10px 0
-			border: none
-
-			&__title
-				color: $color-text
-				font-size: inherit
-				position: relative
-				user-select: none
-				font-weight: bold
-				padding: 6px 10px
-				display: block
-				margin: 12px
-				padding: 0
-
-			&__contents
-				list-style: none
-				margin: 12px
-				padding: 0
-
-				&__item
-					background-color: darken($color-background-primary, 5%)
-					border-radius: 4px
-					margin-top: 4px
-					display: block
-					cursor: move
-					padding: 6px
-
-					&:first-child
-						margin-top: 0
-
-					&[draggable="true"]
-						border: $border-width dashed transparent
-
-						&:hover
-							border-color: $color-primary
-				
-				&__property
-					display: block
-					margin-top: 6px
-
-	&-placeholder
-		pointer-events: none
-		text-align: center
-		position: absolute
-		user-select: none
-		display: none
-
-		&--active
-			display: block
-
-		&__line
-			animation: placeholder-pulse $animation-speed-long infinite
-			background: $color-primary
-			display: block
-			border: none
+		// Tab content styling
+		&__list
+			list-style: none
 			padding: 0
 			margin: 0
 
-			&:before,
-			&:after
-				border: solid rgba(66, 129, 244, 0)
-				position: absolute
-				border-width: 10px
-				content: ''
+			&__item
+				display: block
+
+				&[draggable="true"]
+					border: 1px solid darken($color-background-primary, 3%)
+					transition: border-color $animation-speed-default ease, box-shadow $animation-speed-default ease
+					box-sizing: border-box
+					border-radius: 3px
+					margin-top: 4px
+					display: block
+					padding: 5px
+					cursor: move
+					cursor: grab
+					float: left
+					height: 82px * .75
+					width: 82px
+
+					&:nth-child(even)
+						margin-left: 4px
+
+					&:hover
+						+helper-box-shadow()
+						border-color: darken($color-background-primary, 20%)
+
+		&__input
+			display: none
+
+		// Default state
+		&__tab
+			&__label
+				text-transform: uppercase
+				color: $color-primary
+				letter-spacing: 1px
+				font-weight: normal
+				cursor: pointer
+				font-size: 11px
+				display: block
+				padding: 15px
+				margin: 0
+
+				&:hover
+					background-color: darken($color-background-primary, 3%)
+
+			&__contents
+				transition: height $animation-speed-default ease, padding-top $animation-speed-default ease, padding-bottom $animation-speed-default ease
+				+helper-box-shadow()
+				background-color: $color-background-primary
+				box-sizing: border-box
+				position: relative
+				border-radius: 3px
+				overflow-y: hidden
+				overflow-x: hidden
+				display: block
+				padding: 0
 				height: 0
-				width: 0
 
-		&--vertical &__line
-			width: $border-width
-			height: 100%
+				// Scrollbar is too thick on windows
+				&::-webkit-scrollbar
+					width: 6px
 
-			&:before,
-			&:after
-				margin-left: -10px
+				&::-webkit-scrollbar-track
+					border-radius: 10px
 
-			&:before
-				border-top-color: #4281f4
-				top: 0
+				&::-webkit-scrollbar-thumb
+					background-color: rgba(0, 0, 0, .2)
+					border-radius: 10px
 
-			&:after
-				border-bottom-color: #4281f4
-				margin-top: -12px
-				top: 100%
+		// Active state
+		&__input:checked + &__tab
+			background-color: $color-primary
+			padding-bottom: 2px
 
-		&--horizontal &__line
-			height: $border-width
-			width: 100%
+		&__input:checked + &__tab &__tab__label
+			transition: none
+			background-color: transparent
+			cursor: default
+			color: white
 
-			&:before,
-			&:after
-				margin-top: -10px
-				top: 50%
+		&__input:checked + &__tab &__tab__contents
+			overflow-y: auto
+			margin: 0 2px
+			padding: 10px
+			height: auto
 
-			&:before
-				border-left-color: #4281f4
-				left: 0
-
-			&:after
-				border-right-color: #4281f4
-				right: 0
-
+	// Inline-text popover panel
 	&-popover
 		+helper-box-shadow()
 		transition: transform $animation-speed-default ease, opacity $animation-speed-default ease
@@ -472,15 +415,82 @@
 				&:hover
 					background-color: darken($color-background-primary, 5%)
 
+	// Placeholder insertion line
+	&-placeholder
+		$arrow-size: 6px
+
+		pointer-events: none
+		text-align: center
+		position: absolute
+		user-select: none
+		display: none
+
+		&--active
+			display: block
+
+		&__line
+			animation: placeholder-pulse $animation-speed-long infinite
+			background: $color-primary
+			display: block
+			border: none
+			padding: 0
+			margin: 0
+
+			&:before,
+			&:after
+				border: solid rgba(66, 129, 244, 0)
+				border-width: $arrow-size
+				position: absolute
+				content: ''
+				height: 0
+				width: 0
+
+		&--vertical &__line
+			width: $border-width
+			height: 100%
+
+			&:before,
+			&:after
+				margin-left: -1 * $arrow-size
+
+			&:before
+				border-top-color: $color-primary
+				top: 0
+
+			&:after
+				border-bottom-color: $color-primary
+				margin-top: -12px
+				top: 100%
+
+		&--horizontal &__line
+			height: $border-width
+			width: 100%
+
+			&:before,
+			&:after
+				margin-top: -1 * $arrow-size
+				top: 50%
+
+			&:before
+				border-left-color: $color-primary
+				left: 0
+
+			&:after
+				border-right-color: $color-primary
+				right: 0
+
+	// Control tools
 	&-controls
+		$safe-zone: 30px;
+
 		transition: opacity $animation-speed-default ease
 		transition-delay: $animation-speed-default / 2
 		visibility: hidden
 		position: absolute
-		margin-left: -20px
-		margin-top: -20px
+		margin-left: -1 * $safe-zone
+		margin-top: -1 * $safe-zone
 		user-select: none
-		padding: 20px
+		padding: $safe-zone
 		padding-bottom: 0
 		z-index: 991
 		opacity: 0
@@ -504,16 +514,20 @@
 			top: -100%
 
 			&__tool
+				+helper-box-shadow()
 				border: $border-width solid $color-primary
 				background: $color-background-primary
+				background-position: 50% 50%
+				background-repeat: no-repeat
 				box-sizing: border-box
-				+helper-box-shadow()
 				border-radius: 4px
 				position: absolute
+				text-align: center
+				min-width: 24px
 				display: block
 				padding: 0 4px
-				height: 20px
-				top: -12px
+				height: 24px
+				top: -14px
 
 				&--label,
 				&--remove
@@ -526,19 +540,28 @@
 				&--label
 					background-image: url('../../assets/icon-properties.svg')
 					background-repeat: no-repeat
-					background-position: 1px 0
+					background-position: 2px 50%
 					text-transform: uppercase
 					color: $color-primary
 					letter-spacing: 1px
-					padding-left: 18px
-					line-height: 16px
-					font-weight: bold
+					line-height: 20px
 					font-size: 80%
+					width: 21px
 					left: -8px
+					z-index: 9
+
+					& span
+						padding-left: 16px
+						display: none
+
+					&:hover
+						width: auto
+
+						span
+							display: inline
 
 				&--handle
 					background-image: url('../../assets/icon-move.svg')
-					background-position: 50% 50%
 					background-repeat: no-repeat
 					margin-left: -30px
 					cursor: move

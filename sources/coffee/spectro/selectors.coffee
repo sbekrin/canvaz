@@ -2,11 +2,14 @@ $.extend $.expr[':'],
 
 	# Spectro `:void` selector helper
 	# Checks if set element is self-closing
+	#
+	# Well, <audio> and <video> elements are not void, but their contents
+	# are not supposed to be edited
 	'void': (element) ->
 		[ 'area', 'base', 'br', 'col', 'command',
 		  'embed', 'hr', 'img', 'input', 'keygen',
 		  'link', 'meta', 'param', 'source', 'track',
-		  'wbr' ].indexOf(element.tagName.toLowerCase()) > -1
+		  'wbr', 'audio', 'video' ].indexOf(element.tagName.toLowerCase()) > -1
 
 	# Spectro `:spectro-enabled` selector helper
 	# Checks if element is enabled
@@ -18,30 +21,34 @@ $.extend $.expr[':'],
 		$element = $ element
 		$scheme = $element.data 'scheme'
 
-		isNotVoid = not $scheme.is(':void')
-		isParentEnabled = $element.parent().hasClass $.fn.spectro.defaults.enabledElementClass
+		isNotVoid = not $scheme.is ':void'
+		isParentEnabled = $element.parent().hasClass $.fn.spectro.classes.enabledElementClass
 		isForcedEditable = $scheme.attr('spectro-editable') is 'true'
 		hasNoChildren = $scheme.children().length is 0
 		
 		return isNotVoid and isParentEnabled and (isForcedEditable or hasNoChildren)
 
-	# TODO:
-	'spectro-setupable': (element) -> true
+	# Spectro `:spectro-setupable` selector helper
+	# Checks if any extension avaible for set element
+	'spectro-setupable': (element) ->
+		$element = $ element
+
+		for key, extension of $.fn.spectro.extensions
+			if $element.data('scheme').is extension.avaibleFor()
+				return true
+
+		return false
 
 	# Spectro `:spectro-draggable` selector helper
 	# Checks of element can be moved
 	'spectro-draggable': (element) ->
 		$element = $ element
 
-		if $element.attr('data-spectro-scheme') isnt null and
-		   $element.parent().children().length is 1
-			return false
-		else
-			return true
+		return not $element.attr('data-spectro-scheme')?
 
 	# Spectro `:spectro-removeable` selector helper
 	# Checks if element can be removed
-	'spectro-removeable': (element) -> not $(element).attr('data-spectro-scheme')?
+	'spectro-removeable': (element) -> $(element).data('scheme').get(0).parentElement isnt null
 
 	# Spectro `:spectro-controlable` selector helper
 	# Checks if controls are allowed for set element
@@ -50,8 +57,8 @@ $.extend $.expr[':'],
 
 		# Prevent controls for active, removed and dragged elements
 		return $element.parents(':focus').length is 0 and
-				not $element.hasClass $.fn.spectro.defaults.removedElementClass and
-				not $element.hasClass $.fn.spectro.defaults.draggedElementClass and
+				not $element.hasClass $.fn.spectro.classes.removedElementClass and
+				not $element.hasClass $.fn.spectro.classes.draggedElementClass and
 				not $element.is ':focus'
 				
 	# Spectro `:spectro-inline` selector helper
@@ -67,4 +74,4 @@ $.extend $.expr[':'],
 				   $scheme.attr('spectro-editable') is 'true'
 
 		# Check if set element has `spectro-editable` container
-		return $element.parents('.' + $.fn.spectro.defaults.enabledElementClass).filter(filter).length isnt 0
+		return $element.parents('.' + $.fn.spectro.classes.enabledElementClass).filter(filter).length isnt 0

@@ -14,20 +14,8 @@
   <body>
     <!-- Demo content-->
     <main>
-      <p><br></p>
       <section>
         <article data-spectro-scheme="./scheme.xml">
-          <div class="row">
-            <div class="col">
-              <p>Good afternoon</p>
-            </div>
-            <div class="col">
-              <p>Guten tag</p>
-            </div>
-            <div class="col">
-              <p>Добрый день</p>
-            </div>
-          </div>
           <h2>How And Why To Make Side Projects Work At A Digital Agency</h2>
           <p>It’s no secret that the digital industry is booming. From exciting startups to global brands, companies are reaching out to digital agencies, responding to the new possibilities available. However, the industry is fast becoming overcrowded, heaving with agencies offering similar services — on the surface, at least.</p>
           <p>Producing creative, fresh projects is the key to standing out. Unique side projects are the best place to innovate, but balancing commercially and creatively lucrative work is tricky. So, this article looks at how to make side projects work and <b>why they’re worthwhile</b>, drawing on lessons learned from our development of the <a href="http://www.uxcompanion.com/">UX Companion</a> app.</p><img src="http://media.mediatemple.netdna-cdn.com/wp-content/uploads/2014/12/01-UXCBooks-opt-small.jpg" alt="">
@@ -47,46 +35,12 @@
     </main>
     <!-- Switcher component-->
     <div class="spectro-switcher spectro-helper">
-      <label tabindex="1" class="spectro-switcher__component">
-        <input id="spectro-switcher" type="checkbox" class="spectro-hidden"><span id="spectro-edit" class="spectro-switcher__component-label">Edit</span><span class="spectro-switcher__component-control"><span class="spectro-switcher__component-control-bullet"></span></span><span id="spectro-view" class="spectro-switcher__component-label">View</span>
-      </label>
-    </div>
-    <!-- Sidebar component-->
-    <div class="spectro-sidebar spectro-sidebar--active spectro-helper">
-      <div class="spectro-list-menu"><span class="spectro-list-menu__label">Contents</span>
-        <ul role="tablist" class="spectro-list-menu__options spectro-sidebar__tab-list">
-          <li id="tab-contents" aria-controls="panel-contents" role="tab" class="spectro-list-menu__options__item spectro-sidebar__tab-list__item">Contents</li>
-          <li id="tab-attributes" aria-controls="panel-attributes" role="tab" class="spectro-list-menu__options__item spectro-sidebar__tab-list__item">Attributes</li>
-          <li id="tab-classes" aria-controls="panel-classes" role="tab" class="spectro-list-menu__options__item spectro-sidebar__tab-list__item">Classes</li>
-        </ul>
+      <div class="spectro-switcher__component">
+        <input type="radio" id="spectro-mode-edit" name="spectro-mode" value="edit" hidden class="spectro-switcher__component__input">
+        <input type="radio" id="spectro-mode-view" name="spectro-mode" value="view" hidden checked class="spectro-switcher__component__input">
+        <label for="spectro-mode-edit" class="spectro-switcher__component__label">Edit</label> <span class="spectro-switcher__component__control"><span class="spectro-switcher__component__control__bullet"></span></span>
+        <label for="spectro-mode-view" class="spectro-switcher__component__label">View</label>
       </div>
-      <section id="panel-contents" aria-labeledby="tab-contents" role="tabpanel" class="spectro-sidebar__tab-panel">
-        <div class="spectro-sidebar__tab-panel__contents">
-          <label class="spectro-sidebar__tab-panel__contents__property">
-            <input type="checkbox">Use alternative style
-          </label>
-        </div>
-      </section>
-      <section id="panel-attributes" aria-labeledby="tab-attributes" role="tabpanel" hidden class="spectro-sidebar__tab-panel">
-        <div class="spectro-sidebar__tab-panel__contents">
-          <label tabindex="2" class="spectro-sidebar__tab-panel__contents__property spectro-input"><span class="spectro-input-label">Text property</span>
-            <input type="text" class="spectro-input-control">
-          </label>
-          <label tabindex="3" class="spectro-sidebar__tab-panel__contents__property spectro-input"><span class="spectro-input-label">List property</span>
-            <select class="spectro-input-control">
-              <option>Value</option>
-            </select>
-          </label>
-        </div>
-      </section>
-      <section id="panel-classes" aria-labeledby="tab-classes" role="tabpanel" hidden class="spectro-sidebar__tab-panel">
-        <h2 class="spectro-sidebar__tab-panel__title">Content</h2>
-        <ul class="spectro-sidebar__tab-panel__contents">
-          <li tabindex="0" class="spectro-sidebar__tab-panel__contents__item">Heading</li>
-          <li tabindex="0" class="spectro-sidebar__tab-panel__contents__item">Paragraph</li>
-          <li tabindex="0" class="spectro-sidebar__tab-panel__contents__item">List</li>
-        </ul>
-      </section>
     </div>
   </body>
 </html>
