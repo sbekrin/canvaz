@@ -1,7 +1,6 @@
 ![Spectro Logotype](http://i.imgur.com/SIhsB0y.jpg)
 
-# About
-Spectro is jQuery plugin made for visual, drag'n'drop, modular content management on websites.
+Spectro is jQuery plugin made for visual, drag and drop, modular content management on websites.
 
 # Features
 - Customizable content structure via scheme file
