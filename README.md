@@ -1,4 +1,4 @@
-![Spectro Logotype](http://i.imgur.com/SIhsB0y.jpg)
+![Spectro Logotype](http://i.imgur.com/5LI69Up.jpg)
 
 Spectro is jQuery plugin made for visual, drag and drop, modular content management on websites.
 
