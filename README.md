@@ -27,12 +27,13 @@ Scheme is intuitive `*.xml` file, which describes possible element structure. It
 
 | Attribute Name        | Status     | Description |
 |-----------------------|------------|-------------|
-| `spectro-label`       | ok         | This is human-readable name for element wich will be shown instead of tag name |
-| `spectro-classes`     | deprecated | This attribute have been removed after extensions support added |
-| `spectro-attributes`  | deprecated | This attribute have been removed after extensions support added |
-| `spectro-editable`    | ok         | This is boolean attribute for WYSIWYG-like editing. This attribute applied to parent element in order to make children inline elements |
+| `spectro-label`       | ok         | Human-readable name for element wich will be shown instead of tag name               |
 | `spectro-orientation` | ok         | This is Enum attribute with possible values of `vertical` and `horizontal` (default) |
-| `spectro-hotkey`      | in work    | `spectro-hotkey` is hotkey set for quick element insertion |
+| `spectro-icon`        | in work    | Preview icon for contents extension (could be any graphic, svg or png recommended)   |
+| `spectro-hotkey`      | in work    | Hotkey set for quick element insertion                                               |
+| `spectro-editable`    | deprecated | Boolean attribute for WYSIWYG-like editing. Replaced with wysiwyg extension          |
+| `spectro-classes`     | deprecated | This attribute have been removed after contents extensions added                     |
+| `spectro-attributes`  | deprecated | This attribute have been removed after contents extensions added                     |
 
 Other attributes with `spectro-*` prefix are reserved. All other attributes will be copied to new element as defaults.
 
