@@ -5,26 +5,41 @@ body {
   font: 20px 'PT Serif', Georgia, serif;
   cursor: default;
   margin: 0; }
-  body main {
-    display: block; }
-    body main article {
-      max-width: 720px;
-      margin: 0 auto;
-      width: 90%; }
-      body main article img {
-        max-width: 100%;
-        display: block;
-        margin: 0 auto; }
-    body main .row {
-      position: relative; }
-      body main .row:after, body main .row:before {
-        display: table;
-        content: ' '; }
-      body main .row:after {
-        clear: both; }
-      body main .row .col {
-        width: 33.33333%;
-        float: left; }
-
+  body main article {
+    max-width: 720px;
+    margin: 0 auto;
+    width: 90%; }
+    body main article h1, body main article h2, body main article h3 {
+      color: #111; }
+    body main article h1 {
+      font-size: 2em; }
+    body main article h2 {
+      font-size: 1.5em; }
+    body main article h3 {
+      font-size: 1em; }
+    body main article img {
+      max-width: 100%;
+      display: block;
+      margin: 0 auto; }
+    body main article p {
+      color: #222; }
+      body main article p a {
+        box-shadow: inset 0 -2px 0 white, inset 0 -3px 0 #4EA2BE;
+        text-decoration: none;
+        color: #4EA2BE; }
+        body main article p a:hover {
+          box-shadow: inset 0 -2px 0 white, inset 0 -3px 0 #DB3A3E;
+          color: #DB3A3E; }
+  body main .row {
+    position: relative; }
+    body main .row:after,
+    body main .row:before {
+      display: table;
+      content: ' '; }
+    body main .row:after {
+      clear: both; }
+    body main .row .col {
+      width: 33.33333333%;
+      float: left; }
 
 /*# sourceMappingURL=maps/common.css.map */

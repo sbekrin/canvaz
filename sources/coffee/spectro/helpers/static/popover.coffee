@@ -16,9 +16,11 @@ class Spectro.Popover extends Spectro.StaticHelper
 		return @
 
 	@destroy: ->
-		if @$container?
-			@$container.remove()
-			@$container = null
+		container = @container
+
+		if $container?
+			$container.remove()
+			$container = null
 
 	@show: ($target) ->
 
@@ -33,7 +35,7 @@ class Spectro.Popover extends Spectro.StaticHelper
 		$window = $ window
 		scrollLeft = $window.scrollLeft()
 		scrollTop = $window.scrollTop()
-		selection = $target.selection()
+		selection = $target.spectro 'selection'
 		range = selection.getRangeAt(0)
 		box = range.cloneRange().getBoundingClientRect()
 

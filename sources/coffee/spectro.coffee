@@ -4,8 +4,9 @@ window.Spectro = {}
 #= require spectro/i18n.coffee
 #= require spectro/helpers/regular.coffee
 #= require spectro/helpers/regular/controls.coffee
-#= require spectro/helpers/regular/panelset.coffee
+### require spectro/helpers/regular/panelset.coffee ###
 #= require spectro/helpers/static.coffee
+#= require spectro/helpers/static/panelset.coffee
 #= require spectro/helpers/static/breadcrumbs.coffee
 #= require spectro/helpers/static/placeholder.coffee
 #= require spectro/helpers/static/popover.coffee
@@ -13,25 +14,6 @@ window.Spectro = {}
 # String prototype extension
 String::startsWith ?= (string) -> @[...string.length] is string
 String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
-
-# Text selection polyfill
-(($) ->
-	$.fn.selection = ->
-		selection = window.getSelection()
-
-		# Check if selection is not empty
-		if selection.isCollapsed is true or
-		   selection.toString().replace(/\s/g, '')  is ''
-			return null
-
-		# Search for editable element
-		$element = $ selection.anchorNode.parentElement
-		$element = $element.parents('.' + $.fn.spectro.classes.enabledElementClass).is ':spectro-editable'
-
-		if $element.length is 0 then return null
-
-		return selection
-)(jQuery)
 
 # Spectro plugin
 (($) ->
@@ -41,40 +23,42 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 	# Global document events
 	$document.on 'mouseup.spectro mouseleave.spectro touchend.spectro touchcancel.spectro', ->
 
+		$spectro = $.fn.spectro
+
 		# Only if any Spectro instance is active
-		if $('.' + $.fn.spectro.classes.enabledElementClass).length is 0 then return
+		if $('.' + $spectro.classes.enabledElementClass).length is 0 then return
 
 		# Hide popover
 		Spectro.Popover.hide()
 
-		if $.fn.spectro.isDrag and
-		   $.fn.spectro.$draggedElement?
+		if $spectro.isDrag and
+		   $spectro.$draggedElement?
 
 			# Remove drag state from draggable element
-			$.fn.spectro.$draggedElement.attr 'aria-grabbed', false
+			$spectro.$draggedElement.attr 'aria-grabbed', false
 
 			# Remove drag class from document to show back controls
 			$html.removeClass $.fn.spectro.classes.documentDraggedClass
 
-			if $.fn.spectro.$lastDragoveredElement?
+			if $spectro.$lastDragoveredElement?
 
 				# Place element inside target
-				if $.fn.spectro.$lastDragoveredElement.spectro 'accepts', $.fn.spectro.$draggedElement
-					$.fn.spectro.$lastDragoveredElement.append $.fn.spectro.$draggedElement
+				if $spectro.$lastDragoveredElement.spectro 'accepts', $.fn.spectro.$draggedElement
+					$spectro.$lastDragoveredElement.append $.fn.spectro.$draggedElement
 
 				# Place element before target
-				else if $.fn.spectro.draggedElementDropBefore is true
-					$.fn.spectro.$lastDragoveredElement.before $.fn.spectro.$draggedElement
+				else if $spectro.draggedElementDropBefore is true
+					$spectro.$lastDragoveredElement.before $.fn.spectro.$draggedElement
 
 				# Place element after target
 				else
-					$.fn.spectro.$lastDragoveredElement.after $.fn.spectro.$draggedElement
+					$spectro.$lastDragoveredElement.after $.fn.spectro.$draggedElement
 
 				# Trigger change event on root element
-				$.fn.spectro.$draggedElement.trigger $.fn.spectro.events.change
+				$spectro.$draggedElement.trigger $.fn.spectro.events.change
 
 			# Show controls for dragged element later
-			draggedElement = $.fn.spectro.$draggedElement
+			$draggedElement = $spectro.$draggedElement
 
 			# Remove placeholder
 			Spectro.Placeholder.destroy()
@@ -84,8 +68,13 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 			$.fn.spectro.$lastDragoveredElement = null
 			$.fn.spectro.draggedElementDropBefore = false
 
-			# We have to clean up drag data to show controls
-			draggedElement.trigger 'mouseover.spectro'
+			# Make sure element stays in DOM and show controls
+			if jQuery.contains document, $draggedElement[0]
+				$draggedElement.trigger 'focus.spectro'
+			else
+				# TODO
+				#$draggedElement.spectro 'disable'
+				$draggedElement.remove()
 
 	# Plugin methods
 	methods =
@@ -111,6 +100,8 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 			# Check if this is component
 			if $scheme.attr('spectro-label')?
 
+				$.fn.spectro.enabledElements++
+
 				# Create controls for active element
 				controls = new Spectro.Controls $this
 
@@ -129,9 +120,11 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 					.trigger $.fn.spectro.events.enable
 					.on 'mouseover.spectro', (event) ->
 
+						$spectro = $.fn.spectro
+
 						# If this is not drag action
-						if not $.fn.spectro.isDrag and
-						   $.fn.spectro.$draggedElement is null
+						if not $spectro.isDrag and
+						   $spectro.$draggedElement is null
 
 							# Prevent root element to be focused
 							#if $this.attr('data-spectro-scheme')? then return
@@ -143,14 +136,18 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 							# caret to disappear in Firefox
 							if $this.is ':spectro-editable'
 								$this.attr contenteditable: true
-					.on 'mouseover.spectro', (event) ->
-						if $.fn.spectro.isDrag and
-						   $.fn.spectro.$draggedElement isnt null and
-						   $.fn.spectro.$draggedElement[0] isnt $this[0]
 
-							if $this.spectro('accepts', $.fn.spectro.$draggedElement) and
-							   $this.children().length is 0
-								$.fn.spectro.$lastDragoveredElement = $this
+						# Check if dragged element acceptable here
+						else if $spectro.isDrag and
+								$spectro.$draggedElement isnt null and
+								$spectro.$draggedElement[0] isnt $this[0] and
+								$this.spectro('accepts', $spectro.$draggedElement) and
+								$this.children().length is 0
+
+							# Highlight dropzone
+							$.fn.spectro.$lastDragoveredElement = $this
+							$this.addClass $.fn.spectro.classes.activeElementClass
+
 					.on 'mousemove.spectro touchmove.spectro', (event) ->
 
 						# Get placeholder singleton
@@ -190,54 +187,21 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 								$.fn.spectro.$lastDragoveredElement = $this
 
 								placeholder.show $this, isVertical
-					.on 'dblclick.spectro', (event) ->
-						$this = $ this
-						selection = $this.selection()
 
-						# If element is active, contenteditable and has text selected
-						if $this.is(':focus') and
-						   selection isnt null
-							event.stopPropagation()
-
-							# Remove trailing whitespace then doubleclick word on windows
-							if /(.+)(\s{1,})/g.test selection.toString()
-
-								# Count whitespaces from back
-								string = selection.toString();
-								spacesCount = 0
-
-								i = string.length
-
-								while i--
-									if /\s/.test string[i]
-										spacesCount++
-									else break
-
-								# Create new selection
-								range = selection.getRangeAt(0).cloneRange()
-								range.setEnd range.endContainer, range.endOffset - spacesCount
-
-								selection.removeAllRanges()
-								selection.addRange(range)
-					.on 'mouseup.spectro touchend.spectro', (event) ->
-						$this = $ this
-						popover = Spectro.Popover.get()
-						selection = $this.selection()
-
-						if $this.is(':focus') and
-						   selection isnt null
-							event.stopPropagation()
-
-							# Show popover if required
-							popover.show $this
 					.on 'mouseout.spectro', (event) ->
-						#event.stopPropagation()
-
 						$this = $ this
+						$spectro = $.fn.spectro
 
+						# Clean up dropzone highlight
+						if $spectro.isDrag and
+						   $this.hasClass $spectro.classes.activeElementClass
+							$this.removeClass $spectro.classes.activeElementClass
+
+						# Hide controls
 						if not $this.is ':focus'
 							$this.removeAttr 'contenteditable'
-							controls.hide()					
+							controls.hide()
+
 					.on 'focus.spectro', (event) ->
 						event.preventDefault()
 
@@ -253,6 +217,10 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 							$this.attr 'contenteditable', true
 
 						# Clean helpers
+						Spectro.Panelset.get()
+						Spectro.Panelset.reset()
+						Spectro.Panelset.show $this
+
 						breadcrumbs.reset()
 						controls.show()
 
@@ -277,13 +245,15 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 
 							breadcrumbs.add label, (-> $item.focus())
 
-						breadcrumbs.show()					
+						breadcrumbs.show()	
+
 					.on 'blur.spectro', (event) ->
 						controls.hide()
 
 						$ this
 							.removeAttr 'contenteditable'
-							.removeClass $.fn.spectro.classes.activeElementClass					
+							.removeClass $.fn.spectro.classes.activeElementClass
+
 					.on 'keydown.spectro', (event) ->
 						$this = $ this
 						$this.trigger $.fn.spectro.events.change
@@ -313,7 +283,7 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 								.blur()
 								.remove()
 
-						# Move element below when `Ctrl` + `Up/Down Arrow`
+						# Move element on `Ctrl` + `Up/Down Arrow`
 						else if (event.keyCode is 38 or event.keyCode is 40) and
 								event.ctrlKey is true and
 								$this.is ':spectro-draggable'
@@ -326,7 +296,8 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 							else
 								$this.next().after $this
 
-							$this.focus()					
+							$this.focus()
+
 					.on 'paste.spectro', (event) ->
 						event.preventDefault();
 						event.stopPropagation();
@@ -348,8 +319,11 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 		disable: ->
 			$this = $ this
 
-			# Disable document once
-			if $html.hasClass $.fn.spectro.classes.documentEnabledClass
+			$.fn.spectro.enabledElements--
+
+			# Disable document
+			if $.fn.spectro.enabledElements is 0 and
+			   $html.hasClass $.fn.spectro.classes.documentEnabledClass
 				$html.removeClass $.fn.spectro.classes.documentEnabledClass
 
 			$this
@@ -419,6 +393,23 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 
 			return $clone
 
+		# Get text selection in element
+		selection: ->
+			selection = window.getSelection()
+
+			# Check if selection is not empty
+			if selection.isCollapsed is true or
+			   selection.toString().replace(/\s/g, '')  is ''
+				return null
+
+			# Search for editable element
+			$element = $ selection.anchorNode.parentElement
+			$element = $element.parents('.' + $.fn.spectro.classes.enabledElementClass).is ':spectro-editable'
+
+			if $element.length is 0 then return null
+
+			return selection
+
 	# Spectro entrypoint method
 	$.fn.spectro = (method, options...) ->
 		if methods[method]
@@ -428,20 +419,14 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 		else
 			console.warn 'Spectro: Unknown method'
 
-	# Extensions object
-	$.fn.spectro.extensions = []
-
-	#= require spectro/extensions/contents.coffee
-	#= require spectro/extensions/attributes.coffee
-	#= require spectro/extensions/styles.coffee
-
 	# Global variables
+	$.fn.spectro.enabledElements = 0
 	$.fn.spectro.isDrag = false
 	$.fn.spectro.$draggedElement = null
 	$.fn.spectro.$lastDragoveredElement = null
 	$.fn.spectro.draggedElementDropBefore = false
 
-	# Spectro defaults
+	# Spectro default classes
 	$.fn.spectro.classes =
 		enabledElementClass: 'spectro-element'
 		hoveredElementClass: 'spectro-element--hover'
@@ -450,7 +435,7 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 		documentEnabledClass: 'spectro--enabled'
 		documentDraggedClass: 'spectro--dragged'
 
-	# Events list
+	# Spectro default events
 	$.fn.spectro.events =
 		enable: 'enable.spectro'
 		disable: 'disable.spectro'
@@ -480,4 +465,8 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 			styles: 'Стили'
 			attributes: 'Свойства'
 			contents: 'Содержимое'
+
+	# Extensions object
+	$.fn.spectro.extensions = {}
+
 )(jQuery)

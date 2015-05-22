@@ -15,28 +15,27 @@
 		display: none
 
 	&-input
-		&--focus &-label,
-		&--focus &-control
+		&__label + &__control:focus
 			border-color: $color-primary
 
-		&--focus &-label
-			color: $color-text
-
-		&-label
-			transition: border-color $animation-speed-default ease
-			border: $border-width solid $color-input-border
-			background-color: $color-input-background
+		//&__label
+		//	transition: border-color $animation-speed-default ease
+		//	border: $border-width solid $color-input-border
+		//	background-color: $color-input-background
+		//	color: lighten($color-text, 20%)
+		//	border-radius: 4px 4px 0 0
+		//	display: inline-block
+		//	border-bottom: none
+		//	position: relative
+		//	padding: 2px 6px
+		//	font-size: 80%
+		//	bottom: -2px
+		//	z-index: 2
+		&__label
 			color: lighten($color-text, 20%)
-			border-radius: 4px 4px 0 0
-			display: inline-block
-			border-bottom: none
-			position: relative
-			padding: 2px 6px
-			font-size: 80%
-			bottom: -2px
-			z-index: 2
+			padding: 4px
 
-		&-control
+		&__control
 			transition: color $animation-speed-default ease, border-color $animation-speed-default ease
 			border: $border-width solid $color-input-border
 			background-color: $color-input-background
@@ -48,9 +47,6 @@
 			outline: none
 			width: 100%
 
-		&-label + &-control
-			border-radius: 0 4px 4px 4px
-
 	// Document related
 	&--dragged body
 		cursor: move
@@ -58,7 +54,7 @@
 
 	&--dragged &-controls
 		display: none
-
+	
 	// Element related
 	&-element
 		transition: box-shadow $animation-speed-default ease, opacity $animation-speed-default ease
@@ -107,8 +103,8 @@
 	// View / edit modes switcher
 	&-switcher
 		user-select: none
-		line-height: 40px
-		height: 40px
+		line-height: $controls-height
+		height: $controls-height
 		width: 200px
 		z-index: 999
 		right: 0
@@ -123,7 +119,7 @@
 			&__label
 				color: $color-text
 				cursor: pointer
-				padding: 2px
+				padding: $border-width
 
 				&:hover
 					color: $color-primary
@@ -139,7 +135,7 @@
 			#spectro-mode-edit:checked ~ &__control &__control__bullet
 				background-color: $color-primary
 				margin-left: 0
-				left: 2px
+				left: $border-width
 
 			&__control
 				$control-color: fade-out($color-text, .6)
@@ -173,87 +169,63 @@
 
 	// Breadcrumbs set
 	&-breadcrumbs
-		transition: top $animation-speed-default ease
-		border-bottom-right-radius: 4px
 		+helper-box-shadow()
-		overflow: hidden
-		z-index: 998
-		padding: 0
-		top: -30px
 
-		&--active
-			top: 0
+		transition: top $animation-speed-default ease
+		background-color: $color-background-primary
+		border-bottom-right-radius: 4px
+		user-select: none
+		line-height: $controls-height
+		height: $controls-height
+		z-index: 998
+		left: 0
+		top: 0
 
 		&__list
-			line-height: 28px
 			list-style: none
-			height: 28px
-			padding: 0
+			padding: 0 10px
 			margin: 0
 
-			&-item,
-			&-item:after
-				transition: all $animation-speed-default ease
-
-			&-item
-				background: $color-background-primary
-				padding: 0 20px 0 30px
-				position: relative
+			&__item
+				display: inline-block
 				color: $color-text
-				user-select: none
 				cursor: pointer
-				display: block
 				outline: none
-				float: left
 
-				&:hover,
-				&:hover:after,
-				&:focus,
-				&:focus:after
-					background: darken($color-background-primary, 5%)
-					color: darken($color-text, 50%)
-
-				&:first-child
-					padding-left: 20px
+				&:first-child:before
+					display: none
 
 				&:last-child
-					border-color: $color-primary
-					background: $color-primary
-					border-radius: 0 0 4px 0
-					color: white
+					color: $color-primary
+					font-weight: bold
 					cursor: default
 
-					&:after
-						background: $color-primary
-						content: none
-				
-				&:after
-					border: $border-width solid $color-border-primary
-					transform: scale(.707) rotate(45deg)
-					background: $color-background-primary
-					border-radius: 0 2px 0 28px
+				&:before
+					border: 1px solid lighten($color-text, 50%)
+					transform: rotate(45deg)
+					display: inline-block
 					border-bottom: none
-					position: absolute
 					border-left: none
-					right: -15px
-					height: 28px
-					width: 28px
+					position: relative
+					cursor: default
+					margin: 0 8px 0 5px
 					content: ''
-					z-index: 1
+					height: 6px
+					width: 6px
 					top: -1px
+
+				&:hover
+					color: $color-primary
 
 	// Key tab panel set
 	&-panelset
-		+helper-box-shadow()
 		transition: transform $animation-speed-default ease, opacity $animation-speed-default ease
-		background-color: $color-background-primary
 		transform: scale(.6)
-		transform-origin: 100% 50%
+		transform-origin: 50% 50%
 		box-sizing: border-box
-		padding-top: 40px
+		padding-top: $controls-height
 		color: $color-text
 		width: 200px
-		height: 100%
 		z-index: 997
 		opacity: 0
 		right: 0
@@ -273,18 +245,27 @@
 				display: block
 
 				&[draggable="true"]
-					border: 1px solid darken($color-background-primary, 3%)
+					$item-width: 84px
+
+					border: 1px solid darken($color-background-primary, 10%)
 					transition: border-color $animation-speed-default ease, box-shadow $animation-speed-default ease
+					text-overflow: ellipsis
 					box-sizing: border-box
+					white-space: nowrap
 					border-radius: 3px
+					overflow: hidden
 					margin-top: 4px
 					display: block
 					padding: 5px
 					cursor: move
 					cursor: grab
 					float: left
-					height: 82px * .75
-					width: 82px
+					height: $item-width * .75
+					width: $item-width
+
+					&:nth-child(1),
+					&:nth-child(2)
+						margin-top: 0
 
 					&:nth-child(even)
 						margin-left: 4px
@@ -303,6 +284,7 @@
 				color: $color-primary
 				letter-spacing: 1px
 				font-weight: normal
+				user-select: none
 				cursor: pointer
 				font-size: 11px
 				display: block
@@ -313,8 +295,8 @@
 					background-color: darken($color-background-primary, 3%)
 
 			&__contents
-				transition: height $animation-speed-default ease, padding-top $animation-speed-default ease, padding-bottom $animation-speed-default ease
 				+helper-box-shadow()
+				transition: height $animation-speed-default ease, padding-top $animation-speed-default ease, padding-bottom $animation-speed-default ease
 				background-color: $color-background-primary
 				box-sizing: border-box
 				position: relative
@@ -339,7 +321,7 @@
 		// Active state
 		&__input:checked + &__tab
 			background-color: $color-primary
-			padding-bottom: 2px
+			padding-bottom: $border-width
 
 		&__input:checked + &__tab &__tab__label
 			transition: none
@@ -349,7 +331,7 @@
 
 		&__input:checked + &__tab &__tab__contents
 			overflow-y: auto
-			margin: 0 2px
+			margin: 0 $border-width
 			padding: 10px
 			height: auto
 
@@ -402,15 +384,12 @@
 			&-item
 				transition: background-color $animation-speed-default ease
 				display: inline-block
-				border-radius: 2px
+				border-radius: $border-width
 				line-height: 28px
 				cursor: pointer
 				padding: 0 8px
 				height: 28px
 				margin: 2px
-
-				> *
-					line-height: inherit !important
 
 				&:hover
 					background-color: darken($color-background-primary, 5%)
@@ -481,7 +460,7 @@
 
 	// Control tools
 	&-controls
-		$safe-zone: 30px;
+		$safe-zone: 30px
 
 		transition: opacity $animation-speed-default ease
 		transition-delay: $animation-speed-default / 2
@@ -515,6 +494,7 @@
 
 			&__tool
 				+helper-box-shadow()
+				
 				border: $border-width solid $color-primary
 				background: $color-background-primary
 				background-position: 50% 50%
@@ -525,20 +505,18 @@
 				text-align: center
 				min-width: 24px
 				display: block
-				padding: 0 4px
+				padding: 0 6px
 				height: 24px
 				top: -14px
 
 				&--label,
 				&--remove
-					transition: background-color $animation-speed-default ease
 					cursor: pointer
-
+					
 					&:hover
 						background-color: darken($color-background-primary, 5%)
 
 				&--label
-					background-image: url('../../assets/icon-properties.svg')
 					background-repeat: no-repeat
 					background-position: 2px 50%
 					text-transform: uppercase
@@ -546,19 +524,8 @@
 					letter-spacing: 1px
 					line-height: 20px
 					font-size: 80%
-					width: 21px
 					left: -8px
 					z-index: 9
-
-					& span
-						padding-left: 16px
-						display: none
-
-					&:hover
-						width: auto
-
-						span
-							display: inline
 
 				&--handle
 					background-image: url('../../assets/icon-move.svg')
@@ -570,6 +537,7 @@
 					left: 50%
 
 				&--remove
+					transition: background-color $animation-speed-default ease
 					background-image: url('../../assets/icon-remove.svg')
 					text-align: center
 					right: -8px

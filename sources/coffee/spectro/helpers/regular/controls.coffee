@@ -11,7 +11,7 @@ class Spectro.Controls extends Spectro.Helper
 		@$container = $ """
 			<div class="spectro-controls spectro-helper">
 				<ul class="spectro-controls__toolbar">
-					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--label" title="#{Spectro.i18n('setup')}"><span>#{label}</span></li>
+					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--label"><span>#{label}</span></li>
 					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--handle" title="#{Spectro.i18n('move')}"></li>
 					<li class="spectro-controls__toolbar__tool spectro-controls__toolbar__tool--remove" title="#{Spectro.i18n('remove')}"></li>
 				</ul>
@@ -28,89 +28,105 @@ class Spectro.Controls extends Spectro.Helper
 		$target = @$target
 		controls = @
 
-		$removeAction = @$container.find '.spectro-controls__toolbar__tool--remove'
-		$moveAction = @$container.find '.spectro-controls__toolbar__tool--handle'
-		$setupAction = @$container.find '.spectro-controls__toolbar__tool--label'
+		$remove = @$container.find '.spectro-controls__toolbar__tool--remove'
+		$move = @$container.find '.spectro-controls__toolbar__tool--handle'
+		$label = @$container.find '.spectro-controls__toolbar__tool--label'
 
 		# Remove action
-		if $target.is ':spectro-removeable'
-			$removeAction.on 'mousedown touchstart', (event) ->
-				event.stopPropagation()
+		$remove.on 'mousedown touchstart', (event) ->
+			event.stopPropagation()
 
-				# Remove target element
-				$target
-					.addClass $.fn.spectro.classes.removedElementClass
-					.on 'transitionend oTransitionEnd otransitionend webkitTransitionEnd', =>
-						$parent = $target.parent()
+			# Remove target element
+			$target
+				.addClass $.fn.spectro.classes.removedElementClass
+				.on 'transitionend oTransitionEnd otransitionend webkitTransitionEnd', =>
+					$parent = $target.parent()
 
-						# Remove target element
-						$target.trigger $.fn.spectro.events.change
-						$target.remove()
+					# Remove target element
+					$target.trigger $.fn.spectro.events.change
+					$target.remove()
 
-						# Clean whitespaces on parent to fix ':empty' css selector
-						if $parent.children().length is 0
-							$parent.html ''
+					# Clean whitespaces on parent to fix ':empty' css selector
+					if $parent.children().length is 0
+						$parent.html ''
 
-						# Hide controls
-						controls.hide()
-
-		else $removeAction.hide()
+					# Hide controls
+					controls.hide()
 
 		# Drag and drop
-		if $target.is ':spectro-draggable'
+		dragHandler = (event) ->
+			event.preventDefault()
 
-			# Universal drag handler
-			dragHandler = (event) ->
-				event.preventDefault()
+			# Reset focus
+			$focusedElement = $ document.activeElement
 
-				# Reset focus
-				$focusedElement = $ document.activeElement
+			if $focusedElement.is ':spectro-enabled'
+				$focusedElement.blur()
+			
+			# Set drag&drop stuff
+			$.fn.spectro.$draggedElement = $target
+			$.fn.spectro.isDrag = true
 
-				if $focusedElement.is ':spectro-enabled'
-					$focusedElement.blur()
-				
-				# Set drag&drop stuff
-				$.fn.spectro.$draggedElement = $target
-				$.fn.spectro.isDrag = true
+			# Visuals
+			$.fn.spectro.$draggedElement.attr 'aria-grabbed', true
+			$('html').addClass $.fn.spectro.classes.documentDraggedClass
 
-				# Visuals
-				$.fn.spectro.$draggedElement.attr 'aria-grabbed', true
-				$('html').addClass $.fn.spectro.classes.documentDraggedClass
+		# Better user experience when dragging non-text elements
+		$move.on 'mousedown touchstart', dragHandler
 
-			# Better user experience when dragging non-text elements
-			$moveAction.on 'mousedown touchstart', dragHandler
+		# Direct drag and drop for void elements
+		if $target.is ':void'
+			$target.on 'dragstart.spectro', dragHandler
 
-			# Direct drag and drop for void elements
-			if $target.is ':void'
-				$target.on 'dragstart.spectro', dragHandler
+		# Label
+		$label.on 'mousedown touchstart', (event) ->
+			event.preventDefault()
 
-		else $moveAction.hide()
+			# Focus on element
+			$target.trigger 'focus.spectro'
 
-		# Properties setup
-		if $target.is ':spectro-setupable'
-			$setupAction.on 'mousedown touchstart', (event) ->
-				event.preventDefault()
+			selection = window.getSelection()
 
-				$label = $ this
+			# Select text in editable elements
+			if $target.is ':spectro-editable'
+				range = document.createRange()
+				range.selectNodeContents $target[0]
+				selection.removeAllRanges()
+				selection.addRange range
 
-				initialLocation =
-					top: $label.offset().top
-					left: $label.offset().left
-					width: $label.outerWidth()
-					height: $label.outerHeight()
-
-				new Spectro.Panelset $target, initialLocation
-
-		else $setupAction.hide()
+			# Clean text selection on others
+			else
+				selection.removeAllRanges()
 
 	show: ->
-		controls = this
+		$container = @$container
+		$target = @$target
+
+		$remove = $container.find '.spectro-controls__toolbar__tool--remove'
+		$move = $container.find '.spectro-controls__toolbar__tool--handle'
+		$label = $container.find '.spectro-controls__toolbar__tool--label'
+
+		# Check remove action
+		if $target.is ':spectro-removeable'
+			$remove.show()
+		else $remove.hide()
+
+		# Drag and drop label
+		if $target.is ':spectro-draggable'
+			$move.show()
+		else $move.hide()
+
+		# Setup label
+		#if $target.is ':spectro-setupable'
+		$label.show()
+		#else $setup.hide()
 
 		# Prevent removed, dragged and already focused elements to be focused
 		if not @$target.is ':spectro-controlable' then return
 
-		@$target.addClass $.fn.spectro.classes.hoveredElementClass
-		@$container.addClass @defaults.activeClass
+		$target.addClass $.fn.spectro.classes.hoveredElementClass
+		$container.addClass @defaults.activeClass
+
 		@update()
 
 	update: ->

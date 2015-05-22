@@ -32,9 +32,9 @@ $.extend $.expr[':'],
 	# Checks if any extension avaible for set element
 	'spectro-setupable': (element) ->
 		$element = $ element
-
+		
 		for key, extension of $.fn.spectro.extensions
-			if $element.data('scheme').is extension.avaibleFor()
+			if $element.data('scheme').is extension.selector
 				return true
 
 		return false
