@@ -1,12 +1,12 @@
 $.fn.spectro.extensions.wysiwyg =
 	selector: 'p[spectro-editable="true"]'
-	label: Spectro.i18n 'contents'
-	panel: ($element) ->
-		$element
+	label: 'Format'
+	panel: ($target) ->
+		$target
 		.off 'dblclick.spectro' # TODO: Add onEnable and onDisable extension methods
 		.on 'dblclick.spectro', (event) ->
 			$this = $ this
-			selection = $element.spectro 'selection'
+			selection = $target.spectro 'selection'
 
 			# If element is active, contenteditable and has text selected
 			if $this.is(':focus') and
@@ -34,6 +34,7 @@ $.fn.spectro.extensions.wysiwyg =
 					selection.removeAllRanges()
 					selection.addRange range
 
+		###
 		.on 'mouseup.spectro touchend.spectro', (event) ->
 			$this = $ this
 			selection = $element.spectro 'selection'
@@ -45,5 +46,13 @@ $.fn.spectro.extensions.wysiwyg =
 				# Show popover if required
 				popover = Spectro.Popover.get()
 				popover.show $this
+		###
 
-		return null
+		$panel = $ '<div />'
+
+		# Collect avaible inline elements
+		for element in $target.data('scheme').children()
+			$element = $ element
+			$panel.append '<button class="spectro-button">' + $element.attr('spectro-label') + '</button>'
+
+		return $panel

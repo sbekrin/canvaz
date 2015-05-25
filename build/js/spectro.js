@@ -14,14 +14,16 @@
       return $(element).spectro('enabled');
     },
     'spectro-editable': function(element) {
-      var $element, $scheme, hasNoChildren, isForcedEditable, isNotVoid, isParentEnabled;
+      var $element, $scheme, hasNoChildren, isForcedEditable, isNotVoid;
       $element = $(element);
       $scheme = $element.data('scheme');
+      if ($scheme == null) {
+        return false;
+      }
       isNotVoid = !$scheme.is(':void');
-      isParentEnabled = $element.parent().hasClass($.fn.spectro.classes.enabledElementClass);
       isForcedEditable = $scheme.attr('spectro-editable') === 'true';
       hasNoChildren = $scheme.children().length === 0;
-      return isNotVoid && isParentEnabled && (isForcedEditable || hasNoChildren);
+      return isNotVoid && (isForcedEditable || hasNoChildren);
     },
     'spectro-setupable': function(element) {
       var $element, extension, key, _ref;
@@ -46,7 +48,7 @@
     'spectro-controlable': function(element) {
       var $element;
       $element = $(element);
-      return $element.parents(':focus').length === 0 && !$element.hasClass($.fn.spectro.classes.removedElementClass && !$element.hasClass($.fn.spectro.classes.draggedElementClass && !$element.is(':focus')));
+      return $element.parents(':focus').length === 0 && !$element.hasClass($.fn.spectro.classes.removedElementClass && !$element.hasClass($.fn.spectro.classes.draggedElementClass && !element === document.activeElement));
     },
     'spectro-inline': function(element) {
       var $element, filter;
@@ -140,18 +142,7 @@
       $label = this.$container.find('.spectro-controls__toolbar__tool--label');
       $remove.on('mousedown touchstart', function(event) {
         event.stopPropagation();
-        return $target.addClass($.fn.spectro.classes.removedElementClass).on('transitionend oTransitionEnd otransitionend webkitTransitionEnd', (function(_this) {
-          return function() {
-            var $parent;
-            $parent = $target.parent();
-            $target.trigger($.fn.spectro.events.change);
-            $target.remove();
-            if ($parent.children().length === 0) {
-              $parent.html('');
-            }
-            return controls.hide();
-          };
-        })(this));
+        return $target.spectro('remove');
       });
       dragHandler = function(event) {
         var $focusedElement;
@@ -232,9 +223,6 @@
 
   })(Spectro.Helper);
 
-
-  /* require spectro/helpers/regular/panelset.coffee */
-
   Spectro.StaticHelper = (function() {
     function StaticHelper() {}
 
@@ -295,7 +283,6 @@
           this.add(key, extension.label, extension.panel($target));
         }
       }
-      this.$container.addClass('spectro-panelset--active');
       $firstInput = this.$container.find('.spectro-panelset__input');
       if ($firstInput.length) {
         $firstInput.get(0).checked = true;
@@ -303,12 +290,8 @@
       return $window.trigger('resize.spectro');
     };
 
-    Panelset.hide = function() {
-      return this.$container.removeClass('spectro-panelset--active');
-    };
-
     Panelset.reset = function() {
-      return this.$container.removeClass('spectro-panelset--active').html('');
+      return this.$container.html('');
     };
 
     Panelset.add = function(code, label, $contents) {
@@ -346,17 +329,13 @@
       }
     };
 
-    Breadcrumbs.show = function() {
-      return this.$container.addClass('spectro-breadcrumbs--active');
-    };
-
     Breadcrumbs.reset = function() {
       return this.$container.find('.spectro-breadcrumbs__list').html('');
     };
 
     Breadcrumbs.add = function(label, callback) {
       var $crumb;
-      $crumb = $("<li class=\"spectro-breadcrumbs__list__item\" tabindex=\"0\">" + label + "</li>").on('click.spectro', function() {
+      $crumb = $("<li class=\"spectro-breadcrumbs__list__item\" tabindex=\"0\"><span>" + label + "</span></li>").on('click.spectro', function() {
         return callback();
       });
       return this.$container.find('.spectro-breadcrumbs__list').append($crumb);
@@ -375,7 +354,7 @@
 
     Placeholder.get = function() {
       if (this.$container == null) {
-        this.$container = $('<div class="spectro-placeholder spectro-placeholder--horizontal spectro-helper">\n	<hr class="spectro-placeholder__line" />\n</div>').appendTo('body');
+        this.$container = $('<div class="spectro-placeholder spectro-placeholder--horizontal">\n	<hr class="spectro-placeholder__line" />\n</div>').appendTo('body');
       }
       return this;
     };
@@ -534,26 +513,26 @@
     $document = $(document);
     $html = $('html');
     $document.on('mouseup.spectro mouseleave.spectro touchend.spectro touchcancel.spectro', function() {
-      var $draggedElement, $spectro;
-      $spectro = $.fn.spectro;
-      if ($('.' + $spectro.classes.enabledElementClass).length === 0) {
+      var $draggedElement, spectro;
+      spectro = $.fn.spectro;
+      if ($('.' + spectro.classes.enabledElementClass).length === 0) {
         return;
       }
       Spectro.Popover.hide();
-      if ($spectro.isDrag && ($spectro.$draggedElement != null)) {
-        $spectro.$draggedElement.attr('aria-grabbed', false);
+      if (spectro.isDrag && (spectro.$draggedElement != null)) {
+        spectro.$draggedElement.attr('aria-grabbed', false);
         $html.removeClass($.fn.spectro.classes.documentDraggedClass);
-        if ($spectro.$lastDragoveredElement != null) {
-          if ($spectro.$lastDragoveredElement.spectro('accepts', $.fn.spectro.$draggedElement)) {
-            $spectro.$lastDragoveredElement.append($.fn.spectro.$draggedElement);
-          } else if ($spectro.draggedElementDropBefore === true) {
-            $spectro.$lastDragoveredElement.before($.fn.spectro.$draggedElement);
+        if (spectro.$lastDragoveredElement != null) {
+          if (spectro.$lastDragoveredElement.spectro('accepts', $.fn.spectro.$draggedElement)) {
+            spectro.$lastDragoveredElement.append($.fn.spectro.$draggedElement);
+          } else if (spectro.draggedElementDropBefore === true) {
+            spectro.$lastDragoveredElement.before($.fn.spectro.$draggedElement);
           } else {
-            $spectro.$lastDragoveredElement.after($.fn.spectro.$draggedElement);
+            spectro.$lastDragoveredElement.after($.fn.spectro.$draggedElement);
           }
-          $spectro.$draggedElement.trigger($.fn.spectro.events.change);
+          spectro.$draggedElement.trigger($.fn.spectro.events.change);
         }
-        $draggedElement = $spectro.$draggedElement;
+        $draggedElement = spectro.$draggedElement;
         Spectro.Placeholder.destroy();
         $.fn.spectro.isDrag = false;
         $.fn.spectro.$draggedElement = null;
@@ -562,7 +541,7 @@
         if (jQuery.contains(document, $draggedElement[0])) {
           return $draggedElement.trigger('focus.spectro');
         } else {
-          return $draggedElement.remove();
+          return $draggedElement.spectro('remove');
         }
       }
     });
@@ -577,26 +556,22 @@
         $scheme = $(scheme);
         $this = $(this);
         $this.data('scheme', $scheme);
-        if ($scheme.attr('spectro-label') != null) {
+        if ($scheme.attr('spectro-label')) {
           $.fn.spectro.enabledElements++;
           controls = new Spectro.Controls($this);
+          $this.data('controls', controls);
           if (!$html.hasClass($.fn.spectro.classes.documentEnabledClass)) {
             $html.addClass($.fn.spectro.classes.documentEnabledClass);
           }
           if ($this.is(':spectro-inline')) {
             return;
           }
-          $this.attr('tabindex', 0).attr('aria-label', $scheme.attr('spectro-label')).attr('aria-grabbed', false).addClass($.fn.spectro.classes.enabledElementClass).trigger($.fn.spectro.events.enable).on('mouseover.spectro', function(event) {
+          $this.attr('tabindex', 0).attr('aria-label', $scheme.attr('spectro-label')).attr('aria-grabbed', false).attr('contenteditable', $this.is(':spectro-editable')).addClass($.fn.spectro.classes.enabledElementClass).trigger($.fn.spectro.events.enable).on('mouseover.spectro dragover.spectro', function(event) {
             var $spectro;
             $spectro = $.fn.spectro;
             if (!$spectro.isDrag && $spectro.$draggedElement === null) {
               event.stopPropagation();
-              controls.show();
-              if ($this.is(':spectro-editable')) {
-                return $this.attr({
-                  contenteditable: true
-                });
-              }
+              return controls.show();
             } else if ($spectro.isDrag && $spectro.$draggedElement !== null && $spectro.$draggedElement[0] !== $this[0] && $this.spectro('accepts', $spectro.$draggedElement) && $this.children().length === 0) {
               $.fn.spectro.$lastDragoveredElement = $this;
               return $this.addClass($.fn.spectro.classes.activeElementClass);
@@ -626,7 +601,7 @@
                 return placeholder.show($this, isVertical);
               }
             }
-          }).on('mouseout.spectro', function(event) {
+          }).on('mouseout.spectro dragleave.spectro', function(event) {
             var $spectro;
             $this = $(this);
             $spectro = $.fn.spectro;
@@ -634,27 +609,22 @@
               $this.removeClass($spectro.classes.activeElementClass);
             }
             if (!$this.is(':focus')) {
-              $this.removeAttr('contenteditable');
               return controls.hide();
             }
           }).on('focus.spectro', function(event) {
             var $parent, path;
             event.preventDefault();
+            $this = $(this);
             if (!$this.is(':spectro-controlable')) {
               return;
             }
-            $this = $(this);
             if (!$this.hasClass($.fn.spectro.classes.activeElementClass)) {
               $this.addClass($.fn.spectro.classes.activeElementClass);
-            }
-            if ($this.is(':spectro-editable') && $this.attr('contenteditable') !== 'true') {
-              $this.attr('contenteditable', true);
             }
             Spectro.Panelset.get();
             Spectro.Panelset.reset();
             Spectro.Panelset.show($this);
             breadcrumbs.reset();
-            controls.show();
             $parent = $this;
             path = [];
             while ($parent.hasClass($.fn.spectro.classes.enabledElementClass) && $parent[0] !== document) {
@@ -662,7 +632,7 @@
               $parent = $parent.parent();
             }
             path.reverse();
-            $(path).each(function() {
+            return $(path).each(function() {
               var $item, index, label;
               $item = $(this);
               label = $item.data('scheme').attr('spectro-label') || $item.prop('tagName');
@@ -675,39 +645,50 @@
                 return $item.focus();
               }));
             });
-            return breadcrumbs.show();
           }).on('blur.spectro', function(event) {
             controls.hide();
-            return $(this).removeAttr('contenteditable').removeClass($.fn.spectro.classes.activeElementClass);
+            return $(this).removeClass($.fn.spectro.classes.activeElementClass);
           }).on('keydown.spectro', function(event) {
-            var $clone;
+            var $clone, ctrlKey, keyCode;
             $this = $(this);
             $this.trigger($.fn.spectro.events.change);
-            if (event.keyCode === 13) {
+            keyCode = event.keyCode;
+            ctrlKey = event.ctrlKey === true;
+            if (keyCode === 27) {
+              event.preventDefault();
+              event.stopPropagation();
+              return $this.trigger('blur');
+            } else if (keyCode === 13) {
               event.preventDefault();
               event.stopPropagation();
               $clone = $this.spectro('clone');
               $this.after($clone);
               $clone.focus();
               return false;
-            } else if (event.keyCode === 46 && event.ctrlKey === true && $this.is(':spectro-removeable')) {
+            } else if ((keyCode === 46 || keyCode === 8) && (ctrlKey === true || $this.is(':void')) && $this.is(':spectro-removeable')) {
               event.preventDefault();
               event.stopPropagation();
-              return $this.blur().remove();
-            } else if ((event.keyCode === 38 || event.keyCode === 40) && event.ctrlKey === true && $this.is(':spectro-draggable')) {
+              return $this.spectro('remove');
+            } else if ((keyCode === 38 || keyCode === 40) && ctrlKey === true && $this.is(':spectro-draggable')) {
               event.preventDefault();
               event.stopPropagation();
-              if (event.keyCode === 38) {
+              if (keyCode === 38) {
                 $this.prev().before($this);
               } else {
                 $this.next().after($this);
               }
               return $this.focus();
             }
-          }).on('paste.spectro', function(event) {
-            event.preventDefault();
+          }).on('dragover.spectro', function(event) {
             event.stopPropagation();
-            return document.execCommand('insertHTML', false, event.originalEvent.clipboardData.getData('text/plain'));
+            $this = $(this);
+            if (!$this.is(':focus')) {
+              return $this.focus();
+            }
+          }).on('input.spectro paste.spectro', function(event) {
+            event.stopPropagation();
+            $this = $(this);
+            return $this.html($this.text());
           });
         }
         return window.setTimeout(function() {
@@ -728,15 +709,16 @@
         if ($.fn.spectro.enabledElements === 0 && $html.hasClass($.fn.spectro.classes.documentEnabledClass)) {
           $html.removeClass($.fn.spectro.classes.documentEnabledClass);
         }
-        $this.removeClass($.fn.spectro.classes.enabledElementClass).removeAttr('tabindex').removeAttr('aria-label').removeAttr('aria-grabbed').trigger($.fn.spectro.events.disable).off('.spectro').children().each(function() {
+        $this.removeClass($.fn.spectro.classes.enabledElementClass).removeAttr('tabindex').removeAttr('aria-label').removeAttr('aria-grabbed').removeAttr('contenteditable').trigger($.fn.spectro.events.disable).off('.spectro').children().each(function() {
           return $(this).spectro('disable');
         });
-        if ($this.attr('class') === '') {
+        if ($.trim($this.attr('class')) === '') {
           $this.removeAttr('class');
         }
         Spectro.Helper.clean();
         Spectro.Breadcrumbs.destroy();
-        return Spectro.Placeholder.destroy();
+        Spectro.Placeholder.destroy();
+        return Spectro.Panelset.destroy();
       },
       enabled: function() {
         return $(this).hasClass($.fn.spectro.classes.enabledElementClass);
@@ -744,23 +726,38 @@
       disabled: function() {
         return !$(this).spectro('enabled');
       },
-      accepts: function($element) {
-        var $elementScheme, $scheme, $this;
+      accepts: function($target) {
+        var $scheme, $targetScheme, $this;
         $this = $(this);
         if ($this.data('scheme') == null) {
           return false;
         }
-        $elementScheme = $element.data('scheme');
+        $targetScheme = $target.data('scheme');
         $scheme = $this.data('scheme');
-        if ($elementScheme.parents().length - 1 !== $scheme.parents().length) {
+        if ($targetScheme.parents().length - 1 !== $scheme.parents().length) {
           return false;
         }
-        return $scheme.find("> " + ($elementScheme.prop('tagName')) + "[spectro-label='" + ($elementScheme.attr('spectro-label')) + "']").length !== 0;
+        return $scheme.find("> " + ($targetScheme.prop('tagName')) + "[spectro-label='" + ($targetScheme.attr('spectro-label')) + "']").length !== 0;
       },
       neighbor: function($element) {
         var $this;
         $this = $(this);
         return $this.parent().spectro('accepts', $element);
+      },
+      remove: function() {
+        var $parent, $this;
+        $.fn.spectro.enabledElements--;
+        $this = $(this);
+        $this.addClass($.fn.spectro.classes.removedElementClass);
+        $parent = $this.parent();
+        $this.parent().focus();
+        $this.trigger($.fn.spectro.events.change).remove();
+        if ($parent.children().length === 0) {
+          $parent.html('');
+        }
+        if ($this.data('controls') != null) {
+          return $this.data('controls').destroy();
+        }
       },
       clone: function($scheme) {
         var $clone, $this, attribute, _i, _len, _ref;
@@ -783,16 +780,18 @@
         return $clone;
       },
       selection: function() {
-        var $element, selection;
+        var selection;
         selection = window.getSelection();
         if (selection.isCollapsed === true || selection.toString().replace(/\s/g, '') === '') {
           return null;
         }
-        $element = $(selection.anchorNode.parentElement);
-        $element = $element.parents('.' + $.fn.spectro.classes.enabledElementClass).is(':spectro-editable');
-        if ($element.length === 0) {
-          return null;
-        }
+
+        /* Search for editable element
+        			$element = $ selection.anchorNode.parentElement
+        			$element = $element.parents('.' + $.fn.spectro.classes.enabledElementClass).is ':spectro-editable'
+        			
+        			if $element.length is 0 then return null
+         */
         return selection;
       }
     };

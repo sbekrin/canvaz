@@ -37,14 +37,11 @@
 .spectro-hidden {
   display: none; }
 
-.spectro-input__label + .spectro-input__control:focus {
-  border-color: #4281f4; }
-
-.spectro-input__label {
+.spectro-label {
   color: #777777;
   padding: 4px; }
 
-.spectro-input__control {
+.spectro-input {
   -webkit-transition: color 0.2s ease, border-color 0.2s ease;
           transition: color 0.2s ease, border-color 0.2s ease;
   border: 2px solid #dddddd;
@@ -56,6 +53,33 @@
   font: inherit;
   outline: none;
   width: 100%; }
+  .spectro-input:active,
+  .spectro-input:focus {
+    border-color: #4281f4; }
+
+.spectro-button {
+  -webkit-transition: box-shadow 0.2s ease, border-color 0.2s ease;
+          transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  border: 1px solid #e3e3e3;
+  background-color: #fcfcfc;
+  border-radius: 2px;
+  padding: 6px;
+  box-sizing: border-box;
+  color: #444;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  margin: 3px; }
+  .spectro-button:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-color: #bcbcbc;
+    z-index: 3; }
+  .spectro-button--active,
+  .spectro-button:active {
+    box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.1);
+    background-color: #4281f4;
+    color: #fcfcfc;
+    border-color: #4281f4; }
 
 .spectro--dragged body {
   cursor: move;
@@ -98,17 +122,29 @@
     clip: rect(0, 0, 0);
     clip: rect(0, 0, 0, 0); }
 
+.spectro--enabled .spectro-helper {
+  opacity: 1; }
+
 .spectro-helper {
+  -webkit-transition: box-shadow 0.2s ease, -webkit-transform 0.2s ease, opacity 0.2s ease;
+          transition: box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
   font: 14px Arial, Helvetica, sans-serif;
-  position: fixed; }
+  position: fixed;
+  opacity: 1; }
+
+.spectro--enabled .spectro-switcher {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  background-color: #fcfcfc; }
 
 .spectro-switcher {
+  -webkit-transition: box-shadow 0.2s ease;
+          transition: box-shadow 0.2s ease;
+  line-height: 36px;
+  height: 36px;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  line-height: 36px;
-  height: 36px;
   width: 200px;
   z-index: 999;
   right: 0;
@@ -162,11 +198,11 @@
         left: 100%;
         top: 1px; }
 
-.spectro-breadcrumbs {
+.spectro--enabled .spectro-breadcrumbs {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  -webkit-transition: top 0.2s ease;
-          transition: top 0.2s ease;
-  background-color: #fcfcfc;
+  background-color: #fcfcfc; }
+
+.spectro-breadcrumbs {
   border-bottom-right-radius: 4px;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -209,16 +245,10 @@
         top: -1px; }
       .spectro-breadcrumbs__list__item:hover {
         color: #4281f4; }
+        .spectro-breadcrumbs__list__item:hover span {
+          background-color: rgba(252, 252, 252, 0.6); }
 
 .spectro-panelset {
-  -webkit-transition: -webkit-transform 0.2s ease, opacity 0.2s ease;
-          transition: transform 0.2s ease, opacity 0.2s ease;
-  -webkit-transform: scale(0.6);
-      -ms-transform: scale(0.6);
-          transform: scale(0.6);
-  -webkit-transform-origin: 50% 50%;
-      -ms-transform-origin: 50% 50%;
-          transform-origin: 50% 50%;
   box-sizing: border-box;
   padding-top: 36px;
   color: #444;
@@ -227,11 +257,6 @@
   opacity: 0;
   right: 0;
   top: 0; }
-  .spectro-panelset--active {
-    -webkit-transform: none;
-        -ms-transform: none;
-            transform: none;
-    opacity: 1; }
   .spectro-panelset__list {
     list-style: none;
     padding: 0;
@@ -239,14 +264,10 @@
     .spectro-panelset__list__item {
       display: block; }
       .spectro-panelset__list__item[draggable="true"] {
-        border: 1px solid #e3e3e3;
-        -webkit-transition: border-color 0.2s ease, box-shadow 0.2s ease;
-                transition: border-color 0.2s ease, box-shadow 0.2s ease;
         text-overflow: ellipsis;
-        box-sizing: border-box;
         white-space: nowrap;
-        border-radius: 3px;
         overflow: hidden;
+        margin: 0;
         margin-top: 4px;
         display: block;
         padding: 5px;
@@ -380,6 +401,7 @@
         background-color: #efefef; }
 
 .spectro-placeholder {
+  box-shadow: none;
   pointer-events: none;
   text-align: center;
   position: absolute;
@@ -436,25 +458,18 @@
 .spectro-controls {
   -webkit-transition: opacity 0.2s ease;
           transition: opacity 0.2s ease;
-  -webkit-transition-delay: 0.1s;
-          transition-delay: 0.1s;
   visibility: hidden;
   position: absolute;
-  margin-left: -30px;
   margin-top: -30px;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
-  padding: 30px;
-  padding-bottom: 0;
+  padding-top: 30px;
   z-index: 991;
   opacity: 0; }
   .spectro-controls--active {
     visibility: visible;
-    -webkit-transform: none;
-        -ms-transform: none;
-            transform: none;
     opacity: 1; }
   .spectro-controls--active .spectro-controls__toolbar {
     top: 0; }

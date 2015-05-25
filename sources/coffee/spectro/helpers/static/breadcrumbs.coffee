@@ -16,7 +16,7 @@ class Spectro.Breadcrumbs extends Spectro.StaticHelper
 			@$container.remove()
 			@$container = null
 
-	@show: -> @$container.addClass 'spectro-breadcrumbs--active'
+	#@show: -> @$container.addClass 'spectro-breadcrumbs--active'
 
 	@reset: ->
 		@$container
@@ -25,7 +25,7 @@ class Spectro.Breadcrumbs extends Spectro.StaticHelper
 
 	@add: (label, callback) ->
 		$crumb = $ """
-			<li class="spectro-breadcrumbs__list__item" tabindex="0">#{label}</li>
+			<li class="spectro-breadcrumbs__list__item" tabindex="0"><span>#{label}</span></li>
 		"""
 		.on 'click.spectro', ->
 			callback()

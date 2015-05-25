@@ -1,3 +1,4 @@
+// Modules
 var gulp			= require('gulp'),
 	gutil			= require('gulp-util'),
 	jade			= require('gulp-jade'),
@@ -9,11 +10,12 @@ var gulp			= require('gulp'),
 	autoprefixer	= require('gulp-autoprefixer'),
 	base64			= require('gulp-base64'),
 	filter			= require('gulp-filter'),
-	browsersync		= require('browser-sync'),
-	htmlhint		= require('gulp-htmlhint');
+	browsersync		= require('browser-sync');
 
+// Shortcuts
 var reload = browsersync.reload;
 
+// Error handler
 function handler (error) {
 	if (typeof error.location != 'undefined') {
 		gutil.log(error.filename + '(' + error.location.first_line + '): ' + error.message);
@@ -22,21 +24,23 @@ function handler (error) {
 	}
 }
 
+// Paths setup
 var paths = {
-	jade:			'./sources/jade/*.jade',
-	sass:			'./sources/sass/*.sass',
-	coffeescript:	'./sources/coffee/*.coffee',
-	scheme:			'./assets/scheme.xml'
+	jade:		'./sources/jade/*.jade',
+	sass:		'./sources/sass/*.sass',
+	coffee:		'./sources/coffee/*.coffee',
+	scheme:		'./assets/scheme.xml'
 };
 
+// Html build
 gulp.task('jade', function ( ) {
 	gulp.src(paths.jade)
 		.pipe(jade({ pretty: true }).on('error', handler))
-		.pipe(htmlhint())
 		.pipe(gulp.dest('./build/'))
 		.pipe(reload({ stream: true }));
 });
 
+// Css build
 gulp.task('sass', function ( ) {
 	gulp.src(paths.sass)
 		.pipe(sourcemaps.init())
@@ -49,8 +53,9 @@ gulp.task('sass', function ( ) {
 		.pipe(reload({ stream: true }));
 });
 
-gulp.task('coffeescript', function ( ) {
-	gulp.src(paths.coffeescript)
+// Js build
+gulp.task('coffee', function ( ) {
+	gulp.src(paths.coffee)
 		.pipe(include())
 		//.pipe(sourcemaps.init())
 		.pipe(coffee().on('error', handler))
@@ -61,11 +66,13 @@ gulp.task('coffeescript', function ( ) {
 		.pipe(reload({ stream: true }));
 });
 
+// Scheme copy
 gulp.task('copyscheme', function ( ) {
 	gulp.src(paths.scheme)
 		.pipe(gulp.dest('./build/'));
 });
 
+// Watcher
 gulp.task('watch', function ( ) {
 	browsersync({
 		server: { baseDir: './build/' },
@@ -86,7 +93,8 @@ gulp.task('watch', function ( ) {
 
 	gulp.watch(paths.jade, [ 'jade' ]);
 	gulp.watch(paths.sass, [ 'sass' ]);
-	gulp.watch(paths.coffeescript, [ 'coffeescript' ]);
+	gulp.watch(paths.coffee, [ 'coffee' ]);
 });
 
-gulp.task('default', [ 'watch', 'jade', 'sass', 'coffeescript', 'copyscheme' ]);
+// Entrypoint
+gulp.task('default', [ 'watch', 'jade', 'sass', 'coffee', 'copyscheme' ]);

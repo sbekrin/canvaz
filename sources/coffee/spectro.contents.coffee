@@ -11,7 +11,7 @@ $.fn.spectro.extensions.contents =
 			label = $scheme.attr 'spectro-label'
 
 			$li = $ """
-				<li class="spectro-panelset__list__item"
+				<li class="spectro-panelset__list__item spectro-button"
 					data-ghost-tag="#{$scheme.prop 'tagName'}"
 					title="#{label}"
 					draggable="true">

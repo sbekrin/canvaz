@@ -5,10 +5,8 @@ $.fn.spectro.extensions.image =
 		$panel = $ '<div />'
 
 		$url = $ '
-			<label class="spectro-input">
-				<span class="spectro-input__label">Source:</span>
-				<input type="text" class="spectro-input__control" value="' + $element.attr('src') + '" />
-			</label>
+			<label class="spectro-label" for="spectro-image-source">Source:</label>
+			<input type="text" class="spectro-input" id="spectro-image-source" value="' + $element.attr('src') + '" />
 		'
 
 		$panel.append $url

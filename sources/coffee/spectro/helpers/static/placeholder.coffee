@@ -3,7 +3,7 @@ class Spectro.Placeholder extends Spectro.StaticHelper
 	@get: ->
 		if not @$container?
 			@$container = $ '''
-				<div class="spectro-placeholder spectro-placeholder--horizontal spectro-helper">
+				<div class="spectro-placeholder spectro-placeholder--horizontal">
 					<hr class="spectro-placeholder__line" />
 				</div>
 			'''

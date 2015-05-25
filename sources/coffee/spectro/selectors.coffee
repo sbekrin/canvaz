@@ -21,12 +21,16 @@ $.extend $.expr[':'],
 		$element = $ element
 		$scheme = $element.data 'scheme'
 
+		if not $scheme?
+			return false
+
 		isNotVoid = not $scheme.is ':void'
-		isParentEnabled = $element.parent().hasClass $.fn.spectro.classes.enabledElementClass
+		#isParentEnabled = $element.parent().hasClass $.fn.spectro.classes.enabledElementClass
 		isForcedEditable = $scheme.attr('spectro-editable') is 'true'
 		hasNoChildren = $scheme.children().length is 0
 		
-		return isNotVoid and isParentEnabled and (isForcedEditable or hasNoChildren)
+		#return isNotVoid and isParentEnabled and (isForcedEditable or hasNoChildren)
+		return isNotVoid and (isForcedEditable or hasNoChildren)
 
 	# Spectro `:spectro-setupable` selector helper
 	# Checks if any extension avaible for set element
@@ -40,7 +44,8 @@ $.extend $.expr[':'],
 		return false
 
 	# Spectro `:spectro-draggable` selector helper
-	# Checks of element can be moved
+	# Checks if element can be moved
+	# So far only root element is static
 	'spectro-draggable': (element) ->
 		$element = $ element
 
@@ -48,6 +53,7 @@ $.extend $.expr[':'],
 
 	# Spectro `:spectro-removeable` selector helper
 	# Checks if element can be removed
+	# So far only root element is static
 	'spectro-removeable': (element) -> $(element).data('scheme').get(0).parentElement isnt null
 
 	# Spectro `:spectro-controlable` selector helper
@@ -59,7 +65,8 @@ $.extend $.expr[':'],
 		return $element.parents(':focus').length is 0 and
 				not $element.hasClass $.fn.spectro.classes.removedElementClass and
 				not $element.hasClass $.fn.spectro.classes.draggedElementClass and
-				not $element.is ':focus'
+				#not $element.is ':focus'
+				not element is document.activeElement
 				
 	# Spectro `:spectro-inline` selector helper
 	# Checks if element is inline

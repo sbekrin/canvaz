@@ -10,7 +10,7 @@
         var $li, $scheme, label;
         $scheme = $(this);
         label = $scheme.attr('spectro-label');
-        $li = $("<li class=\"spectro-panelset__list__item\"\n	data-ghost-tag=\"" + ($scheme.prop('tagName')) + "\"\n	title=\"" + label + "\"\n	draggable=\"true\">\n	" + label + "\n</li>");
+        $li = $("<li class=\"spectro-panelset__list__item spectro-button\"\n	data-ghost-tag=\"" + ($scheme.prop('tagName')) + "\"\n	title=\"" + label + "\"\n	draggable=\"true\">\n	" + label + "\n</li>");
         $li.data('scheme', $scheme);
         return $ul.append($li);
       });

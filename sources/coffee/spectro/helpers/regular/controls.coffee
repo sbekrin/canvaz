@@ -35,23 +35,8 @@ class Spectro.Controls extends Spectro.Helper
 		# Remove action
 		$remove.on 'mousedown touchstart', (event) ->
 			event.stopPropagation()
-
-			# Remove target element
-			$target
-				.addClass $.fn.spectro.classes.removedElementClass
-				.on 'transitionend oTransitionEnd otransitionend webkitTransitionEnd', =>
-					$parent = $target.parent()
-
-					# Remove target element
-					$target.trigger $.fn.spectro.events.change
-					$target.remove()
-
-					# Clean whitespaces on parent to fix ':empty' css selector
-					if $parent.children().length is 0
-						$parent.html ''
-
-					# Hide controls
-					controls.hide()
+			
+			$target.spectro 'remove'
 
 		# Drag and drop
 		dragHandler = (event) ->
@@ -117,9 +102,7 @@ class Spectro.Controls extends Spectro.Helper
 		else $move.hide()
 
 		# Setup label
-		#if $target.is ':spectro-setupable'
 		$label.show()
-		#else $setup.hide()
 
 		# Prevent removed, dragged and already focused elements to be focused
 		if not @$target.is ':spectro-controlable' then return
