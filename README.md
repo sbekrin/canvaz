@@ -1,6 +1,6 @@
 ![Spectro Logotype](http://i.imgur.com/5LI69Up.jpg)
 
-Spectro is jQuery plugin made for visual, drag and drop, modular content management on websites.
+Spectro is visual, modular content management tool made for everyone.
 
 # Features
 - Customizable content structure via scheme file
@@ -22,7 +22,7 @@ Live demo avaible at http://dev.bekrin.me/spectro/.
 - [ ] Develop Wordpress plugin
 - [ ] Develop Joomla extension
 
-# Sheme
+# Scheme
 Scheme is intuitive `*.xml` file, which describes possible element structure. It is required to be loaded before editing. See simple [scheme.xml](./build/scheme.xml).
 
 | Attribute Name        | Status     | Description |
