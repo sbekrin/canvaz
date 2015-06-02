@@ -5,7 +5,6 @@ var gulp			= require('gulp'),
 	sourcemaps		= require('gulp-sourcemaps'),
 	coffee			= require('gulp-coffee'),
 	include			= require('gulp-include'),
-	uglify			= require('gulp-uglify'),
 	sass			= require('gulp-sass'),
 	autoprefixer	= require('gulp-autoprefixer'),
 	base64			= require('gulp-base64'),
@@ -59,7 +58,6 @@ gulp.task('coffee', function ( ) {
 		.pipe(include())
 		//.pipe(sourcemaps.init())
 		.pipe(coffee().on('error', handler))
-		//.pipe(uglify())
 		//.pipe(sourcemaps.write('./maps/'))
 		.pipe(gulp.dest('./build/js/'))
 		.pipe(filter('**/*.js'))

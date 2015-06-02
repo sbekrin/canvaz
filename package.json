@@ -1,0 +1,22 @@
+{
+	"name": "spectro",
+	"description": "Spectro is visual, modular content management tool made for everyone.",
+	"version": "0.1.2",
+	"repository": "qrelly/spectro",
+	"author": "Sergey Bekrin <sergey@bekrin.me> (http://bekrin.me/)",
+	"dependencies": {
+		"gulp": "*",
+		"gulp-util": "*",
+		"gulp-jade": "*",
+		"gulp-sourcemaps": "*",
+		"gulp-coffee": "*",
+		"gulp-coffee": "*",
+		"gulp-include": "*",
+		"gulp-sass": "*",
+		"gulp-autoprefixer": "*",
+		"gulp-base64": "*",
+		"gulp-filter": "*",
+		"browser-sync": "*"
+	},
+	"license": "MIT"
+}
