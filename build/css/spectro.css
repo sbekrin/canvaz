@@ -121,6 +121,9 @@
     opacity: 0;
     clip: rect(0, 0, 0);
     clip: rect(0, 0, 0, 0); }
+  .spectro-element--invalid {
+    background-color: rgba(255, 0, 0, 0.1);
+    cursor: not-allowed; }
 
 .spectro--enabled .spectro-helper {
   opacity: 1; }

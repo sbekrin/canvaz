@@ -1,7 +1,7 @@
 $.fn.spectro.extensions.image =
 	selector: 'img'
 	label: 'Image'
-	panel: ($element) ->
+	focus: ($element) ->
 		$panel = $ '<div />'
 
 		$url = $ '

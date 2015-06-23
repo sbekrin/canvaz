@@ -37,15 +37,14 @@ class Spectro.Panelset extends Spectro.StaticHelper
 			@$container.remove()
 			@$container = null
 
+	# Assign extension-related stuff on focus
 	@show: ($target) ->
 
 		# Append tab extensions
 		for key, extension of $.fn.spectro.extensions
-			if $target.data('scheme').is extension.selector
-				@add key, extension.label, extension.panel $target
-
-		# Show panelset
-		#@$container.addClass 'spectro-panelset--active'
+			if extension.focus? and
+			   $target.data('scheme').is extension.selector
+				@add key, extension.label, extension.focus $target
 
 		# Expand first tab
 		$firstInput = @$container.find '.spectro-panelset__input'
@@ -56,12 +55,7 @@ class Spectro.Panelset extends Spectro.StaticHelper
 		# Update max-height
 		$window.trigger 'resize.spectro'
 
-	#@hide: -> @$container.removeClass 'spectro-panelset--active'
-
-	@reset: ->
-		@$container
-			#.removeClass 'spectro-panelset--active' 
-			.html ''
+	@reset: -> @$container.html ''
 
 	@add: (code, label, $contents) ->
 

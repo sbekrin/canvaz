@@ -2,7 +2,7 @@
   $.fn.spectro.extensions.contents = {
     selector: ':not(:void):not(:empty)[spectro-editable!="true"]',
     label: Spectro.i18n('contents'),
-    panel: function($element) {
+    focus: function($element) {
       var $parentScheme, $ul;
       $parentScheme = $element.data('scheme');
       $ul = $('<ul class="spectro-panelset__list"></ul>');

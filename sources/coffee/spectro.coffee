@@ -70,7 +70,6 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 			# Make sure element stays in DOM and show controls
 			if jQuery.contains document, $draggedElement[0]
 				$draggedElement.trigger 'focus.spectro'
-
 			else
 				$draggedElement.spectro 'remove'
 
@@ -92,6 +91,10 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 			$scheme = $ scheme
 			$this = $ this
 
+			# Hightlight invalid element
+			if scheme is undefined
+				return $this.addClass $.fn.spectro.classes.invalidElementClass
+
 			# Bind scheme before any helpers creation
 			$this.data 'scheme', $scheme
 
@@ -108,9 +111,16 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 				if not $html.hasClass $.fn.spectro.classes.documentEnabledClass
 					$html.addClass $.fn.spectro.classes.documentEnabledClass
 
+				# Enable extensions on call
+				for key, extension of $.fn.spectro.extensions
+					if extension.enable? and
+					   $this.data('scheme').is extension.selector
+						extension.enable $this
+
 				# No setup required for inline elements
 				if $this.is ':spectro-inline' then return
 
+				# Bind attributes and data
 				$this
 					.attr 'tabindex', 0
 					.attr 'aria-label', $scheme.attr 'spectro-label'
@@ -118,8 +128,6 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 					.attr 'contenteditable', $this.is ':spectro-editable'
 					.addClass $.fn.spectro.classes.enabledElementClass
 					.trigger $.fn.spectro.events.enable
-
-					# Show
 					.on 'mouseover.spectro dragover.spectro', (event) ->
 						$spectro = $.fn.spectro
 
@@ -144,7 +152,6 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 					.on 'mousemove.spectro touchmove.spectro', (event) ->
 						
 						# Get placeholder singleton
-						placeholder = Spectro.Placeholder.get()
 						$this = $ this
 
 						# If this is drag action and element is not draggable target
@@ -179,6 +186,7 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 								# This will keep drop target same as palceholder location
 								$.fn.spectro.$lastDragoveredElement = $this
 
+								placeholder = Spectro.Placeholder.get()
 								placeholder.show $this, isVertical
 
 					# Hide visual border and controls (if not focused)
@@ -213,7 +221,7 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 						Spectro.Panelset.show $this
 
 						breadcrumbs.reset()
-						#controls.show()
+						controls.show()
 
 						# Compile parents path
 						$parent = $this
@@ -321,8 +329,9 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 				$this.children().each ->
 					$child = $ this
 					childTagName = $child.prop('tagName').toLowerCase()
+					$target = $scheme.find '> ' + childTagName
 
-					$child.spectro 'enable', scheme: $scheme.find '> ' + childTagName
+					$child.spectro 'enable', scheme: $target[0]
 			, 1
 
 		# Disables Spectro chain
@@ -335,6 +344,13 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 			if $.fn.spectro.enabledElements is 0 and
 			   $html.hasClass $.fn.spectro.classes.documentEnabledClass
 				$html.removeClass $.fn.spectro.classes.documentEnabledClass
+
+			# Disable extensions on call
+			for key, extension of $.fn.spectro.extensions
+				if extension.disable? and
+				   $this.data('scheme')? and
+				   $this.data('scheme').is extension.selector
+					extension.disable $this
 
 			$this
 				.removeClass $.fn.spectro.classes.enabledElementClass
@@ -427,7 +443,7 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 					$clone.attr attribute.name, attribute.value
 
 			# Enable clone element
-			$clone.spectro 'enable', scheme: $scheme
+			$clone.spectro 'enable', scheme: $scheme[0]
 
 			return $clone
 
@@ -470,6 +486,7 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 		hoveredElementClass: 'spectro-element--hover'
 		activeElementClass: 'spectro-element--active'
 		removedElementClass: 'spectro-element--removed'
+		invalidElementClass: 'spectro-element--invalid'
 		documentEnabledClass: 'spectro--enabled'
 		documentDraggedClass: 'spectro--dragged'
 

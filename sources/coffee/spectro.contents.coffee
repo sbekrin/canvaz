@@ -1,7 +1,7 @@
 $.fn.spectro.extensions.contents =
 	selector: ':not(:void):not(:empty)[spectro-editable!="true"]'
 	label: Spectro.i18n 'contents'
-	panel: ($element) ->
+	focus: ($element) ->
 		$parentScheme = $element.data 'scheme'
 		$ul = $ '<ul class="spectro-panelset__list"></ul>'
 

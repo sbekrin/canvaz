@@ -279,8 +279,8 @@
       _ref = $.fn.spectro.extensions;
       for (key in _ref) {
         extension = _ref[key];
-        if ($target.data('scheme').is(extension.selector)) {
-          this.add(key, extension.label, extension.panel($target));
+        if ((extension.focus != null) && $target.data('scheme').is(extension.selector)) {
+          this.add(key, extension.label, extension.focus($target));
         }
       }
       $firstInput = this.$container.find('.spectro-panelset__input');
@@ -547,7 +547,7 @@
     });
     methods = {
       enable: function(options) {
-        var $scheme, $this, breadcrumbs, controls, scheme;
+        var $scheme, $this, breadcrumbs, controls, extension, key, scheme, _ref;
         breadcrumbs = Spectro.Breadcrumbs.get();
         scheme = options.scheme;
         if (scheme instanceof XMLDocument) {
@@ -555,6 +555,9 @@
         }
         $scheme = $(scheme);
         $this = $(this);
+        if (scheme === void 0) {
+          return $this.addClass($.fn.spectro.classes.invalidElementClass);
+        }
         $this.data('scheme', $scheme);
         if ($scheme.attr('spectro-label')) {
           $.fn.spectro.enabledElements++;
@@ -562,6 +565,13 @@
           $this.data('controls', controls);
           if (!$html.hasClass($.fn.spectro.classes.documentEnabledClass)) {
             $html.addClass($.fn.spectro.classes.documentEnabledClass);
+          }
+          _ref = $.fn.spectro.extensions;
+          for (key in _ref) {
+            extension = _ref[key];
+            if ((extension.enable != null) && $this.data('scheme').is(extension.selector)) {
+              extension.enable($this);
+            }
           }
           if ($this.is(':spectro-inline')) {
             return;
@@ -578,7 +588,6 @@
             }
           }).on('mousemove.spectro touchmove.spectro', function(event) {
             var isVertical, placeholder;
-            placeholder = Spectro.Placeholder.get();
             $this = $(this);
             if ($.fn.spectro.isDrag && $.fn.spectro.$draggedElement !== null && $.fn.spectro.$draggedElement[0] !== $this[0]) {
               if ($this.spectro('neighbor', $.fn.spectro.$draggedElement)) {
@@ -598,6 +607,7 @@
                   }
                 }
                 $.fn.spectro.$lastDragoveredElement = $this;
+                placeholder = Spectro.Placeholder.get();
                 return placeholder.show($this, isVertical);
               }
             }
@@ -625,6 +635,7 @@
             Spectro.Panelset.reset();
             Spectro.Panelset.show($this);
             breadcrumbs.reset();
+            controls.show();
             $parent = $this;
             path = [];
             while ($parent.hasClass($.fn.spectro.classes.enabledElementClass) && $parent[0] !== document) {
@@ -693,21 +704,29 @@
         }
         return window.setTimeout(function() {
           return $this.children().each(function() {
-            var $child, childTagName;
+            var $child, $target, childTagName;
             $child = $(this);
             childTagName = $child.prop('tagName').toLowerCase();
+            $target = $scheme.find('> ' + childTagName);
             return $child.spectro('enable', {
-              scheme: $scheme.find('> ' + childTagName)
+              scheme: $target[0]
             });
           });
         }, 1);
       },
       disable: function() {
-        var $this;
+        var $this, extension, key, _ref;
         $this = $(this);
         $.fn.spectro.enabledElements--;
         if ($.fn.spectro.enabledElements === 0 && $html.hasClass($.fn.spectro.classes.documentEnabledClass)) {
           $html.removeClass($.fn.spectro.classes.documentEnabledClass);
+        }
+        _ref = $.fn.spectro.extensions;
+        for (key in _ref) {
+          extension = _ref[key];
+          if ((extension.disable != null) && ($this.data('scheme') != null) && $this.data('scheme').is(extension.selector)) {
+            extension.disable($this);
+          }
         }
         $this.removeClass($.fn.spectro.classes.enabledElementClass).removeAttr('tabindex').removeAttr('aria-label').removeAttr('aria-grabbed').removeAttr('contenteditable').trigger($.fn.spectro.events.disable).off('.spectro').children().each(function() {
           return $(this).spectro('disable');
@@ -775,7 +794,7 @@
           }
         }
         $clone.spectro('enable', {
-          scheme: $scheme
+          scheme: $scheme[0]
         });
         return $clone;
       },
@@ -816,6 +835,7 @@
       hoveredElementClass: 'spectro-element--hover',
       activeElementClass: 'spectro-element--active',
       removedElementClass: 'spectro-element--removed',
+      invalidElementClass: 'spectro-element--invalid',
       documentEnabledClass: 'spectro--enabled',
       documentDraggedClass: 'spectro--dragged'
     };
