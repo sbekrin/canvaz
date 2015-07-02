@@ -1,4 +1,5 @@
 (function() {
+  'use strict';
   var $window, _base, _base1,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __hasProp = {}.hasOwnProperty,
@@ -407,75 +408,56 @@
 
     Popover.get = function() {
       if (this.$container == null) {
-        this.$container = $('<div class="spectro-popover spectro-helper">\n	<ul class="spectro-popover__list">\n		<li class="spectro-popover__list-item">\n			<span class="spectro-icon spectro-icon--clearformat">\n		</li>\n	</ul>\n</div>').appendTo('body');
+        this.$container = $('<div class="spectro-popover spectro-helper">\n	<div class="spectro-popover__list"></div>\n</div>').on('mousedown', function(event) {
+          event.preventDefault();
+          return event.stopPropagation();
+        }).appendTo('body');
       }
       return this;
     };
 
     Popover.destroy = function() {
-      var $container, container;
-      container = this.container;
-      if (typeof $container !== "undefined" && $container !== null) {
-        $container.remove();
-        return $container = null;
+      if (this.$container != null) {
+        this.$container.remove();
+        return this.$container = null;
       }
     };
 
-    Popover.show = function($target) {
-      var $scheme, box, drops, popover, range, scrollLeft, scrollTop, selection;
-      $scheme = $target.data('scheme');
-      if ($scheme.children().length === 0) {
-        return;
+    Popover.add = function($item) {
+      return this.$container.find('.spectro-popover__list').append($item);
+    };
+
+    Popover.addAll = function(items) {
+      var $item, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = items.length; _i < _len; _i++) {
+        $item = items[_i];
+        _results.push(this.add($item));
       }
-      this.$container.addClass('spectro-popover--active');
+      return _results;
+    };
+
+    Popover.show = function(position) {
+      if (position == null) {
+        position = {
+          x: 0,
+          y: 0
+        };
+      }
       $window = $(window);
-      scrollLeft = $window.scrollLeft();
-      scrollTop = $window.scrollTop();
-      selection = $target.spectro('selection');
-      range = selection.getRangeAt(0);
-      box = range.cloneRange().getBoundingClientRect();
-      this.clean();
-      if ($scheme.attr('spectro-editable') !== 'true') {
-        return;
-      }
-      drops = [];
-      popover = this;
-      $scheme.children().each(function() {
-        var $drop, $element, $ghost, $label, property, tagName, _i, _len, _ref;
-        $element = $(this);
-        tagName = $element.prop('tagName');
-        $label = $('<span />').text($element.attr('spectro-label'));
-        $ghost = $('<' + tagName + ' />');
-        $ghost.appendTo($target);
-        _ref = ['font', 'text-decoration', 'text-transform', 'color', 'background'];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          property = _ref[_i];
-          $label.css(property, $ghost.css(property));
-        }
-        $ghost.remove();
-        $drop = $('<li class="spectro-popover__list-item"></li>');
-        $drop.append($label).on('mousedown touchstart', function() {
-          var $newElement, attribute, error, _j, _len1, _ref1;
-          $newElement = $('<' + tagName + ' />');
-          _ref1 = $element.get(0).attributes;
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            attribute = _ref1[_j];
-            if (!attribute.name.startsWith('spectro-')) {
-              $newElement.attr(attribute.name, attribute.value);
-            }
-          }
-          try {
-            return selection.getRangeAt(0).cloneRange().surroundContents($newElement.get(0));
-          } catch (_error) {
-            error = _error;
-          }
-        });
-        return popover.add($drop);
+      position.x -= this.width() / 2;
+      return this.$container.addClass('spectro-popover--active').css({
+        left: position.x + 'px',
+        top: position.y + 'px'
       });
-      return this.$container.css({
-        left: (scrollLeft + box.left + (box.width / 2) - (this.$container.outerWidth() / 2)) + 'px',
-        top: (scrollTop + box.top) + 'px'
-      });
+    };
+
+    Popover.isActive = function() {
+      return this.$container.hasClass('spectro-popover--active');
+    };
+
+    Popover.width = function() {
+      return this.$container.outerWidth();
     };
 
     Popover.hide = function() {
@@ -486,10 +468,6 @@
 
     Popover.clean = function() {
       return this.$container.find('.spectro-popover__list').html('');
-    };
-
-    Popover.add = function($element) {
-      return this.$container.find('.spectro-popover__list').append($element);
     };
 
     return Popover;
@@ -518,7 +496,6 @@
       if ($('.' + spectro.classes.enabledElementClass).length === 0) {
         return;
       }
-      Spectro.Popover.hide();
       if (spectro.isDrag && (spectro.$draggedElement != null)) {
         spectro.$draggedElement.attr('aria-grabbed', false);
         $html.removeClass($.fn.spectro.classes.documentDraggedClass);
@@ -619,7 +596,7 @@
               $this.removeClass($spectro.classes.activeElementClass);
             }
             if (!$this.is(':focus')) {
-              return controls.hide();
+              return $this.trigger('blur');
             }
           }).on('focus.spectro', function(event) {
             var $parent, path;
@@ -657,8 +634,8 @@
               }));
             });
           }).on('blur.spectro', function(event) {
-            controls.hide();
-            return $(this).removeClass($.fn.spectro.classes.activeElementClass);
+            $(this).removeClass($.fn.spectro.classes.activeElementClass);
+            return controls.hide();
           }).on('keydown.spectro', function(event) {
             var $clone, ctrlKey, keyCode;
             $this = $(this);
@@ -696,10 +673,6 @@
             if (!$this.is(':focus')) {
               return $this.focus();
             }
-          }).on('input.spectro paste.spectro', function(event) {
-            event.stopPropagation();
-            $this = $(this);
-            return $this.html($this.text());
           });
         }
         return window.setTimeout(function() {

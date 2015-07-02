@@ -1,3 +1,5 @@
+'use strict'
+
 window.Spectro = {}
 
 #= require spectro/selectors.coffee
@@ -28,7 +30,7 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 		if $('.' + spectro.classes.enabledElementClass).length is 0 then return
 
 		# Hide popover
-		Spectro.Popover.hide()
+		#Spectro.Popover.hide()
 
 		if spectro.isDrag and
 		   spectro.$draggedElement?
@@ -201,7 +203,7 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 
 						# Hide controls
 						if not $this.is ':focus'
-							controls.hide()
+							$this.trigger 'blur'
 
 					# Show controls and helpers specific to set element
 					.on 'focus.spectro', (event) ->
@@ -249,9 +251,9 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 
 					# Hide controls when loosing focus
 					.on 'blur.spectro', (event) ->
-						controls.hide()
-
 						$(this).removeClass $.fn.spectro.classes.activeElementClass
+
+						controls.hide()
 
 					# Some usefull hotkeys
 					.on 'keydown.spectro', (event) ->
@@ -317,11 +319,11 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 
 					# Prevent custom markup when copy text from
 					# Word-alike editors or other sources
-					.on 'input.spectro paste.spectro', (event) ->
-						event.stopPropagation()
-
-						$this = $ this
-						$this.html $this.text()
+					#.on 'input.spectro paste.spectro', (event) ->
+					#	event.stopPropagation()
+					#
+					#	$this = $ this
+					#	$this.html $this.text()
 
 			# Proceed spectro enable for children
 			# Made this async to prevent document lock on huge elements
@@ -432,9 +434,7 @@ String::endsWith ?= (string) -> s is '' or @[-string.length..] is string
 		# Creates clone of active element
 		clone: ($scheme = null) ->
 			$this = $ this
-
 			$scheme = $scheme or $this.data 'scheme'
-
 			$clone = $ '<' + $scheme.prop('tagName') + ' />'
 
 			# Copy attributes except spectro-* related

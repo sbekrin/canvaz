@@ -4,105 +4,54 @@ class Spectro.Popover extends Spectro.StaticHelper
 		if not @$container?
 			@$container = $ '''
 				<div class="spectro-popover spectro-helper">
-					<ul class="spectro-popover__list">
-						<li class="spectro-popover__list-item">
-							<span class="spectro-icon spectro-icon--clearformat">
-						</li>
-					</ul>
+					<div class="spectro-popover__list"></div>
 				</div>
 			'''
+			.on 'mousedown', (event) ->
+				event.preventDefault()
+				event.stopPropagation()
+			
 			.appendTo 'body'
 
 		return @
 
 	@destroy: ->
-		container = @container
+		if @$container?
+			@$container.remove()
+			@$container = null
 
-		if $container?
-			$container.remove()
-			$container = null
+	@add: ($item) ->
+		@$container
+			.find '.spectro-popover__list'
+			.append $item
 
-	@show: ($target) ->
+	@addAll: (items) -> @add $item for $item in items
 
-		# Get list of allowed elements
-		$scheme = $target.data 'scheme'
-
-		if $scheme.children().length is 0 then return
-
-		# Show popover
-		@$container.addClass 'spectro-popover--active'
+	@show: (position = x: 0, y: 0) ->
 
 		$window = $ window
-		scrollLeft = $window.scrollLeft()
-		scrollTop = $window.scrollTop()
-		selection = $target.spectro 'selection'
-		range = selection.getRangeAt(0)
-		box = range.cloneRange().getBoundingClientRect()
 
-		# Reset prev. elements
-		@clean()
+		#scroll =
+		#	x: $window.scrollLeft()
+		#	y: $window.scrollTop()
 
-		# Double check
-		if $scheme.attr('spectro-editable') isnt 'true' then return
+		# Shift popover to center by x axis
+		position.x -= @width() / 2
 
-		drops = []
+		# Show popover
+		@$container
+			.addClass 'spectro-popover--active'
+			.css
+				left: position.x + 'px'
+				top: position.y + 'px'
 
-		# Add `clean markup` action
-		#drops.push $('<li class="spectro-popover__list-item"><span></span></li>')
+	@isActive: -> @$container.hasClass 'spectro-popover--active'
 
-		popover = this
+	@width: -> @$container.outerWidth()
 
-		# Collect drops
-		$scheme.children().each ->
-			$element = $ this
-			tagName = $element.prop 'tagName'
-
-			$label = $('<span />').text($element.attr 'spectro-label')
-
-			# Append empty dummy to copy styles
-			$ghost = $ '<' + tagName + ' />'
-			$ghost.appendTo $target
-
-			for property in [ 'font', 'text-decoration', 'text-transform', 'color', 'background' ]
-				$label.css property, $ghost.css property
-
-			# Remove dummy
-			$ghost.remove()
-
-			# Append drop
-			$drop = $ '<li class="spectro-popover__list-item"></li>'
-			$drop
-				.append $label
-				.on 'mousedown touchstart', ->
-					$newElement = $ '<' + tagName + ' />'
-
-					# Keep only default attributes and remove `spectro-*` related stuff
-					for attribute in $element.get(0).attributes
-						if not attribute.name.startsWith 'spectro-'
-							$newElement.attr attribute.name, attribute.value
-
-					try
-						selection.getRangeAt(0).cloneRange().surroundContents($newElement.get(0))
-					catch error
-
-			# Register drop
-			popover.add $drop
-
-		# Move popover to target
-		@$container.css
-			left: (scrollLeft + box.left + (box.width / 2) - (@$container.outerWidth() / 2)) + 'px'
-			top: (scrollTop + box.top) + 'px'
-
-	@hide: ->
-		if @$container?
-			@$container.removeClass 'spectro-popover--active'
+	@hide: -> @$container.removeClass 'spectro-popover--active' if @$container?
 
 	@clean: ->
 		@$container
 			.find '.spectro-popover__list'
-			.html('')
-
-	@add: ($element) ->
-		@$container
-			.find '.spectro-popover__list'
-			.append $element
+			.html ''

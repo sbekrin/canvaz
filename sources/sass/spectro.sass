@@ -8,7 +8,29 @@
 @keyframes element-pulse
 	+element-pulse-animation-keyframes
 
+@font-face
+	font-family: 'spectro'
+	src: url('../fonts/spectro.eot')
+
+@font-face
+	font-family: 'spectro'
+	src: url(data:application/x-font-ttf;charset=utf-8;base64,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) format('truetype')
+	font-weight: normal
+	font-style: normal
+
 .spectro
+
+	// Icons
+	&-icon
+		font-smoothing: antialiased
+		font-family: 'spectro'
+		text-transform: none
+		font-variant: normal
+		font-weight: normal
+		font-style: normal
+		font-size: 24px
+		line-height: 1
+		speak: none
 
 	// Common
 	&-hidden
@@ -83,6 +105,7 @@
 		&--active,
 		&[aria-grabbed="true"]
 			box-shadow: 0 0 0 $border-width $color-primary
+			//outline: $border-width solid $color-primary
 			border-radius: 4px
 			outline: none
 
@@ -252,9 +275,6 @@
 
 	// Key tab panel set
 	&-panelset
-		//transition: transform $animation-speed-default ease, opacity $animation-speed-default ease
-		//transform: scale(.6)
-		//transform-origin: 50% 50%
 		box-sizing: border-box
 		padding-top: $controls-height
 		color: $color-text
@@ -368,8 +388,7 @@
 		+helper-box-shadow
 
 		transition: transform $animation-speed-default ease, opacity $animation-speed-default ease
-		background-color: $color-background-primary
-		border: $border-width solid $color-primary
+		background-color: rgba(0, 0, 0, .85)
 		transform: scale(0)
 		position: absolute
 		border-radius: 4px
@@ -384,12 +403,13 @@
 			opacity: 1
 
 		&__list
+			vertical-align: middle
 			list-style: none
+			height: 36px
 			padding: 0
 			margin: 0
 
-			&:after,
-			&:before
+			&:after
 				border-color: fade-out($color-background-primary, 1)
 				border: solid transparent
 				pointer-events: none
@@ -400,28 +420,22 @@
 				height: 0
 				width: 0
 
-			&:before
-				border-top-color: $color-primary
-				border-width: 13px
-				margin-left: -13px
-
 			&:after
-				border-top-color: $color-background-primary
+				border-top-color: rgba(0, 0, 0, .85)
 				border-width: 10px
 				margin-left: -10px
 
-			&-item
-				transition: background-color $animation-speed-default ease
-				display: inline-block
+			&__item
+				transition: color $animation-speed-default ease
 				border-radius: $border-width
-				line-height: 28px
+				display: inline-block
+				height: inherit
 				cursor: pointer
 				padding: 0 8px
-				height: 28px
-				margin: 2px
+				color: white
 
-				&:hover
-					background-color: darken($color-background-primary, 5%)
+				input[type='checkbox']:checked ~ .spectro-icon
+					color: $color-primary
 
 	// Placeholder insertion line
 	&-placeholder

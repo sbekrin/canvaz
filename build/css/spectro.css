@@ -34,6 +34,27 @@
   100% {
     box-shadow: 0 0 0 2px #4281f4; } }
 
+@font-face {
+  font-family: 'spectro';
+  src: url("../fonts/spectro.eot"); }
+
+@font-face {
+  font-family: 'spectro';
+  src: url(data:application/x-font-ttf;charset=utf-8;base64,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) format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+.spectro-icon {
+  font-smoothing: antialiased;
+  font-family: 'spectro';
+  text-transform: none;
+  font-variant: normal;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  speak: none; }
+
 .spectro-hidden {
   display: none; }
 
@@ -345,8 +366,7 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   -webkit-transition: -webkit-transform 0.2s ease, opacity 0.2s ease;
           transition: transform 0.2s ease, opacity 0.2s ease;
-  background-color: #fcfcfc;
-  border: 2px solid #4281f4;
+  background-color: rgba(0, 0, 0, 0.85);
   -webkit-transform: scale(0);
       -ms-transform: scale(0);
           transform: scale(0);
@@ -368,11 +388,12 @@
             transform: scale(1);
     opacity: 1; }
   .spectro-popover__list {
+    vertical-align: middle;
     list-style: none;
+    height: 36px;
     padding: 0;
     margin: 0; }
-    .spectro-popover__list:after,
-    .spectro-popover__list:before {
+    .spectro-popover__list:after {
       border-color: rgba(252, 252, 252, 0);
       border: solid transparent;
       pointer-events: none;
@@ -382,26 +403,21 @@
       left: 50%;
       height: 0;
       width: 0; }
-    .spectro-popover__list:before {
-      border-top-color: #4281f4;
-      border-width: 13px;
-      margin-left: -13px; }
     .spectro-popover__list:after {
-      border-top-color: #fcfcfc;
+      border-top-color: rgba(0, 0, 0, 0.85);
       border-width: 10px;
       margin-left: -10px; }
-    .spectro-popover__list-item {
-      -webkit-transition: background-color 0.2s ease;
-              transition: background-color 0.2s ease;
-      display: inline-block;
+    .spectro-popover__list__item {
+      -webkit-transition: color 0.2s ease;
+              transition: color 0.2s ease;
       border-radius: 2px;
-      line-height: 28px;
+      display: inline-block;
+      height: inherit;
       cursor: pointer;
       padding: 0 8px;
-      height: 28px;
-      margin: 2px; }
-      .spectro-popover__list-item:hover {
-        background-color: #efefef; }
+      color: white; }
+      .spectro-popover__list__item input[type='checkbox']:checked ~ .spectro-icon {
+        color: #4281f4; }
 
 .spectro-placeholder {
   box-shadow: none;
