@@ -12,15 +12,12 @@ Spectro is visual, modular content management tool made for everyone.
 Live demo avaible at http://dev.bekrin.me/spectro/.
 
 # Plans
-- [x] Move to gulp
-- [x] Rewrite project via SASS, Jade and CoffeScript
-- [x] Refractor jQuery plugin structure
 - [x] Simple localization (i18n) support
 - [x] Extensions support
+- [x] Bundle inline WYSIWYG extension
 - [ ] Scheme hotkeys support
-- [ ] Create test schemes
+- [ ] Create test schemas
 - [ ] Develop Wordpress plugin
-- [ ] Develop Joomla extension
 
 # Scheme
 Scheme is intuitive `*.xml` file, which describes possible element structure. It is required to be loaded before editing. See simple [scheme.xml](./build/scheme.xml).
