@@ -9,6 +9,9 @@ $.fn.spectro.extensions.contents =
 		$parentScheme.children().each ->
 			$scheme = $ this
 			label = $scheme.attr 'spectro-label'
+			icon = $scheme.attr 'spectro-icon'
+
+			if icon is undefined then icon = ''
 
 			$li = $ """
 				<li class="spectro-panelset__list__item spectro-button"
@@ -16,6 +19,7 @@ $.fn.spectro.extensions.contents =
 					title="#{label}"
 					draggable="true">
 					#{label}
+					<div class="spectro-icon">#{icon}</div>
 				</li>
 			"""
 

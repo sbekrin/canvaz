@@ -20,19 +20,19 @@
 
 @-webkit-keyframes element-pulse {
   0% {
-    box-shadow: 0 0 0 2px #4281f4; }
+    outline-color: rgba(66, 129, 244, 0.8); }
   50% {
-    box-shadow: 0 0 0 2px rgba(66, 129, 244, 0.2); }
+    outline-color: rgba(66, 129, 244, 0.2); }
   100% {
-    box-shadow: 0 0 0 2px #4281f4; } }
+    outline-color: rgba(66, 129, 244, 0.8); } }
 
 @keyframes element-pulse {
   0% {
-    box-shadow: 0 0 0 2px #4281f4; }
+    outline-color: rgba(66, 129, 244, 0.8); }
   50% {
-    box-shadow: 0 0 0 2px rgba(66, 129, 244, 0.2); }
+    outline-color: rgba(66, 129, 244, 0.2); }
   100% {
-    box-shadow: 0 0 0 2px #4281f4; } }
+    outline-color: rgba(66, 129, 244, 0.8); } }
 
 @font-face {
   font-family: 'spectro';
@@ -92,7 +92,6 @@
   outline: none;
   margin: 3px; }
   .spectro-button:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     border-color: #bcbcbc;
     z-index: 3; }
   .spectro-button--active,
@@ -121,9 +120,9 @@
   .spectro-element--hover,
   .spectro-element--active,
   .spectro-element[aria-grabbed="true"] {
-    box-shadow: 0 0 0 2px #4281f4;
-    border-radius: 4px;
-    outline: none; }
+    outline: 2px solid #4281f4;
+    outline-offset: 2px;
+    border-radius: 4px; }
   .spectro-element[aria-grabbed="true"] {
     -webkit-animation: placeholder-pulse 1s infinite;
             animation: placeholder-pulse 1s infinite; }
@@ -306,9 +305,6 @@
           margin-top: 0; }
         .spectro-panelset__list__item[draggable="true"]:nth-child(even) {
           margin-left: 4px; }
-        .spectro-panelset__list__item[draggable="true"]:hover {
-          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-          border-color: #c9c9c9; }
   .spectro-panelset__input {
     display: none; }
   .spectro-panelset__tab__label {
@@ -479,11 +475,12 @@
           transition: opacity 0.2s ease;
   visibility: hidden;
   position: absolute;
-  margin-top: -30px;
+  margin-top: -32px;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+  padding-bottom: 2px;
   padding-top: 30px;
   z-index: 991;
   opacity: 0; }

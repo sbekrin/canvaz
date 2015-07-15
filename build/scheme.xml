@@ -8,5 +8,4 @@
 		<i spectro-label="Italic text" spectro-icon="&#xe604;"></i>
 		<a href="//" spectro-label="Link" spectro-icon="&#xe60a;"></a>
 	</p>
-	<img src="//placehold.it/720x320" alt="" spectro-label="Image" />
 </article>

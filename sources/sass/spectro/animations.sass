@@ -9,12 +9,22 @@
 	100%
 		opacity: 1
 
+//=element-pulse-animation-keyframes
+//	0%
+//		box-shadow: 0 0 0 2px $color-primary
+//
+//	50%	
+//		box-shadow: 0 0 0 2px fade-out($color-primary, .8)
+//
+//	100%
+//		box-shadow: 0 0 0 2px $color-primary
+
 =element-pulse-animation-keyframes
 	0%
-		box-shadow: 0 0 0 2px $color-primary
+		outline-color: fade-out($color-primary, .2)
 
-	50%	
-		box-shadow: 0 0 0 2px fade-out($color-primary, .8)
+	50%
+		outline-color: fade-out($color-primary, .8)
 
 	100%
-		box-shadow: 0 0 0 2px $color-primary
+		outline-color: fade-out($color-primary, .2)

@@ -70,7 +70,7 @@
 		margin: 3px;
 
 		&:hover
-			+helper-box-shadow
+			//+helper-box-shadow
 
 			border-color: darken($color-background-primary, 25%)
 			z-index: 3
@@ -104,10 +104,10 @@
 		&--hover,
 		&--active,
 		&[aria-grabbed="true"]
-			box-shadow: 0 0 0 $border-width $color-primary
-			//outline: $border-width solid $color-primary
+			//box-shadow: 0 0 0 $border-width $color-primary
+			outline: $border-width solid $color-primary
+			outline-offset: $outline-offset
 			border-radius: 4px
-			outline: none
 
 		&[aria-grabbed="true"]
 			animation: placeholder-pulse $animation-speed-long infinite
@@ -316,11 +316,6 @@
 					&:nth-child(even)
 						margin-left: 4px
 
-					&:hover
-						+helper-box-shadow
-
-						border-color: darken($color-background-primary, 20%)
-
 		&__input
 			display: none
 
@@ -509,8 +504,9 @@
 		transition: opacity $animation-speed-default ease
 		visibility: hidden
 		position: absolute
-		margin-top: -1 * $safe-zone
+		margin-top: -1 * ($safe-zone + $outline-offset)
 		user-select: none
+		padding-bottom: $outline-offset
 		padding-top: $safe-zone
 		z-index: 991
 		opacity: 0

@@ -7,10 +7,14 @@
       $parentScheme = $element.data('scheme');
       $ul = $('<ul class="spectro-panelset__list"></ul>');
       $parentScheme.children().each(function() {
-        var $li, $scheme, label;
+        var $li, $scheme, icon, label;
         $scheme = $(this);
         label = $scheme.attr('spectro-label');
-        $li = $("<li class=\"spectro-panelset__list__item spectro-button\"\n	data-ghost-tag=\"" + ($scheme.prop('tagName')) + "\"\n	title=\"" + label + "\"\n	draggable=\"true\">\n	" + label + "\n</li>");
+        icon = $scheme.attr('spectro-icon');
+        if (icon === void 0) {
+          icon = '';
+        }
+        $li = $("<li class=\"spectro-panelset__list__item spectro-button\"\n	data-ghost-tag=\"" + ($scheme.prop('tagName')) + "\"\n	title=\"" + label + "\"\n	draggable=\"true\">\n	" + label + "\n	<div class=\"spectro-icon\">" + icon + "</div>\n</li>");
         $li.data('scheme', $scheme);
         return $ul.append($li);
       });

@@ -49,7 +49,10 @@
               $element = extension.$lastTouchedElement;
               while (!$element.hasClass($.fn.spectro.classes.enabledElementClass)) {
                 element = $element.get(0);
-                if ((element != null) && (element.tagName != null) && element.tagName.toLowerCase() === tagName) {
+                if (element == null) {
+                  break;
+                }
+                if (element.tagName.toLowerCase() === tagName) {
                   $hookBefore = $('<span />');
                   $hookAfter = $('<span />');
                   $element.before($hookBefore);
@@ -64,12 +67,9 @@
                 }
                 $element = $element.parent();
               }
-            } else {
-              console.log(selection);
             }
           } catch (_error) {
             exception = _error;
-            console.log(exception);
             $checkbox.attr('checked', false);
           }
           selection.removeAllRanges();
@@ -122,7 +122,7 @@
           range = selection.getRangeAt(0);
           box = range.getBoundingClientRect();
           position.x = box.left + box.width / 2;
-          position.y = box.top;
+          position.y = $(document).scrollTop() + box.top;
           popover.clean();
           popover.addAll(extension.prepare($target));
           return popover.show(position);

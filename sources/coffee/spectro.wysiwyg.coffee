@@ -63,11 +63,13 @@ $.fn.spectro.extensions.wysiwyg =
 						$element = extension.$lastTouchedElement
 
 						while not $element.hasClass $.fn.spectro.classes.enabledElementClass
+
 							element = $element.get 0
 
-							if element? and
-							   element.tagName? and 
-							   element.tagName.toLowerCase() is tagName
+							# Prevent inf. loop
+							if not element? then break
+
+							if element.tagName.toLowerCase() is tagName
 
 								$hookBefore = $ '<span />'
 								$hookAfter = $ '<span />'
@@ -87,11 +89,8 @@ $.fn.spectro.extensions.wysiwyg =
 								break
 
 							$element = $element.parent()
-					else
-						console.log selection
 
 				catch exception
-					console.log exception
 					$checkbox.attr 'checked', false
 
 				# Select text
@@ -155,7 +154,7 @@ $.fn.spectro.extensions.wysiwyg =
 					box = range.getBoundingClientRect()
 
 					position.x = box.left + box.width / 2
-					position.y = box.top
+					position.y = $(document).scrollTop() + box.top
 
 					# Setup and show popover
 					popover.clean()
