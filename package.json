@@ -1,7 +1,7 @@
 {
 	"name": "spectro",
 	"description": "Spectro is visual, modular content management tool made for everyone.",
-	"version": "0.1.2",
+	"version": "0.1.2-alpha",
 	"repository": "qrelly/spectro",
 	"author": "Sergey Bekrin <sergey@bekrin.me> (http://bekrin.me/)",
 	"dependencies": {
