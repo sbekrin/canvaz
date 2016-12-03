@@ -1,0 +1,73 @@
+{
+  "name": "spectro-editor",
+  "version": "2.0.0-alpha",
+  "description": "Visual, modular content editor for React",
+  "main": "./lib/index.js",
+  "scripts": {
+    "flow": "flow; test $? -eq 0 -o $? -eq 2",
+    "prelint": "npm run flow",
+    "lint": "eslint check src webpack",
+    "start": "cross-env NODE_ENV=development node -r babel-register ./node_modules/webpack/bin/webpack --config webpack/development.js --progress --colors --watch",
+    "build": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack/production.js",
+    "pretest": "npm run lint",
+    "test": "exit 0",
+    "example": "cross-env NODE_ENV=development node -r babel-register ./example/server.js"
+  },
+  "author": "Sergey Bekrin <sergey@bekrin.me>",
+  "keywords": [
+    "react",
+    "reactjs",
+    "spectro",
+    "spectrojs",
+    "spectro-editor",
+    "editor",
+    "visual",
+    "modular",
+    "wysiwyg"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "invariant": "^2.2.1",
+    "lodash.uniqwith": "^4.5.0",
+    "radium": "^0.18.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.17.0",
+    "babel-eslint": "^7.0.0",
+    "babel-loader": "^6.2.5",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-flow-strip-types": "^6.18.0",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-react-hmre": "^1.1.1",
+    "babel-preset-stage-0": "^6.16.0",
+    "babel-register": "^6.16.3",
+    "cross-env": "^3.1.3",
+    "css-loader": "^0.26.0",
+    "eslint": "^3.7.1",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-import-resolver-webpack": "^0.6.0",
+    "eslint-plugin-flow-vars": "^0.5.0",
+    "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.4.1",
+    "express": "^4.14.0",
+    "flow-bin": "^0.34.0",
+    "react": "^15.3.2",
+    "react-codemirror": "^0.2.6",
+    "react-dom": "^15.3.2",
+    "react-highlight": "^0.9.0",
+    "react-syntax-highlighter": "^3.0.0",
+    "style-loader": "^0.13.1",
+    "svg-url-loader": "^1.1.0",
+    "webpack": "^1.13.2",
+    "webpack-dev-middleware": "^1.8.4",
+    "webpack-hot-middleware": "^2.13.0",
+    "webpack-merge": "^0.14.1"
+  },
+  "peerDependencies": {
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  }
+}

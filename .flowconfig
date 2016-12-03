@@ -1,0 +1,15 @@
+[libs]
+src/flow/
+
+[ignore]
+.*/__tests__/.*
+.*/node_modules/radium/src*
+.*/node_modules/fbjs*
+
+[options]
+suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
+module.name_mapper='^components\(.*\)$' -> '<PROJECT_ROOT>/src/components/\1'
+module.name_mapper='^constants\(.*\)$' -> '<PROJECT_ROOT>/src/constants/\1'
+module.name_mapper='^types\(.*\)$' -> '<PROJECT_ROOT>/src/types/\1'
+module.name_mapper='^themes\(.*\)$' -> '<PROJECT_ROOT>/src/themes/\1'
+module.name_mapper='^utils\(.*\)$' -> '<PROJECT_ROOT>/src/utils/\1'
