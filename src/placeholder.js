@@ -1,5 +1,4 @@
 /* @flow */
-// TODO: Move to ./src
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import EditorPlaceholder from 'components/EditorPlaceholder';

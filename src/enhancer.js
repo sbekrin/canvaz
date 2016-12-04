@@ -8,7 +8,6 @@ import {
 import invariant from 'invariant';
 import type { SpectroProps, SpectroState, TreeNode, NodeKey, SelectionData } from 'types/EditorTypes';
 import type { ClipboardEvent, FocusEvent } from 'types/EventTypes';
-import { renderPlaceholder, destroyPlaceholder } from 'utils/PlaceholderUtils';
 import { getElementBox } from 'utils/ElementBoxUtils';
 import { insertTextAtCursor } from 'utils/ClipboardUtils';
 import { validateSpectroProps } from 'utils/SpectroPropsUtils';
@@ -16,6 +15,7 @@ import { saveSelection, restoreSelection } from 'utils/SelectionUtils';
 import EditorControlBar from 'components/EditorControlBar';
 import StyleConstants from 'constants/StyleConstants';
 import styles from 'constants/EnhancerStyles';
+import { renderPlaceholder, destroyPlaceholder } from './placeholder';
 import { convertToClassComponent, getDisplayName } from './helpers';
 import {
     getNodePath,
