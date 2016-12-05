@@ -62,7 +62,7 @@ export default {
             backgroundImage: `url(${leftUpArrowIcon})`,
             backgroundPosition: '0px 50%',
             cursor: 'pointer',
-            paddingLeft: 20,
+            paddingLeft: 16,
             ':hover': {
                 backgroundColor: theme.colors.backgroundHover
             }
