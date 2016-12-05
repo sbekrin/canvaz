@@ -119,4 +119,4 @@ npm run example
 To build UMD library, run `npm run build`.
 
 ## License
-MIT
+MIT © [Sergey Bekrin](https://github.com/sergeybekrin)
