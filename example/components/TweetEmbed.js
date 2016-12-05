@@ -20,6 +20,10 @@ class TweetEmbed extends Component {
     state: State;
 
     componentDidMount () {
+        if (!window.twttr) {
+            return;
+        }
+
         window.twttr.widgets.createTweet(this.props.tweetId, this._node).then(() => {
             this.setState({ ready: true });
         });
