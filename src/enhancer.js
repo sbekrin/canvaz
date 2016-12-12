@@ -48,7 +48,7 @@ type State = {
     _spectroHasFocus: boolean,
     _spectroHasPointerOver: boolean,
     _spectroIsBeingDragged: boolean,
-    _spectroIsTarget: boolean
+    _spectroIsBeingInspected: boolean
 };
 
 type Context = {
@@ -90,7 +90,7 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
                     _spectroHasFocus: false,
                     _spectroHasPointerOver: false,
                     _spectroIsBeingDragged: false,
-                    _spectroIsTarget: false
+                    _spectroIsBeingInspected: false
                 };
 
                 // Pass down `editorState` prop as context on mount
@@ -123,7 +123,7 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
 
                 // Set state if current component being inspected
                 this.setState({
-                    _spectroIsTarget: nextContext.spectro.target === this
+                    _spectroIsBeingInspected: nextContext.spectro.target === this
                 });
             }
 
@@ -238,7 +238,7 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
             }
 
             renderToolbar (): void {
-                if (!this.state._spectroIsTarget) {
+                if (!this.state._spectroIsBeingInspected) {
                     return;
                 }
 
@@ -514,7 +514,7 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
 
                 if (this.context.spectro.enabled) {
                     const isDragAndDropActive: boolean = Boolean(this.context.spectro.dragAndDrop);
-                    const isBeingInspected: boolean = this.state._spectroIsTarget;
+                    const isBeingInspected: boolean = this.state._spectroIsBeingInspected;
                     const isBeingDragged: boolean = this.state._spectroIsBeingDragged;
                     const hasFocus: boolean = this.state._spectroHasFocus;
                     const hasPointerOver: boolean = this.state._spectroHasPointerOver;
