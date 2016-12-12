@@ -37,7 +37,7 @@ export function mergeNodes (leftNode: TreeNode, rightNode: TreeNode): TreeNode {
  * Returns parent index in `props.children` of node by path
  */
 export function getNodeIndex (tree: TreeNode, path: NodeKey[]): number {
-    const stack = path.concat().reverse();
+    const stack = [ ...path ].reverse();
     let targetIndex = -1;
     let node = tree;
 
@@ -48,11 +48,11 @@ export function getNodeIndex (tree: TreeNode, path: NodeKey[]): number {
 
         node = (
             Array.isArray(node.props.children) ?
-                node.props.children.find((child: TreeNode, index: number): boolean => {
-                    targetIndex = index;
-                    return child.props.key === key;
-                }) :
-                node.props.children
+            node.props.children.find((child: TreeNode, index: number): boolean => {
+                targetIndex = index;
+                return child.props.key === key;
+            }) :
+            node.props.children
         );
     }
 
@@ -62,7 +62,7 @@ export function getNodeIndex (tree: TreeNode, path: NodeKey[]): number {
 /**
  * Returns node object
  */
-export function getNode (node: TreeNode, key: string): ?TreeNode {
+export function getNode (node: TreeNode, key: NodeKey): ?TreeNode {
     const stack: Array<TreeNode> = [ node ];
 
     while (stack.length > 0) {
@@ -128,7 +128,7 @@ export function updateNodeAtPath (
     path: NodeKey[],
     node: TreeNode
 ): TreeNode {
-    const stack = path.concat().reverse();
+    const stack = [ ...path ].reverse();
     let parentNode: ?TreeNode = null;
     let currentNode: TreeNode = tree;
     let targetIndex: number = -1;
@@ -187,7 +187,7 @@ export function removeNodeAtPath (tree: TreeNode, path: NodeKey[]): TreeNode {
  * Returns node by path
  */
 export function getNodeAtPath (tree: TreeNode, path: NodeKey[]): TreeNode {
-    const stack = path.concat().reverse();
+    const stack = [ ...path ].reverse();
     let node = tree;
 
     stack.pop();
@@ -216,7 +216,7 @@ export function moveNodeAtPath (
     dropPath: NodeKey[],
     dropIndex: number = 0
 ): TreeNode {
-    const dropStack: NodeKey[] = dropPath.concat().reverse();
+    const dropStack: NodeKey[] = [ ...dropPath ].reverse();
     const targetNode: TreeNode = getNodeAtPath(tree, targetPath);
     let parentNode: TreeNode = tree;
 
@@ -245,15 +245,15 @@ export function moveNodeAtPath (
     // and finally remove prefixed before node
     const originalKey = targetNode.props.key;
     const markedKey: NodeKey = `__tmp__${originalKey}`;
-    const markedPath: NodeKey[] = targetPath.concat();
+    const markedPath: NodeKey[] = [ ...targetPath ];
     const markedNode: TreeNode = mergeNodes(targetNode, { props: { key: markedKey } });
 
     markedPath.pop();
     markedPath.push(markedKey);
 
-    updateNodeAtPath(tree, targetPath, markedNode);
+    let newTree = updateNodeAtPath(tree, targetPath, markedNode);
     parentNode.props.children.splice(dropIndex, 0, targetNode);
-    removeNodeAtPath(tree, markedPath);
+    newTree = removeNodeAtPath(newTree, markedPath);
 
-    return tree;
+    return newTree;
 }
