@@ -13,7 +13,7 @@ import type {
     SelectionData } from 'types/EditorTypes';
 import type { ClipboardEvent, FocusEvent } from 'types/EventTypes';
 import { getElementBox } from 'utils/ElementBoxUtils';
-import { insertTextAtCursor } from 'utils/ClipboardUtils';
+import { convertPastedTextToPlainText } from 'utils/ClipboardUtils';
 import { validateSpectroConfig } from 'utils/SpectroConfigUtils';
 import { saveSelection, restoreSelection } from 'utils/SelectionUtils';
 import EditorControlBar from 'components/EditorControlBar';
@@ -489,13 +489,7 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
                 event.stopPropagation();
                 event.preventDefault();
 
-                if (event.clipboardData && event.clipboardData.getData) {
-                    const text: string = event.clipboardData.getData('text/plain');
-                    document.execCommand('insertHTML', false, text);
-                } else if (window.clipboardData && window.clipboardData.getData) {
-                    const text: string = window.clipboardData.getData('Text');
-                    insertTextAtCursor(text);
-                }
+                convertPastedTextToPlainText(event);
             };
 
             onKeyPress = (event: KeyboardEvent): void => {
