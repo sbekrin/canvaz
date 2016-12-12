@@ -87,25 +87,39 @@ const initialTree = {
     }
 };
 
-// You may want to send changes to backend (or to store in localStorage)
-function onChange (newTree) {
-    console.log('New tree is', newTree);
-}
+class Editor extends React.Component {
+    constructor (props, context) {
+        super(props, context);
 
-const Editor = () => (
-    <SpectroEditor
-        components={{
-            Article,
-            Heading,
-            Paragraph,
-            List,
-            ListItem
-        }}
-        onChange={onChange}
-        tree={initialTree}
-        enabled
-    />
-);
+        this.state = {
+            tree: initialTree,
+            target: null
+        };
+    }
+
+    onChange = (tree) => {
+        console.log('New tree is', newTree);
+        this.setState({ tree });
+    };
+
+    onInspect = (target) => {
+        console.log('Now inspecting', target);
+        this.setState({ target });
+    };
+
+    render () {
+        return (
+            <SpectroEditor
+                onChange={this.onChange}
+                onInspect={this.onInspect}
+                components={{ Article, Heading, List, ListItem }}
+                target={this.state.target}
+                tree={this.state.tree}
+                enabled
+            />
+        );
+    }
+}
 
 render(<Editor />, document.querySelector('#app'));
 ```

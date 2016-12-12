@@ -28,7 +28,7 @@ class Editor extends Component {
         this.state = {
             enabled: true,
             tree: initialTree,
-            inspectTarget: null
+            target: null
         };
     }
 
