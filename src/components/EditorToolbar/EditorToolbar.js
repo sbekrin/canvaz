@@ -1,13 +1,22 @@
 import React, { Component } from 'react';
-import radium from 'radium';
+import withRadium from 'radium';
+import type ToolbarSection from './ToolbarSection';
 import styles from './EditorToolbar.styles';
 
-class EditorSidebar extends Component {
+type Props = {
+    children: ToolbarSection
+};
+
+class EditorToolbar extends Component {
+    props: Props;
+
     render () {
         return (
-            <div style={styles.container} />
+            <div style={styles.container}>
+                {this.props.children}
+            </div>
         );
     }
 }
 
-export default radium(EditorSidebar);
+export default withRadium(EditorToolbar);

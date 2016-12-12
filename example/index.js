@@ -27,7 +27,8 @@ class Editor extends Component {
 
         this.state = {
             enabled: true,
-            tree: initialTree
+            tree: initialTree,
+            inspectTarget: null
         };
     }
 
@@ -39,6 +40,10 @@ class Editor extends Component {
         this.setState({ tree });
     };
 
+    onInspect = (target) => {
+        this.setState({ target });
+    };
+
     render () {
         return (
             <main>
@@ -47,10 +52,12 @@ class Editor extends Component {
                     toggled={this.state.enabled}
                 />
                 <SpectroEditor
-                    components={editorComponents}
                     onChange={this.onChange}
-                    tree={this.state.tree}
+                    onInspect={this.onInspect}
+                    components={editorComponents}
                     enabled={this.state.enabled}
+                    target={this.state.target}
+                    tree={this.state.tree}
                 />
             </main>
         );

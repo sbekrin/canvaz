@@ -1,8 +1,8 @@
 /* @flow */
 import invariant from 'invariant';
-import type { SpectroProps } from 'types/EditorTypes';
+import type { SpectroConfig } from 'types/EditorTypes';
 
-export function validateSpectroProps (spectro: SpectroProps): void {
+export function validateSpectroConfig (spectro: SpectroConfig): void {
     // Check `label`
     const hasLabel = spectro.label;
     const labelIsString = hasLabel && typeof spectro.label === 'string';

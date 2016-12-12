@@ -1,5 +1,5 @@
 import React from 'react';
-import withSpectro from '../../src';
+import withSpectro, { SpectroTextbox } from '../../src';
 import Heading from './Heading';
 import Paragraph from './Paragraph';
 import List from './List';
@@ -21,5 +21,8 @@ const Article = ({ title, children }: Props) => (
 
 export default withSpectro({
     label: 'Article',
-    accepts: [ Heading, Paragraph, List, TweetEmbed, Layout ]
+    accepts: [ Heading, Paragraph, List, TweetEmbed, Layout ],
+    props: {
+        title: <SpectroTextbox label="Article Title" maxLength={128} required />
+    }
 })(Article);

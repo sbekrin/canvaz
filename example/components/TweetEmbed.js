@@ -1,6 +1,6 @@
 /* @flow */
 import React, { Component } from 'react';
-import withSpectro from '../../src';
+import withSpectro, { SpectroTextbox } from '../../src';
 import './TweetEmbed.css';
 
 type Props = {
@@ -20,27 +20,39 @@ class TweetEmbed extends Component {
     state: State;
 
     componentDidMount () {
+        this.createWidget();
+    }
+
+    componentDidUpdate (prevProps) {
+        if (this.props.tweetId !== prevProps.tweetId) {
+            this.createWidget();
+        }
+    }
+
+    createWidget () {
         if (!window.twttr) {
             return;
         }
 
-        window.twttr.widgets.createTweet(this.props.tweetId, this._node).then(() => {
+        this.node.innerHTML = '';
+
+        window.twttr.widgets.createTweet(this.props.tweetId, this.node).then(() => {
             this.setState({ ready: true });
         });
     }
 
+    keepRef = (node) => {
+        this.node = node;
+    };
+
     props: Props;
 
-    _node: HTMLElement;
-
-    _keepRef = (node) => {
-        this._node = node;
-    };
+    node: HTMLElement;
 
     render () {
         return (
             <p
-                ref={this._keepRef}
+                ref={this.keepRef}
                 className={[
                     'TwitterEmbed',
                     this.state.ready && 'TwitterEmbed--ready'
@@ -52,5 +64,8 @@ class TweetEmbed extends Component {
 
 export default withSpectro({
     label: 'Tweet Embed',
-    void: true
+    void: true,
+    props: {
+        tweetId: <SpectroTextbox label="Tweet ID" required />
+    }
 })(TweetEmbed);

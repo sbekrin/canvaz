@@ -14,9 +14,11 @@ function isSameNode (firstNode: TreeNode, secondNode: TreeNode): boolean {
  * Merges two nodes into single one
  */
 export function mergeNodes (leftNode: TreeNode, rightNode: TreeNode): TreeNode {
+    const leftNodeChildren = leftNode.props.children || [];
+    const rightNodeChildren = rightNode.props.children || [];
     const children = (
-        [ leftNode.props.children, rightNode.props.children ].every(Array.isArray) ?
-            uniqWith([ ...leftNode.props.children, ...rightNode.props.children ], isSameNode) :
+        [ leftNodeChildren, rightNodeChildren ].every(Array.isArray) ?
+            uniqWith([ ...leftNodeChildren, ...rightNodeChildren ], isSameNode) :
             rightNode.props.children
     );
 
@@ -130,6 +132,11 @@ export function updateNodeAtPath (
     let parentNode: ?TreeNode = null;
     let currentNode: TreeNode = tree;
     let targetIndex: number = -1;
+
+    // Update root node if only one path key passed
+    if (stack.length === 1 && stack[0] === tree.props.key) {
+        return node;
+    }
 
     // Skip root element
     stack.pop();

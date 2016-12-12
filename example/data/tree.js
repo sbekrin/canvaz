@@ -47,7 +47,7 @@ export default {
                   {
                     type: 'List',
                     props: {
-                      ordered: true,
+                      type: 'ordered',
                       children: [
                         {
                           type: 'ListItem',

@@ -22,7 +22,7 @@ type Props = {
     canDrag: boolean,
     canRemove: boolean,
     onUp: () => void,
-    onSetup: () => void,
+    onInspect: () => void,
     onDragStart: () => void,
     onRemove: () => void,
 };
@@ -34,9 +34,9 @@ class ControlBar extends Component {
         canRemove: true
     };
 
-    onSetup = (event: Event): void => {
+    onInspect = (event: Event): void => {
         this.preventFocusLoss(event);
-        this.props.onSetup();
+        this.props.onInspect();
     };
 
     onDragStart = (event: Event): void => {
@@ -83,8 +83,8 @@ class ControlBar extends Component {
                             styles.control.setup,
                             canGoUp && styles.control.roundedLeft
                         ]}
-                        onMouseDown={this.onSetup}
-                        key="setupAction"
+                        onMouseDown={this.onInspect}
+                        key="inspectAction"
                     >{label}</button>
                 </ControlPlaceholder>
             </ControlBarColumn>

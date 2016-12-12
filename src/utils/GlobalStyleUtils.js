@@ -1,6 +1,7 @@
 /* @flow */
 import StyleConstants from 'constants/StyleConstants';
 
+// TODO: Move colors to constants
 export function buildGlobalStyles () {
     return `
         @keyframes ${StyleConstants.PULSE_ANIMATION_NAME} {
@@ -13,6 +14,12 @@ export function buildGlobalStyles () {
             0% { background-color: rgba(0, 0, 0, 0.1); }
             50% { background-color: rgba(0, 0, 0, 0.2); } 
             100% { background-color: rgba(0, 0, 0, 0.1); }
+        }
+
+        @keyframes ${StyleConstants.OUTLINE_PULSE_ANIMATION_NAME} {
+            0% { outline-color: rgba(66, 129, 244, 0.8); }
+            50% { outline-color: rgba(66, 129, 244, 0.2); }
+            100% { outline-color: rgba(66, 129, 244, 0.8); }
         }
 
         .${StyleConstants.DRAG_IN_PROGRESS_CLASS} {

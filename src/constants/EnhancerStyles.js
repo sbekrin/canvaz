@@ -16,14 +16,17 @@ const highlightStyles = {
 
 export default {
     active: {
-        outline: '2px solid transparent'
+        outline: `${theme.border.width}px solid transparent`
     },
     hover: highlightStyles,
     focus: highlightStyles,
     drag: {
+        ...highlightStyles,
         animation: `${StyleConstants.PULSE_ANIMATION_NAME} 1s infinite`,
-        outline: `${theme.border.width} solid ${theme.colors.primary}`,
-        outlineOffset: 4,
         pointerEvents: 'none'
+    },
+    inspect: {
+        ...highlightStyles,
+        animation: `${StyleConstants.OUTLINE_PULSE_ANIMATION_NAME} 1s infinite`
     }
 };

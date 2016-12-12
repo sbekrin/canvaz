@@ -15,19 +15,26 @@ export type ComponentsMapping = {
 };
 
 export type EditorDNDState = {
-
+    targetInstance: Object,
+    targetRef: HTMLElement,
+    dropIndex: number,
+    depth: number,
+    acceptableComponents: Array<Component>,
+    lastDragOverNodeKey: NodeKey
 };
 
 export type SpectroState = {
     dragAndDrop: EditorDNDState,
     enabled: boolean,
     tree: TreeNode,
+    target: Object,
     onChange: () => TreeNode
 };
 
 export type SpectroConfig = {
     label: string,
     accepts: Array<Component | Function>,
+    props: Object,
     void: boolean,
     textEditable: boolean,
     spellCheck: boolean

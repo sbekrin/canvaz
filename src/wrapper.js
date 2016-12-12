@@ -1,7 +1,7 @@
 /* @flow */
 import type { Element as ReactElement } from 'react';
 import React, { Component, cloneElement } from 'react';
-import type { SpectroProps } from 'types/EditorTypes';
+import type { SpectroConfig } from 'types/EditorTypes';
 import { getDisplayName, isSpectroEnhanced } from './helpers';
 
 type Props = {
@@ -14,7 +14,7 @@ type State = {
     hasFocus: boolean
 };
 
-export default function createWrapper (spectro: SpectroProps) {
+export default function createWrapper (spectro: SpectroConfig) {
     return function wrap (SpectroEnhancer: Function): constructor {
         return class SpectroHOC extends Component<any, Props, any> {
             static displayName = `Spectro(${getDisplayName(SpectroEnhancer)})`;

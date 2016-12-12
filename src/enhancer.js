@@ -1,21 +1,27 @@
 /* @flow */
 import type { Element as ReactElement } from 'react';
+import invariant from 'invariant';
 import React, { PropTypes, cloneElement } from 'react';
 import {
     unmountComponentAtNode,
-    unstable_renderSubtreeIntoContainer as renderSubtreeIntoContainer
-} from 'react-dom';
-import invariant from 'invariant';
-import type { SpectroProps, SpectroState, TreeNode, NodeKey, SelectionData } from 'types/EditorTypes';
+    unstable_renderSubtreeIntoContainer as renderSubtreeIntoContainer } from 'react-dom';
+import type {
+    SpectroConfig,
+    SpectroState,
+    TreeNode,
+    NodeKey,
+    SelectionData } from 'types/EditorTypes';
 import type { ClipboardEvent, FocusEvent } from 'types/EventTypes';
 import { getElementBox } from 'utils/ElementBoxUtils';
 import { insertTextAtCursor } from 'utils/ClipboardUtils';
-import { validateSpectroProps } from 'utils/SpectroPropsUtils';
+import { validateSpectroConfig } from 'utils/SpectroConfigUtils';
 import { saveSelection, restoreSelection } from 'utils/SelectionUtils';
 import EditorControlBar from 'components/EditorControlBar';
 import StyleConstants from 'constants/StyleConstants';
+import PluginConstants from 'constants/PluginConstants';
 import styles from 'constants/EnhancerStyles';
 import { renderPlaceholder, destroyPlaceholder } from './placeholder';
+import { renderToolbar } from './toolbar';
 import { convertToClassComponent, getDisplayName } from './helpers';
 import {
     getNodePath,
@@ -24,8 +30,7 @@ import {
     updateNodeAtPath,
     removeNodeAtPath,
     mergeNodes,
-    moveNodeAtPath
-} from './tree';
+    moveNodeAtPath } from './tree';
 
 type Props = {
     editorState: ?SpectroState,
@@ -42,14 +47,15 @@ type State = {
     _spectroIsRoot: boolean,
     _spectroHasFocus: boolean,
     _spectroHasPointerOver: boolean,
-    _spectroIsBeingDragged: boolean
+    _spectroIsBeingDragged: boolean,
+    _spectroIsTarget: boolean
 };
 
 type Context = {
     spectro: SpectroState
 };
 
-export default function createEnhancer (spectro: SpectroProps): Function {
+export default function createEnhancer (spectro: SpectroConfig): Function {
     return function enhance (component: Function | ReactClass<any>): ReactClass<any> {
         const ComposedComponent: ReactClass<any> = convertToClassComponent(component);
 
@@ -83,17 +89,18 @@ export default function createEnhancer (spectro: SpectroProps): Function {
                     _spectroIsRoot: Boolean(this.props.editorState),
                     _spectroHasFocus: false,
                     _spectroHasPointerOver: false,
-                    _spectroIsBeingDragged: false
+                    _spectroIsBeingDragged: false,
+                    _spectroIsTarget: false
                 };
 
-                // Check spectro context
+                // Pass down `editorState` prop as context on mount
                 if (!context.spectro && props.editorState) {
                     this.context.spectro = props.editorState;
                 }
 
                 invariant(
                     this.context.spectro,
-                    'Make sure to pass `editorStore` prop to root SpectroComponent'
+                    'Make sure to pass `editorStore` prop to SpectroEditor'
                 );
 
                 invariant(
@@ -101,18 +108,23 @@ export default function createEnhancer (spectro: SpectroProps): Function {
                     `Required \`spectroKey\` prop is missing on ${this.constructor.displayName}`
                 );
 
-                validateSpectroProps(spectro);
+                validateSpectroConfig(spectro);
             }
 
-            componentWillReceiveProps (nextProps: Props, nextContext: ?Context) {
+            componentWillReceiveProps (nextProps: Props, nextContext: Context) {
                 if (super.componentWillReceiveProps) {
                     super.componentWillReceiveProps(nextProps, nextContext);
                 }
 
-                // Pass down `editorState` prop as context on root component
+                // Pass down `editorState` prop as context on updates
                 if (nextProps.editorState) {
                     this.context.spectro = nextProps.editorState;
                 }
+
+                // Set state if current component being inspected
+                this.setState({
+                    _spectroIsTarget: nextContext.spectro.target === this
+                });
             }
 
             componentDidUpdate (
@@ -125,7 +137,8 @@ export default function createEnhancer (spectro: SpectroProps): Function {
                 }
 
                 if (this.context.spectro.enabled) {
-                    this.renderControlBar();
+                    this.renderControlbar();
+                    this.renderToolbar();
 
                     // Restore selection for textEditable component,
                     // this is required for IE (Edge?) and Firefox
@@ -166,7 +179,7 @@ export default function createEnhancer (spectro: SpectroProps): Function {
             getChildContext (): Context {
                 const superChildContext = (
                     super.getChildContext ?
-                        super.getChildContext() :
+                    super.getChildContext() :
                     {}
                 );
 
@@ -187,7 +200,7 @@ export default function createEnhancer (spectro: SpectroProps): Function {
                 this._controlBarRef = null;
             }
 
-            renderControlBar (): void {
+            renderControlbar (): void {
                 if (!this._childrenRef) {
                     return;
                 }
@@ -216,12 +229,25 @@ export default function createEnhancer (spectro: SpectroProps): Function {
                         canDrag={isNotRoot}
                         canRemove={isNotRoot}
                         onUp={this.onParentFocus}
-                        onSetup={this.onSetup}
+                        onInspect={this.onInspect}
                         onRemove={this.onRemove}
                         onDragStart={this.onDragStart}
                     />,
                     this._controlBarRef
                 );
+            }
+
+            renderToolbar (): void {
+                if (!this.state._spectroIsTarget) {
+                    return;
+                }
+
+                const plugins: Array<Function> = [
+                    ...PluginConstants.DEFAULT_PLUGINS,
+                    ...spectro.plugins || []
+                ];
+
+                renderToolbar(this, plugins.map((plugin) => plugin(spectro, this)));
             }
 
             onParentFocus = (event: MouseEvent): void => {
@@ -232,8 +258,8 @@ export default function createEnhancer (spectro: SpectroProps): Function {
                 }
             };
 
-            onSetup = (): void => {
-                // TODO: Invoke EditorToolbar here
+            onInspect = (): void => {
+                this.context.spectro.onInspect(this);
             };
 
             onDragStart = (): void => {
@@ -247,6 +273,7 @@ export default function createEnhancer (spectro: SpectroProps): Function {
                 }
 
                 this.setState({ _spectroIsBeingDragged: true });
+
                 this.context.spectro.dragAndDrop = {
                     targetPath,
                     targetInstance: this,
@@ -493,6 +520,7 @@ export default function createEnhancer (spectro: SpectroProps): Function {
 
                 if (this.context.spectro.enabled) {
                     const isDragAndDropActive: boolean = Boolean(this.context.spectro.dragAndDrop);
+                    const isBeingInspected: boolean = this.state._spectroIsTarget;
                     const isBeingDragged: boolean = this.state._spectroIsBeingDragged;
                     const hasFocus: boolean = this.state._spectroHasFocus;
                     const hasPointerOver: boolean = this.state._spectroHasPointerOver;
@@ -518,11 +546,13 @@ export default function createEnhancer (spectro: SpectroProps): Function {
                     });
 
                     // Set additional styles
+                    // $FlowFixMe: Allow to use &&
                     Object.assign(extendedProps.style, {
                         ...styles.active,
-                        ...(addHoverStyles ? styles.hover : {}),
-                        ...(hasFocus ? styles.focus : {}),
-                        ...(isBeingDragged ? styles.drag : {})
+                        ...(addHoverStyles && styles.hover),
+                        ...(hasFocus && styles.focus),
+                        ...(isBeingInspected && styles.inspect),
+                        ...(isBeingDragged && styles.drag)
                     });
 
                     // Bind common events

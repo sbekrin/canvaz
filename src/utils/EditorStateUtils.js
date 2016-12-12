@@ -8,7 +8,10 @@ export function createEmpty (): SpectroState {
     return {
         dragAndDrop: null,
         enabled: false,
+        plugins: [],
         tree: {},
+        target: null,
+        onInspect: () => null,
         onChange: () => null
     };
 }
