@@ -29,8 +29,7 @@ export function getDisplayName (component: ReactClass<any>): string {
 export function isSpectroEnhanced (child: ReactElement<any>): boolean {
     return (
         child.type &&
-        child.type._spectroEnhancer &&
-        child.type._spectroEnhancer._isSpectroEnhanced
+        child.type._isSpectroEnhanced
     );
 }
 

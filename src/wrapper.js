@@ -19,9 +19,15 @@ export default function createWrapper (spectro: SpectroConfig) {
         return class SpectroHOC extends Component<any, Props, any> {
             static displayName = `Spectro(${getDisplayName(SpectroEnhancer)})`;
 
+            // Mark as enhanced
+            static _isSpectroEnhanced = true;
+
             // Keep reference to original SpectroEnhancer for quick comparison
             // then doing drag and drop dropzone check
             static _spectroEnhancer = SpectroEnhancer;
+
+            // Keep spectro config for plugins
+            static _spectro: SpectroConfig = spectro;
 
             state: State;
 

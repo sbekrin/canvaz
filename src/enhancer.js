@@ -62,8 +62,6 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
         return class SpectroEnhancer extends ComposedComponent {
             static displayName = getDisplayName(ComposedComponent);
 
-            static _isSpectroEnhanced = true;
-
             static contextTypes = {
                 ...ComposedComponent.contextTypes,
                 spectro: PropTypes.object
