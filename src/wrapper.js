@@ -20,11 +20,11 @@ export default function createWrapper (spectro: SpectroConfig) {
             static displayName = `Spectro(${getDisplayName(SpectroEnhancer)})`;
 
             // Mark as enhanced
-            static _isSpectroEnhanced = true;
+            static _isSpectroEnhanced: boolean = true;
 
             // Keep reference to original SpectroEnhancer for quick comparison
             // then doing drag and drop dropzone check
-            static _spectroEnhancer = SpectroEnhancer;
+            static _spectroEnhancer: SpectroEnhancer = SpectroEnhancer;
 
             // Keep spectro config for plugins
             static _spectro: SpectroConfig = spectro;
@@ -40,7 +40,7 @@ export default function createWrapper (spectro: SpectroConfig) {
                 };
             }
 
-            _node: SpectroEnhancer = null;
+            _node: SpectroEnhancer;
 
             _keepRef = (node: ReactElement<any>): void => {
                 if (node) {

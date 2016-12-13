@@ -1,5 +1,5 @@
 /* @flow */
-import type ReactElement from 'react';
+import type { Element as ReactElement } from 'react';
 import React, { cloneElement } from 'react';
 import ToolbarSection from 'components/EditorToolbar/ToolbarSection';
 import type { SpectroConfig } from 'types/EditorTypes';
