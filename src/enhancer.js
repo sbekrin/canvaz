@@ -512,7 +512,6 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
 
                 if (this.context.spectro.enabled) {
                     const isDragAndDropActive: boolean = Boolean(this.context.spectro.dragAndDrop);
-                    const isBeingInspected: boolean = this.state._spectroIsBeingInspected;
                     const isBeingDragged: boolean = this.state._spectroIsBeingDragged;
                     const hasFocus: boolean = this.state._spectroHasFocus;
                     const hasPointerOver: boolean = this.state._spectroHasPointerOver;
@@ -543,7 +542,6 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
                         ...styles.active,
                         ...(addHoverStyles && styles.hover),
                         ...(hasFocus && styles.focus),
-                        ...(isBeingInspected && styles.inspect),
                         ...(isBeingDragged && styles.drag)
                     });
 
