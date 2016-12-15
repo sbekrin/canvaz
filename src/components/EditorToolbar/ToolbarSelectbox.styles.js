@@ -6,7 +6,9 @@ export default {
     },
     layout: {
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        paddingTop: 6,
+        paddingBottom: 6
     },
     label: {
         paddingBottom: 4,
@@ -14,7 +16,7 @@ export default {
     },
     select: {
         background: `url(${chevronIcon})`,
-        backgroundPosition: '100% 0',
+        backgroundPosition: '100% 50%',
         backgroundRepeat: 'no-repeat',
         WebkitAppearance: 'none',
         borderWidth: 1,
@@ -24,6 +26,6 @@ export default {
         outline: 'none',
         borderRadius: 2,
         font: 'inherit',
-        padding: 4
+        padding: 6
     }
 };

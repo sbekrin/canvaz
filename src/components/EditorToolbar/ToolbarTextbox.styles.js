@@ -6,7 +6,9 @@ export default {
     },
     layout: {
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        paddingTop: 6,
+        paddingBottom: 6
     },
     label: {
         paddingBottom: 4,
@@ -16,7 +18,7 @@ export default {
         borderWidth: theme.border.width,
         borderColor: '#ccc',
         borderStyle: 'solid',
-        padding: 4,
+        padding: 6,
         borderRadius: 2,
         font: 'inherit',
         ':focus': {

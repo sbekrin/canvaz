@@ -14,14 +14,14 @@ export default {
         userSelect: 'none',
         fontSize: 11,
         display: 'block',
-        padding: 15,
+        padding: '15px 10px',
         margin: 0
     },
     contents: {
         backgroundColor: theme.colors.background,
         boxSizing: 'border-box',
         position: 'relative',
-        borderRadius: 3,
+        borderRadius: 2,
         overflowY: 'hidden',
         overflowX: 'hidden',
         display: 'block',
