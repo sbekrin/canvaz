@@ -18,8 +18,8 @@ export function mergeNodes (leftNode: TreeNode, rightNode: TreeNode): TreeNode {
     const rightNodeChildren = rightNode.props.children || [];
     const children = (
         [ leftNodeChildren, rightNodeChildren ].every(Array.isArray) ?
-            uniqWith([ ...leftNodeChildren, ...rightNodeChildren ], isSameNode) :
-            rightNode.props.children
+        uniqWith([ ...leftNodeChildren, ...rightNodeChildren ], isSameNode) :
+        leftNode.props.children || rightNode.props.children
     );
 
     return {
