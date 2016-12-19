@@ -12,7 +12,6 @@ import type {
     NodeKey,
     SelectionData } from 'types/EditorTypes';
 import type { ClipboardEvent, FocusEvent } from 'types/EventTypes';
-import { getElementBox } from 'utils/ElementBoxUtils';
 import { convertPastedTextToPlainText } from 'utils/ClipboardUtils';
 import { validateSpectroConfig } from 'utils/SpectroConfigUtils';
 import { saveSelection, restoreSelection } from 'utils/SelectionUtils';
@@ -20,17 +19,18 @@ import EditorControlBar from 'components/EditorControlBar';
 import StyleConstants from 'constants/StyleConstants';
 import PluginConstants from 'constants/PluginConstants';
 import styles from 'constants/EnhancerStyles';
-import { renderPlaceholder, destroyPlaceholder } from './placeholder';
 import { renderToolbar } from './toolbar';
 import { convertToClassComponent, getDisplayName } from './helpers';
 import {
+    createDndState,
+    updateDndStateOnOver,
+    updateDndStateOnDrop } from './dnd';
+import {
     getNodePath,
-    getNodeIndex,
     getNode,
     updateNodeAtPath,
     removeNodeAtPath,
-    mergeNodes,
-    moveNodeAtPath } from './tree';
+    mergeNodes } from './tree';
 
 type Props = {
     editorState: ?SpectroState,
@@ -261,28 +261,9 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
             };
 
             onDragStart = (): void => {
-                const targetPath: ?NodeKey[] = getNodePath(
-                    this.context.spectro.tree,
-                    this.props.spectroKey
-                );
-
-                if (!targetPath) {
-                    return;
-                }
-
                 this.setState({ _spectroIsBeingDragged: true });
+                this.context.spectro.dragAndDrop = createDndState(this);
 
-                this.context.spectro.dragAndDrop = {
-                    targetPath,
-                    targetInstance: this,
-                    targetRef: this._childrenRef,
-                    dropIndex: -1,
-                    depth: targetPath.length,
-                    acceptableComponents: [],
-                    lastDragOverNodeKey: null
-                };
-
-                // Bind global events
                 document.documentElement.classList.add(StyleConstants.DRAG_IN_PROGRESS_CLASS);
                 document.addEventListener('mouseup', this.onDrop);
             };
@@ -292,86 +273,16 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
                     return;
                 }
 
-                const { tree, dragAndDrop } = this.context.spectro;
-                const {
-                    targetPath,
-                    targetInstance,
-                    lastDragOverNodeKey,
-                    lastDragOverRef } = dragAndDrop;
-                const hasWhiteList: boolean = spectro.accepts && Array.isArray(spectro.accepts);
-                const hasChildNodeKey: boolean = lastDragOverNodeKey !== null;
-                const targetIsAllowedHere: boolean = (
-                    hasWhiteList &&
-                    spectro.accepts.some((type) => (
-                        type._spectroEnhancer === targetInstance.constructor
-                    ))
-                );
-                const isDragOverOnSelf: boolean = (
-                    targetPath[targetPath.length - 1] === this.props.spectroKey
-                );
-
-                // Do nothing then self-drop
-                if (isDragOverOnSelf) {
-                    return;
-                }
-
-                // Once drag event reaches spectro component with
-                // white-list prop `accepts`, keep that list for
-                // next check "if element is allowed here"
-                if (targetIsAllowedHere && hasChildNodeKey) {
-                    event.stopPropagation();
-                    const childNodePath: ?NodeKey[] = getNodePath(tree, lastDragOverNodeKey);
-                    const dropPath: ?NodeKey[] = getNodePath(tree, this.props.spectroKey);
-                    const acceptableComponents = spectro.accepts;
-                    const { top, left, height, width } = getElementBox(lastDragOverRef);
-
-                    // Prevent DND if target or dropzone are empty
-                    if (!childNodePath || !dropPath) {
-                        return;
-                    }
-
-                    let dropIndex: number = getNodeIndex(tree, childNodePath);
-                    let willDropAfter: boolean = false;
-
-                    // Negative drop index may happen on root component
-                    if (dropIndex < 0) {
-                        return;
-                    }
-
-                    // Increase drop index to move element after target
-                    if (event.pageY > (top + (height / 2))) {
-                        willDropAfter = true;
-                        dropIndex += 1;
-                    }
-
-                    renderPlaceholder(left, top + (willDropAfter ? height : 0), width);
-
-                    this.context.spectro.dragAndDrop = {
-                        ...dragAndDrop,
-                        dropPath,
-                        dropIndex,
-                        acceptableComponents
-                    };
-
-                    return;
-                }
-
-                this.context.spectro.dragAndDrop = {
-                    ...this.context.spectro.dragAndDrop,
-                    lastDragOverNodeKey: this.props.spectroKey,
-                    lastDragOverRef: this._childrenRef
-                };
+                this.context.spectro.dragAndDrop = updateDndStateOnOver(this, spectro, event);
             }
 
             onDragEnd = (): void => {
-                // Clean up global events
                 document.documentElement.classList.remove(StyleConstants.DRAG_IN_PROGRESS_CLASS);
                 document.removeEventListener('mouseup', this.onDrop);
 
-                // Reset DND state
-                this.context.spectro.dragAndDrop = null;
                 this.setState({ _spectroIsBeingDragged: false });
 
+                // Focus on node on drop
                 if (this._childrenRef) {
                     this._childrenRef.focus();
                 }
@@ -382,48 +293,18 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
                     return;
                 }
 
-                const { tree, dragAndDrop } = this.context.spectro;
-                const { targetPath, targetInstance, dropPath, dropIndex } = dragAndDrop;
-
-                dragAndDrop.depth -= 1;
-
-                const isDropOnSelf: boolean = (
-                    targetPath[targetPath.length - 1] === this.props.spectroKey
-                );
-                const hasWhiteList: boolean = dragAndDrop.acceptableComponents.length > 0;
-                const hasAchievedRoot: boolean = dragAndDrop.depth <= 1;
-                const isAllowedHere: boolean = dragAndDrop.acceptableComponents.some((type) => (
-                    type._spectroEnhancer === targetInstance.constructor
-                ));
-
-                // Proceed drop
-                if (isAllowedHere && hasWhiteList && !isDropOnSelf) {
-                    const newTree = moveNodeAtPath(tree, targetPath, dropPath, dropIndex);
-                    this.context.spectro.onChange(newTree);
-                }
-
-                // Stop event from bubbling up
-                if (isAllowedHere || isDropOnSelf || hasAchievedRoot) {
-                    event.stopPropagation();
-                    targetInstance.onDragEnd();
-                }
-
+                this.context.spectro.dragAndDrop = updateDndStateOnDrop(this, event);
                 this.setState({ _spectroHasPointerOver: false });
-                destroyPlaceholder();
             };
 
             onRemove = (): void => {
-                const { tree } = this.context.spectro;
+                const { tree, onChange } = this.context.spectro;
                 const { spectroKey } = this.props;
-                const path: ?NodeKey[] = getNodePath(tree, spectroKey);
+                const targetPath: ?NodeKey[] = getNodePath(tree, spectroKey);
 
-                if (!path) {
-                    return;
+                if (targetPath) {
+                    onChange(removeNodeAtPath(tree, targetPath));
                 }
-
-                const updatedTree: TreeNode = removeNodeAtPath(tree, path);
-
-                this.context.spectro.onChange(updatedTree);
             };
 
             onPointerOver = (event: MouseEvent): void => {
@@ -467,20 +348,15 @@ export default function createEnhancer (spectro: SpectroConfig): Function {
 
                 this._spectroSelection = saveSelection(this._childrenRef);
 
-                const { tree } = this.context.spectro;
+                const { tree, onChange } = this.context.spectro;
                 const { spectroKey } = this.props;
                 const diff: Object = { props: { children: event.target.innerText } };
                 const node: TreeNode = getNode(tree, spectroKey);
-                const path: ?NodeKey[] = getNodePath(tree, spectroKey);
+                const targetPath: ?NodeKey[] = getNodePath(tree, spectroKey);
 
-                if (!path) {
-                    return;
+                if (targetPath) {
+                    onChange(updateNodeAtPath(tree, targetPath, mergeNodes(node, diff)));
                 }
-
-                const updatedNode: TreeNode = mergeNodes(node, diff);
-                const newTree: TreeNode = updateNodeAtPath(tree, path, updatedNode);
-
-                this.context.spectro.onChange(newTree);
             };
 
             onPaste = (event: ClipboardEvent): void => {
