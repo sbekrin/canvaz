@@ -59,7 +59,6 @@ export function updateDndStateOnOver (
 
     // Do nothing then self-drop
     if (isDragOverOnSelf) {
-        console.log('dos');
         return dragAndDrop;
     }
 
