@@ -6,15 +6,16 @@ and great visual control of output.
 
 > ⚠️ This is alpha project. Most features are unstable and not finished yet.
 
+## Demo
 ![](https://github.com/sergeybekrin/spectro/raw/master/.github/example.gif)
 
-### Usage
-#### 1. Install Spectro
+## Usage
+### 1. Install Spectro
 ```
 npm install --save spectro-editor
 ```
 
-#### 2. Define components you'll use for editing
+### 2. Define components you'll use for editing
 You can use any rich component (like YouTube player or Twitter Embed).
 
 ```javascript
@@ -62,7 +63,7 @@ const Article = withSpectro({
 ));
 ```
 
-#### 3. Render editor container
+### 3. Render editor container
 Please note, that `components` prop is required and used to
 deserialize JSON data from backend. This also makes possible
 to render your content on other target platforms, like React
