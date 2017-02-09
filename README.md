@@ -6,6 +6,8 @@ and great visual control of output.
 
 > ⚠️ This is alpha project. Most features are unstable and not finished yet.
 
+![](https://github.com/sergeybekrin/spectro/raw/master/.github/example.gif)
+
 ### Usage
 #### 1. Install Spectro
 ```
