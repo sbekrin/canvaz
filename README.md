@@ -1,4 +1,4 @@
-![Spectro logo](https://raw.githubusercontent.com/sergeybekrin/spectro/master/.github/spectro-logo.svg)
+![Spectro logo](https://raw.githubusercontent.com/sergeybekrin/spectro/master/.github/spectro-logo.png)
 # Spectro Editor
 Spectro is visual, modular content editor. Unlike any WYSIWYG-editors,
 Spectro works with component tree instead of text. It provides extensibility
