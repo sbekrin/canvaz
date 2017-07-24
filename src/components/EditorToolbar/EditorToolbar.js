@@ -4,19 +4,19 @@ import type ToolbarSection from './ToolbarSection';
 import styles from './EditorToolbar.styles';
 
 type Props = {
-    children: ToolbarSection
+  children: ToolbarSection,
 };
 
 class EditorToolbar extends Component {
-    props: Props;
+  props: Props;
 
-    render () {
-        return (
-            <div style={styles.container}>
-                {this.props.children}
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div style={styles.container}>
+        {this.props.children}
+      </div>
+    );
+  }
 }
 
 export default withRadium(EditorToolbar);

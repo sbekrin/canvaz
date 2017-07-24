@@ -1,7 +1,7 @@
 export default {
-    container: {
-        display: 'flex',
-        flexDirection: 'row',
-        flex: 1
-    }
+  container: {
+    display: 'flex',
+    flexDirection: 'row',
+    flex: 1,
+  },
 };

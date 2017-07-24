@@ -1,1 +1,3 @@
-export default from './EditorToolbar';
+import EditorToolbar from './EditorToolbar';
+
+export default EditorToolbar;

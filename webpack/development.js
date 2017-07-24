@@ -1,7 +1,7 @@
-import merge from 'webpack-merge';
-import sharedConfig from './shared';
+const merge = require('webpack-merge');
+const sharedConfig = require('./shared');
 
-export default merge(sharedConfig, {
-    devtool: '#inline-source-map',
-    debug: true
+module.exports = merge(sharedConfig, {
+  devtool: '#inline-source-map',
+  debug: true,
 });

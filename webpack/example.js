@@ -1,38 +1,47 @@
-import path from 'path';
-import webpack from 'webpack';
+const { resolve } = require('path');
+const webpack = require('webpack');
 
-export default {
-    debug: true,
-    devtool: '#inline-source-map',
-    entry: [
-        'webpack-hot-middleware/client',
-        './example/index.js'
+module.exports = {
+  devtool: '#inline-source-map',
+  devServer: {
+    hot: true,
+    contentBase: resolve(__dirname, '..', 'example'),
+    noInfo: true,
+    stats: {
+      colors: true,
+    },
+  },
+  entry: './example/index.js',
+  output: {
+    path: resolve(__dirname, '..', 'example'),
+    filename: 'bundle.js',
+    publicPath: '/',
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+      },
+      { test: /\.svg$/, loader: 'svg-url-loader' },
+      { test: /\.css$/, loader: 'style-loader!css-loader' },
     ],
-    output: {
-        path: path.resolve(__dirname, '..', 'example'),
-        filename: 'bundle.js',
-        publicPath: '/'
+  },
+  resolve: {
+    alias: {
+      '~': resolve(__dirname, '..', 'src'),
     },
-    url: {
-        dataUrlLimit: Infinity
-    },
-    module: {
-        loaders: [
-            { test: /\.js$/, exclude: /node_modules/, loader: 'babel?cacheDirectory' },
-            { test: /\.svg$/, loader: 'svg-url' },
-            { test: /\.css$/, loader: 'style-loader!css-loader' }
-        ]
-    },
-    resolve: {
-        root: [
-            path.resolve(__dirname, '..', 'src'),
-            path.resolve(__dirname, '..', 'node_modules')
-        ],
-        extensions: [ '', '.js' ]
-    },
-    plugins: [
-        new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin()
-    ]
+    extensions: ['.js'],
+  },
+  plugins: [
+    new webpack.LoaderOptionsPlugin({
+      debug: true,
+      url: {
+        dataUrlLimit: Infinity,
+      },
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+  ],
 };

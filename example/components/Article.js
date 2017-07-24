@@ -8,21 +8,24 @@ import Layout from './Layout';
 import './Article.css';
 
 type Props = {
-    title: string,
-    children: any
+  title: string,
+  children: any,
 };
 
-const Article = ({ title, children }: Props) => (
-    <article className="Article">
-        <h1>{title}</h1>
-        <div>{children}</div>
-    </article>
-);
+const Article = ({ title, children }: Props) =>
+  <article className="Article">
+    <h1>
+      {title}
+    </h1>
+    <div>
+      {children}
+    </div>
+  </article>;
 
 export default withSpectro({
-    label: 'Article',
-    accepts: [ Heading, Paragraph, List, TweetEmbed, Layout ],
-    props: {
-        title: <SpectroTextbox label="Article Title" maxLength={128} required />
-    }
+  label: 'Article',
+  accepts: [Heading, Paragraph, List, TweetEmbed, Layout],
+  props: {
+    title: <SpectroTextbox label="Article Title" maxLength={128} required />,
+  },
 })(Article);

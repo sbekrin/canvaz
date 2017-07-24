@@ -4,14 +4,15 @@ import LayoutColumn from './LayoutColumn';
 import './Layout.css';
 
 type Props = {
-    children: ?Array<LayoutColumn>
+  children: ?Array<LayoutColumn>,
 };
 
-const Layout = ({ children }: Props) => (
-    <div className="Layout">{children}</div>
-);
+const Layout = ({ children }: Props) =>
+  <div className="Layout">
+    {children}
+  </div>;
 
 export default withSpectro({
-    label: 'Layout',
-    accepts: [ LayoutColumn ]
+  label: 'Layout',
+  accepts: [LayoutColumn],
 })(Layout);

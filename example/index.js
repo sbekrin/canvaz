@@ -22,46 +22,46 @@ import * as editorComponents from './components';
  * to deserialize editor tree.
  */
 class Editor extends Component {
-    constructor (props, context) {
-        super(props, context);
+  state = {
+    enabled: true,
+    tree: initialTree,
+    target: null,
+  };
 
-        this.state = {
-            enabled: true,
-            tree: initialTree,
-            target: null
-        };
-    }
+  componentDidMount() {
+    console.log('mounted');
+  }
 
-    onToggle = (enabled) => {
-        this.setState({ enabled });
-    };
+  onToggle = enabled => {
+    this.setState({ enabled });
+  };
 
-    onChange = (tree) => {
-        this.setState({ tree });
-    };
+  onChange = tree => {
+    this.setState({ tree });
+  };
 
-    onInspect = (target) => {
-        this.setState({ target });
-    };
+  onInspect = target => {
+    this.setState({ target });
+  };
 
-    render () {
-        return (
-            <main>
-                <SpectroSwitcher
-                    onToggle={this.onToggle}
-                    toggled={this.state.enabled}
-                />
-                <SpectroEditor
-                    onChange={this.onChange}
-                    onInspect={this.onInspect}
-                    components={editorComponents}
-                    enabled={this.state.enabled}
-                    target={this.state.target}
-                    tree={this.state.tree}
-                />
-            </main>
-        );
-    }
+  render() {
+    return (
+      <main>
+        <SpectroSwitcher
+          onToggle={this.onToggle}
+          toggled={this.state.enabled}
+        />
+        <SpectroEditor
+          onChange={this.onChange}
+          onInspect={this.onInspect}
+          components={editorComponents}
+          enabled={this.state.enabled}
+          target={this.state.target}
+          tree={this.state.tree}
+        />
+      </main>
+    );
+  }
 }
 
 /**
@@ -69,7 +69,4 @@ class Editor extends Component {
  *
  * Render it!
  */
-render(
-    <Editor />,
-    document.querySelector('[data-approot]')
-);
+render(<Editor />, document.querySelector('[data-approot]'));

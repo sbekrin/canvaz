@@ -1,1 +1,3 @@
-export default from './EditorPlaceholder';
+import EditorPlaceholder from './EditorPlaceholder';
+
+export default EditorPlaceholder;

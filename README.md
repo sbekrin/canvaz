@@ -4,6 +4,8 @@ Spectro is visual, modular content editor. Unlike any WYSIWYG-editors,
 Spectro works with component tree instead of text. It provides extensibility
 and great visual control of output.
 
+[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+
 > ⚠️ This is alpha project. Most features are unstable and not finished yet.
 
 ## Demo

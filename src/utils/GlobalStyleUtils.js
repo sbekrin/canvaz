@@ -1,9 +1,9 @@
 /* @flow */
-import StyleConstants from 'constants/StyleConstants';
+import StyleConstants from '~/constants/StyleConstants';
 
 // TODO: Move colors to constants
-export function buildGlobalStyles () {
-    return `
+export function buildGlobalStyles() {
+  return `
         @keyframes ${StyleConstants.PULSE_ANIMATION_NAME} {
             0% { opacity: 1 }
             50% { transform: scale(1.1); opacity: .2; }
@@ -48,19 +48,21 @@ export function buildGlobalStyles () {
     `;
 }
 
-export function createGlobalStyles () {
-    if (!document.querySelector(`[${StyleConstants.GLOBAL_STYLES_ATTRIBUTE}]`)) {
-        const styles = document.createElement('style');
-        styles.setAttribute(StyleConstants.GLOBAL_STYLES_ATTRIBUTE, 'true');
-        styles.innerHTML = buildGlobalStyles();
-        document.head.appendChild(styles);
-    }
+export function createGlobalStyles() {
+  if (!document.querySelector(`[${StyleConstants.GLOBAL_STYLES_ATTRIBUTE}]`)) {
+    const styles = document.createElement('style');
+    styles.setAttribute(StyleConstants.GLOBAL_STYLES_ATTRIBUTE, 'true');
+    styles.innerHTML = buildGlobalStyles();
+    document.head.appendChild(styles);
+  }
 }
 
-export function destroyGlobalStyles () {
-    const globalStylesRef = document.querySelector(`[${StyleConstants.GLOBAL_STYLES_ATTRIBUTE}]`);
+export function destroyGlobalStyles() {
+  const globalStylesRef = document.querySelector(
+    `[${StyleConstants.GLOBAL_STYLES_ATTRIBUTE}]`
+  );
 
-    if (globalStylesRef) {
-        document.head.removeChild(globalStylesRef);
-    }
+  if (globalStylesRef) {
+    document.head.removeChild(globalStylesRef);
+  }
 }
