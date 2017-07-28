@@ -9,18 +9,17 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.js$/,
+        test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        loader: 'ts-loader',
       },
-      { test: /\.svg$/, loader: 'svg-url-loader' },
     ],
   },
   resolve: {
     alias: {
       '~': resolve(__dirname, '..', 'src'),
     },
-    extensions: ['.js'],
+    extensions: ['.ts', '.tsx'],
   },
   externals: {
     react: {

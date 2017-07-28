@@ -1,13 +1,12 @@
 {
-  "name": "spectro-editor",
-  "version": "2.0.0-alpha",
+  "name": "canvaz",
+  "version": "1.0.0-alpha",
   "description": "Visual, modular content editor for React",
   "main": "lib/index.js",
-  "module": "dist/spectro-editor.es.js",
-  "jsnext:main": "dist/spectro-editor.es.js",
+  "module": "dist/canvaz.es.js",
+  "jsnext:main": "dist/canvaz.es.js",
   "scripts": {
-    "flow": "flow check",
-    "eslint": "eslint src webpack example",
+    "tslint": "tslint --type-check --project tsconfig.json",
     "prettier": "prettier --single-quote --trailing-comma es5 --write \"{src,webpack,example}/**/*.js\"",
     "start": "cross-env NODE_ENV=development webpack --config webpack/development.js --progress --colors --watch",
     "build:es": "cross-env TARGET=es cross-env NODE_ENV=production webpack --config webpack/production.js",
@@ -16,50 +15,36 @@
     "prebuild:dist": "rimraf ./dist",
     "build:dist": "npm run build:es && npm run build:umd-dev && npm run build:umd-prod",
     "prebuild:lib": "rimraf ./lib",
-    "build:lib": "cross-env BABEL_ENV=lib babel --out-dir lib --ignore \"*.test.js\" src",
     "build": "npm run build:lib && npm run build:dist",
-    "test": "npm run flow && npm run eslint",
+    "test": "npm run tslint",
     "example": "cross-env NODE_ENV=development webpack-dev-server --config webpack/example.js"
   },
   "author": "Sergey Bekrin <sergey@bekrin.me> http://bekrin.me",
   "repository": "sergeybekrin/spectro",
   "keywords": [
     "react",
-    "spectro",
-    "spectro-editor",
+    "canvaz",
     "editor",
     "visual",
     "modular",
     "content"
   ],
-  "files": ["lib", "dist", "readme.md"],
+  "files": [
+    "lib",
+    "dist",
+    "readme.md"
+  ],
   "license": "MIT",
   "dependencies": {
+    "hoist-non-react-statics": "^2.2.1",
     "invariant": "^2.2.2",
-    "lodash.uniqwith": "^4.5.0",
-    "radium": "^0.19.4"
+    "styled-components": "^2.1.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.25.0",
-    "babel-eslint": "^7.2.3",
-    "babel-loader": "^7.1.1",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-preset-env": "^1.6.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-react-hmre": "^1.1.1",
+    "@types/node": "^8.0.17",
+    "@types/react": "^15.0.39",
     "cross-env": "^5.0.0",
-    "css-loader": "^0.28.4",
-    "eslint": "^4.3.0",
-    "eslint-config-prettier": "^2.3.0",
-    "eslint-import-resolver-webpack": "^0.8.3",
-    "eslint-plugin-flow-vars": "^0.5.0",
-    "eslint-plugin-prettier": "^2.1.2",
-    "eslint-plugin-react": "^7.1.0",
     "express": "^4.15.3",
-    "flow-bin": "^0.51.0",
     "prettier": "^1.5.3",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
@@ -68,78 +53,17 @@
     "react-highlight": "^0.10.0",
     "react-syntax-highlighter": "^5.6.2",
     "rimraf": "^2.6.1",
-    "style-loader": "^0.18.2",
-    "svg-url-loader": "^2.1.1",
+    "ts-loader": "^2.3.1",
+    "tslint": "^5.5.0",
+    "tslint-config-prettier": "^1.1.0",
+    "tslint-react": "^3.1.0",
+    "typescript": "^2.4.2",
     "webpack": "^3.3.0",
-    "webpack-dev-middleware": "^1.11.0",
     "webpack-dev-server": "^2.6.1",
-    "webpack-hot-middleware": "^2.18.2",
     "webpack-merge": "^4.1.0"
   },
   "peerDependencies": {
     "react": "^15.3.2",
     "react-dom": "^15.3.2"
-  },
-  "eslintConfig": {
-    "parser": "babel-eslint",
-    "extends": ["prettier"],
-    "plugins": ["prettier"],
-    "settings": {
-      "import/resolver": {
-        "webpack": {
-          "config": "webpack/development.js"
-        }
-      }
-    },
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "singleQuote": true,
-          "trailingComma": "es5"
-        }
-      ]
-    }
-  },
-  "babel": {
-    "plugins": [
-      ["transform-object-rest-spread", { "useBuiltIns": true }],
-      "transform-class-properties",
-      "transform-flow-strip-types"
-    ],
-    "env": {
-      "production": {
-        "presets": [
-          [
-            "env",
-            {
-              "targets": {
-                "browsers": ["last 2 versions"]
-              },
-              "modules": false
-            }
-          ],
-          "react"
-        ]
-      },
-      "development": {
-        "presets": [
-          [
-            "env",
-            {
-              "targets": { "chrome": "40" },
-              "debug": true,
-              "modules": false
-            }
-          ],
-          "react-hmre",
-          "react"
-        ],
-        "plugins": ["transform-class-properties"]
-      },
-      "lib": {
-        "presets": [["env", { "targets": { "node": "4" } }], "react"]
-      }
-    }
   }
 }

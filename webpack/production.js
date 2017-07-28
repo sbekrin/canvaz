@@ -13,7 +13,7 @@ module.exports = merge(sharedConfig, {
       umd_prod: `${packageName}.min.js`,
     }[target],
     library: {
-      root: 'SpectroEditor',
+      root: 'Canvaz',
       umd: packageName,
       commonjs: packageName,
     },

@@ -11,7 +11,7 @@ module.exports = {
       colors: true,
     },
   },
-  entry: './example/index.js',
+  entry: './example/index.tsx',
   output: {
     path: resolve(__dirname, '..', 'example'),
     filename: 'bundle.js',
@@ -20,19 +20,17 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.js$/,
+        test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        loader: 'ts-loader',
       },
-      { test: /\.svg$/, loader: 'svg-url-loader' },
-      { test: /\.css$/, loader: 'style-loader!css-loader' },
     ],
   },
   resolve: {
     alias: {
       '~': resolve(__dirname, '..', 'src'),
     },
-    extensions: ['.js'],
+    extensions: ['.js', '.ts', '.tsx'],
   },
   plugins: [
     new webpack.LoaderOptionsPlugin({

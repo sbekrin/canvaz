@@ -1,9 +1,0 @@
-[ignore]
-.*/__tests__/.*
-.*/node_modules/radium/src*
-.*/node_modules/fbjs*
-
-[options]
-emoji=true
-suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
-module.name_mapper='^\~\(.*\)$' -> '<PROJECT_ROOT>/src/\1'
