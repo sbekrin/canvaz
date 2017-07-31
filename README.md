@@ -1,4 +1,3 @@
-![Canvaz logo](https://raw.githubusercontent.com/sergeybekrin/spectro/master/.github/canvaz-logo.png)
 # Canvaz Editor [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 Canvaz (former Spectro) is visual, modular content editor. Unlike any WYSIWYG-editors,
 Canvaz works with component tree instead of text. It provides extensibility
