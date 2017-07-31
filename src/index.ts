@@ -1,14 +1,8 @@
-import CanvazProvider from '~/components/canvaz-provider';
-import CanvazContainer from '~/components/canvaz-container';
 import withCanvaz from '~/hocs/with-canvaz';
+import withData from '~/hocs/with-data';
+import RehydrationProvider from '~/containers/rehydration-provider';
+import CanvazContainer from '~/containers/canvaz-container';
 import TextEditable from '~/components/text-editable';
 
-const PropEditable = props => props.children;
-
-export {
-  CanvazProvider,
-  CanvazContainer,
-  withCanvaz,
-  TextEditable,
-  PropEditable,
-};
+export default withCanvaz;
+export { withData, RehydrationProvider, CanvazContainer, TextEditable };

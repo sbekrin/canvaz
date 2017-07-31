@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { object } from 'prop-types';
-
-export const CONTEXT_KEY = '__components';
+import { COMPONENTS_CONTEXT } from '~/constants';
 
 interface ProviderProps {
   children: any;
@@ -10,19 +9,17 @@ interface ProviderProps {
   };
 }
 
-export default class CanvazProvider extends React.Component<ProviderProps> {
-  static contextTypes = {
-    [CONTEXT_KEY]: object,
-  };
-
+export default class RehydrationProvider extends React.Component<
+  ProviderProps
+> {
   static childContextTypes = {
-    [CONTEXT_KEY]: object.isRequired,
+    [COMPONENTS_CONTEXT]: object.isRequired,
   };
 
   getChildContext() {
     return {
       ...this.context,
-      [CONTEXT_KEY]: this.props.components,
+      [COMPONENTS_CONTEXT]: this.props.components,
     };
   }
 

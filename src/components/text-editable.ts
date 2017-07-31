@@ -1,33 +1,24 @@
 import * as React from 'react';
+import { string } from 'prop-types';
 import styled, { css } from 'styled-components';
-import withContext, { ContextInjectedProps } from '~/hocs/with-context';
-
-const ENTER_KEY_CODE = 13;
+import withCanvazData, { DataProps } from '~/hocs/with-data';
+import dropCanvazProps from '~/helpers/drop-canvaz-props';
 
 interface TextEditableProps {
   onInput?: (event: any) => void;
-  canvazKey?: string;
+  id?: string;
   prop?: string;
 }
 
-class TextEditable extends React.Component<
-  TextEditableProps & ContextInjectedProps
-> {
+class TextEditable extends React.Component<TextEditableProps & DataProps> {
   static defaultProps = {
-    prop: 'children',
+    prop: null,
   };
 
   nodeRef?: HTMLElement = null;
   state = {
     editable: false,
   };
-
-  shouldComponentUpdate(nextProps, nextState) {
-    const hasNewState = nextState !== this.state;
-    const nextText = nextProps.children.props.children;
-    const currentText = this.nodeRef.innerText;
-    return hasNewState || nextText.trim() !== currentText.trim();
-  }
 
   keepRef = (ref: HTMLElement) => {
     this.nodeRef = ref;
@@ -44,28 +35,25 @@ class TextEditable extends React.Component<
   };
 
   onInput = (event: React.KeyboardEvent<KeyboardEvent>) => {
-    this.props.setNodeProps({
-      [this.props.prop]: (event.target as HTMLElement).innerText,
-    });
+    // Update prop if specified or children by default
+    const nextText = (event.target as HTMLElement).innerText;
+    const nextNode = this.props.prop
+      ? { props: { [this.props.prop]: nextText } }
+      : { children: nextText };
+    this.props.updateNode(nextNode);
   };
 
   onKeyPress = (event: React.KeyboardEvent<KeyboardEvent>) => {
-    if (event.which === ENTER_KEY_CODE) {
-      event.preventDefault();
+    switch (event.keyCode) {
+      case 13: // Enter
+        // TODO: Clone node after current
+        event.preventDefault();
+        break;
     }
   };
 
   render() {
-    const {
-      canvazKey,
-      canvazRoot,
-      canvazEnabled,
-      setNodeProps,
-      children,
-      tabIndex = 0,
-      prop,
-      ...props,
-    } = this.props;
+    const { children, prop, tabIndex = 0, ...props } = this.props;
     const child = React.Children.only(children);
 
     // Check if this is styled component
@@ -74,11 +62,11 @@ class TextEditable extends React.Component<
       typeof type === 'function' && (type as any).styledComponentId
     );
 
-    return canvazEnabled
+    return this.props.isEditing
       ? React.cloneElement(child, {
-          ...props,
+          ...dropCanvazProps(props),
+          tabIndex, // Allow to focus on non-components as well
           [isStyledComponent ? 'innerRef' : 'ref']: this.keepRef,
-          tabIndex,
           onKeyPress: this.onKeyPress,
           onDoubleClick: this.onDoubleClick,
           onBlur: this.onBlur,
@@ -92,7 +80,7 @@ class TextEditable extends React.Component<
 
 const StyledTextEditable = styled(TextEditable)`
   ${props =>
-    props.canvazEnabled &&
+    props.isEditing &&
     css`
       transition-duration: 100ms;
       transition-property: box-shadow; 
@@ -108,4 +96,4 @@ const StyledTextEditable = styled(TextEditable)`
   `}
 `;
 
-export default withContext<TextEditableProps>()(StyledTextEditable);
+export default withCanvazData<TextEditableProps>(StyledTextEditable);

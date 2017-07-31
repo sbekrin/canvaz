@@ -2,12 +2,11 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import styled from 'styled-components';
-import {
-  CanvazProvider,
+import YouTube from 'react-youtube';
+import withCanvaz, {
+  RehydrationProvider,
   CanvazContainer,
-  withCanvaz,
   TextEditable,
-  PropEditable,
 } from '../src';
 
 /*
@@ -19,8 +18,8 @@ import {
  */
 const Heading = withCanvaz({
   label: 'Heading',
-})(({ children }) =>
-  <TextEditable>
+})(({ id, children }) =>
+  <TextEditable id={id}>
     <h2>
       {children}
     </h2>
@@ -29,26 +28,53 @@ const Heading = withCanvaz({
 
 const Text = withCanvaz({
   label: 'Text',
-})(({ children }) =>
-  <TextEditable>
+})(({ id, children }: any) =>
+  <TextEditable id={id}>
     <p>
       {children}
     </p>
   </TextEditable>
 );
 
+const Video = withCanvaz({
+  label: 'YouTube Video',
+  void: true,
+})(({ videoId }) =>
+  <div className="video">
+    <YouTube videoId={videoId} />
+  </div>
+);
+
+const Column = withCanvaz({
+  label: 'Column',
+  accept: [Heading, Text, Video],
+})(({ children }) =>
+  <div className="column">
+    {children}
+  </div>
+);
+
+const Layout = withCanvaz({
+  label: 'Layout',
+  accept: [Column],
+})(({ children }) =>
+  <div className="layout">
+    {children}
+  </div>
+);
+
 const Article = withCanvaz({
   label: 'Article',
-  accept: [Heading, Text],
-})(({ title, description, children, canvazKey }: any) =>
+  accept: [Heading, Text, Video, Layout],
+})(({ id, title, description, children }) =>
   <article>
     <header>
-      <TextEditable canvazKey={canvazKey} prop="title">
+      <TextEditable id={id} prop="title">
         <h1>
           {title}
         </h1>
       </TextEditable>
-      <TextEditable canvazKey={canvazKey} prop="description">
+      <TextEditable id={id} prop="description">
         <p>
           {description}
         </p>
@@ -70,31 +96,15 @@ const Article = withCanvaz({
  * to deserialize editor tree.
  */
 class App extends React.Component<any> {
-  state = {
-    canvazEnabled: true,
-  };
-
-  renderToggle() {
-    return (
-      <label>
-        Edit{' '}
-        <input
-          type="checkbox"
-          onChange={event =>
-            this.setState({ canvazEnabled: event.target.checked })}
-          checked={this.state.canvazEnabled}
-        />
-      </label>
-    );
-  }
-
   render() {
     return (
       <div className={this.props.className}>
-        {this.renderToggle()}
-        <CanvazProvider components={{ Article, Heading, Text }}>
+        <RehydrationProvider
+          components={{ Article, Heading, Text, Video, Layout, Column }}
+        >
           <CanvazContainer
-            editable={this.state.canvazEnabled}
+            onChange={data => console.log(data)}
+            edit={true}
             data={{
               type: 'Article',
               props: {
@@ -103,25 +113,29 @@ class App extends React.Component<any> {
                 This is an example of Canvaz in action. 
                 Go ahead and change content around. 
                 You can also edit heading and this description by double click!
-              `,
-                children: [
-                  {
-                    type: 'Heading',
-                    props: {
-                      children: 'Some sample heading',
-                    },
-                  },
-                  {
-                    type: 'Text',
-                    props: {
-                      children: 'Sample paragraph in this article',
-                    },
-                  },
-                ],
+                `,
               },
+              children: [
+                { type: 'Heading', children: 'Some sample heading' },
+                { type: 'Text', children: 'Sample paragraph in this article' },
+                {
+                  type: 'Layout',
+                  children: [
+                    {
+                      type: 'Column',
+                      children: [{ type: 'Text', children: 'Left Side' }],
+                    },
+                    {
+                      type: 'Column',
+                      children: [{ type: 'Text', children: 'Right Side' }],
+                    },
+                  ],
+                },
+                { type: 'Video', props: { videoId: 'YE7VzlLtp-4' } },
+              ],
             }}
           />
-        </CanvazProvider>
+        </RehydrationProvider>
       </div>
     );
   }
@@ -169,6 +183,27 @@ const StyledApp = styled(App)`
     p {
       font-size: 20px;
       padding: 10px;
+    }
+
+    .video {
+      text-align: center;
+    }
+
+    .layout {
+      margin: 30px 0;
+      display: flex;
+
+      .column {
+        flex: 1;
+
+        &:first-of-type {
+          margin-right: 10px;
+        }
+
+        &:last-of-type {
+          margin-left: 10px;
+        }
+      }
     }
   }
 `;

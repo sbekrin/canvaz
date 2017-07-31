@@ -7,8 +7,8 @@ export function getNode(tree: CanvazNode, key: string) {
     }
 
     // Iterate through children
-    if (Array.isArray(node.props.children)) {
-      return node.props.children.map(traverse).find(Boolean);
+    if (Array.isArray(node.children)) {
+      return node.children.map(traverse).find(Boolean);
     }
 
     return null;
@@ -29,9 +29,9 @@ export function replaceNode(
     }
 
     // Iterate through children
-    if (Array.isArray(node.props.children)) {
+    if (Array.isArray(node.children)) {
       return mergeNodes(node, {
-        props: node.props.children.map(traverse),
+        children: node.children.map(traverse).filter(Boolean),
       });
     }
 
@@ -42,22 +42,31 @@ export function replaceNode(
 }
 
 export function mergeNodes(
-  leftNode: { type?: string; props?: { [key: string]: any } },
-  rightNode: { type?: string; props?: { [key: string]: any } }
+  leftNode: {
+    type?: string;
+    props?: { [key: string]: any };
+    children?: CanvazNode[] | string | number;
+  },
+  rightNode: {
+    type?: string;
+    props?: { [key: string]: any };
+    children?: CanvazNode[] | string | number;
+  }
 ): CanvazNode {
-  return {
-    type: rightNode.type || leftNode.type,
-    props: {
-      ...leftNode.props || {},
-      ...rightNode.props || {},
-    },
-  };
+  const type = rightNode.type || leftNode.type;
+  const props = { ...leftNode.props || {}, ...rightNode.props || {} };
+  const children = rightNode.children || leftNode.children;
+  return { type, props, children };
 }
 
 export function updateNode(
   tree: CanvazNode,
   key: string,
-  nextNode: { type?: string; props?: { [key: string]: any } }
+  nextNode: {
+    type?: string;
+    props?: { [key: string]: any };
+    children?: CanvazNode[] | string | number;
+  }
 ) {
   const prevNode = getNode(tree, key);
   if (!prevNode) {

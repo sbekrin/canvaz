@@ -5,6 +5,12 @@ export default function isValidNode(node: any | CanvazNode) {
   }
 
   const isValidType = typeof node.type === 'string';
-  const isValidProps = typeof node.props === 'object';
-  return isValidType && isValidProps;
+  const isValidProps = node.props ? typeof node.props === 'object' : true;
+  const isValidChildren = node.children
+    ? Array.isArray(node.children) ||
+      typeof node.children === 'string' ||
+      typeof node.children === 'number'
+    : true;
+
+  return isValidType && isValidProps && isValidChildren;
 }

@@ -14,11 +14,9 @@ export default function dehydrate(
     (component.type as React.StatelessComponent<any>).name ||
     (component.type as string) ||
     'Component';
-  const props = {
-    ...component.props,
-    children: component.props.children
-      ? React.Children.toArray(component.props.children).map(dehydrate)
-      : [],
-  };
-  return { type, props };
+  const props = { ...component.props };
+  const children = Boolean(component.props.children)
+    ? React.Children.toArray(component.props.children).map(dehydrate)
+    : [];
+  return { type, props, children };
 }

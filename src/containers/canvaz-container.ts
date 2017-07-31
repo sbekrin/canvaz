@@ -1,22 +1,26 @@
 import * as React from 'react';
 import { object } from 'prop-types';
-import { CONTEXT_KEY as COMPONENTS_KEY } from '~/components/canvaz-provider';
+import isValidMessage from '~/helpers/is-valid-message';
 import rehydrate from '~/tree/rehydrate';
 import assignKeys from '~/tree/assign-keys';
 import isValidNode from '~/tree/is-valid-node';
-
-export const CONTEXT_KEY = '__canvaz';
+import {
+  CANVAZ_CONTEXT,
+  COMPONENTS_CONTEXT,
+  DND_START,
+  DND_OVER,
+  DND_END,
+} from '~/constants';
 
 interface ContainerProps {
   data: CanvazNode;
   onChange?: (newData: CanvazNode) => void;
-  editable?: boolean;
+  edit?: boolean;
   children?: any;
 }
 
 interface ContainerState {
   data: CanvazNode;
-  editable: boolean;
 }
 
 export default class CanvazContainer extends React.Component<
@@ -24,38 +28,64 @@ export default class CanvazContainer extends React.Component<
   ContainerState
 > {
   static defaultProps = {
-    editable: false,
+    edit: false,
   };
 
   static contextTypes = {
-    [COMPONENTS_KEY]: object,
+    [COMPONENTS_CONTEXT]: object,
   };
 
   static childContextTypes = {
-    [COMPONENTS_KEY]: object.isRequired,
-    [CONTEXT_KEY]: object.isRequired,
+    [COMPONENTS_CONTEXT]: object.isRequired,
+    [CANVAZ_CONTEXT]: object.isRequired,
   };
 
   constructor(props: ContainerProps, context: {}) {
     super(props, context);
     this.state = {
       data: assignKeys(props.data),
-      editable: props.editable,
     };
   }
 
   getChildContext() {
     return {
       ...this.context,
-      [CONTEXT_KEY]: {
+      [CANVAZ_CONTEXT]: {
         data: this.state.data,
-        editable: this.props.editable,
+        editing: this.props.edit,
         setData: this.setData,
       },
     };
   }
 
-  setData = (data: CanvazNode) => {
+  componentDidMount() {
+    window.addEventListener('message', this.onMessage, false);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('message', this.onMessage, false);
+  }
+
+  onMessage = (event: MessageEvent) => {
+    if (!isValidMessage(event)) {
+      return;
+    }
+
+    switch (event.data.type) {
+      case DND_START:
+        // Cursor.setGrabbing();
+        break;
+
+      case DND_OVER:
+        break;
+
+      case DND_END:
+        // Cursor.reset();
+        break;
+    }
+  };
+
+  setData = (data: CanvazNode): CanvazNode => {
     if (process.env.NODE_ENV === 'development') {
       if (!isValidNode(data)) {
         throw new TypeError(
@@ -69,6 +99,8 @@ export default class CanvazContainer extends React.Component<
         this.props.onChange(data);
       }
     });
+
+    return data;
   };
 
   render() {
@@ -80,8 +112,8 @@ export default class CanvazContainer extends React.Component<
       }
     }
 
-    return rehydrate(this.state.data, this.context[COMPONENTS_KEY], {
-      canvazRoot: true,
+    return rehydrate(this.state.data, this.context[COMPONENTS_CONTEXT], {
+      isRoot: true,
     });
   }
 }

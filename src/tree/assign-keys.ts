@@ -11,15 +11,16 @@ export default function assignKeys(node: CanvazNode) {
 
   const traverse = (node: CanvazNode) => {
     const key =
-      node.props.key || `${node.type.toLowerCase()}$${getRandomKey()}`;
+      (node.props && node.props.key) ||
+      `${node.type.toLowerCase()}$${getRandomKey()}`;
     return mergeNodes(node, {
       props: {
         key,
-        canvazKey: key, // Keep same key to use in API
-        children: Array.isArray(node.props.children)
-          ? node.props.children.map(traverse)
-          : node.props.children,
+        id: key, // Keep same key to use in API
       },
+      children: Array.isArray(node.children)
+        ? node.children.map(traverse)
+        : node.children,
     });
   };
 
