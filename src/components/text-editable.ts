@@ -3,6 +3,7 @@ import { string } from 'prop-types';
 import styled, { css } from 'styled-components';
 import withCanvazData, { DataProps } from '~/hocs/with-data';
 import dropCanvazProps from '~/helpers/drop-canvaz-props';
+import chain from '~/helpers/chain';
 
 interface TextEditableProps {
   onInput?: (event: any) => void;
@@ -10,47 +11,96 @@ interface TextEditableProps {
   prop?: string;
 }
 
-class TextEditable extends React.Component<TextEditableProps & DataProps> {
+interface TextEditableState {
+  edit: boolean;
+}
+
+class TextEditable extends React.Component<
+  TextEditableProps & DataProps,
+  TextEditableState
+> {
   static defaultProps = {
     prop: null,
   };
 
   nodeRef?: HTMLElement = null;
   state = {
-    editable: false,
+    edit: false,
   };
 
-  keepRef = (ref: HTMLElement) => {
+  shouldComponentUpdate(
+    nextProps: TextEditableProps & DataProps,
+    nextState: TextEditableState
+  ) {
+    // Exit early if state is different
+    if (nextState !== this.state) {
+      return true;
+    }
+
+    // Exit then no ref exist yet
+    if (!this.nodeRef) {
+      return this.props !== nextProps;
+    }
+
+    // Compare text with current DOM value to avoid caret jumping
+    const nextText = nextProps.children.props.children.trim();
+    const currentText = this.nodeRef.innerText.trim();
+    if (nextText === currentText) {
+      // Check rest of props
+      const newProp = Object.keys(this.props)
+        .filter(prop => prop !== 'children')
+        .find(prop => this.props[prop] !== nextProps[prop]);
+      const hasNewProp = Boolean(newProp);
+
+      return hasNewProp;
+    }
+
+    return true;
+  }
+
+  receiveRef = (ref: HTMLElement) => {
     this.nodeRef = ref;
   };
 
-  onDoubleClick = event => {
-    this.setState({ editable: true }, () => {
+  onDoubleClick = chain((event: React.MouseEvent<MouseEvent>) => {
+    this.setState({ edit: true }, () => {
       this.nodeRef.focus();
     });
-  };
+  }, this.props.onDoubleClick);
 
-  onBlur = (event: React.FocusEvent<FocusEvent>) => {
-    this.setState({ editable: false });
-  };
+  onBlur = chain((event: React.FocusEvent<FocusEvent>) => {
+    this.setState({ edit: false });
+  }, this.props.onBlur);
 
-  onInput = (event: React.KeyboardEvent<KeyboardEvent>) => {
+  onInput = chain((event: React.KeyboardEvent<KeyboardEvent>) => {
     // Update prop if specified or children by default
     const nextText = (event.target as HTMLElement).innerText;
     const nextNode = this.props.prop
       ? { props: { [this.props.prop]: nextText } }
       : { children: nextText };
     this.props.updateNode(nextNode);
-  };
+  }, this.props.onInput);
 
-  onKeyPress = (event: React.KeyboardEvent<KeyboardEvent>) => {
-    switch (event.keyCode) {
-      case 13: // Enter
-        // TODO: Clone node after current
+  onKeyDown = chain((event: React.KeyboardEvent<KeyboardEvent>) => {
+    if (this.state.edit) {
+      // Prevent Backspace / Delete keys to bubble
+      switch (event.key) {
+        case 'Backspace':
+        case 'Delete':
+          event.stopPropagation();
+          break;
+      }
+    }
+  }, this.props.onKeyDown);
+
+  onKeyPress = chain((event: React.KeyboardEvent<KeyboardEvent>) => {
+    switch (event.key) {
+      case 'Enter':
         event.preventDefault();
+        this.props.duplicateNode();
         break;
     }
-  };
+  }, this.props.onKeyPress);
 
   render() {
     const { children, prop, tabIndex = 0, ...props } = this.props;
@@ -66,13 +116,14 @@ class TextEditable extends React.Component<TextEditableProps & DataProps> {
       ? React.cloneElement(child, {
           ...dropCanvazProps(props),
           tabIndex, // Allow to focus on non-components as well
-          [isStyledComponent ? 'innerRef' : 'ref']: this.keepRef,
+          [isStyledComponent ? 'innerRef' : 'ref']: this.receiveRef,
+          contentEditable: this.state.edit,
+          suppressContentEditableWarning: true,
+          onKeyDown: this.onKeyDown,
           onKeyPress: this.onKeyPress,
           onDoubleClick: this.onDoubleClick,
           onBlur: this.onBlur,
           onInput: this.onInput,
-          contentEditable: this.state.editable,
-          suppressContentEditableWarning: true,
         })
       : child;
   }

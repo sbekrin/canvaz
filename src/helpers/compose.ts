@@ -1,4 +1,6 @@
-export default function compose(...functions: Function[]) {
+export default function compose(...input: any[]): Function {
+  const functions = input.filter(item => typeof item === 'function');
+
   if (functions.length === 0) {
     return argument => argument;
   }

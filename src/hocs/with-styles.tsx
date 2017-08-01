@@ -52,6 +52,23 @@ export default function withStyles<P>(
       outline: none;
     }
 
+    // Don't let empty components to collapse
+    :empty:after {
+      color: black;
+      font-weight: bold;
+      text-transform: lowercase;
+      font-variant: small-caps;
+      content: '∅ ' attr(aria-label);
+      display: flex;
+      height: 100%;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 2px #666;
+      font-family: sans-serif;
+      opacity: 0.25;
+    }
+
     ${props =>
       props.isVoid &&
       css`

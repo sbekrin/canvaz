@@ -2,9 +2,10 @@ import * as React from 'react';
 import { object, string } from 'prop-types';
 import hoistStatics = require('hoist-non-react-statics');
 import styled, { css } from 'styled-components';
+import convertToClassComponent from '~/helpers/convert-to-class-component';
 import broadcastMessage from '~/helpers/broadcast-message';
 import getDisplayName from '~/helpers/get-display-name';
-import convertToClassComponent from '~/helpers/convert-to-class-component';
+import chain from '~/helpers/chain';
 import withData, { DataProps } from '~/hocs/with-data';
 import { DND_START, DND_OVER, DND_END } from '~/constants';
 
@@ -84,13 +85,13 @@ export default function enhanceWithCanvaz<P = {}>(
       };
 
       onKeyDown = (event: React.KeyboardEvent<KeyboardEvent>) => {
-        if (this.props.isRoot) {
+        if (event.isPropagationStopped()) {
           return;
         }
 
-        switch (event.keyCode) {
-          case 46: // Delete
-          case 8: // Backspace
+        switch (event.key) {
+          case 'Delete':
+          case 'Backspace':
             event.stopPropagation();
             this.props.removeNode();
             break;
@@ -105,15 +106,20 @@ export default function enhanceWithCanvaz<P = {}>(
 
         return React.cloneElement(element, {
           ...overrides,
+          'aria-label': element.props['aria-label'] || config.label,
           tabIndex: this.props.tabIndex || 0,
-          draggable: !this.props.isRoot,
           onMouseOver: this.onMouseOver,
           onMouseOut: this.onMouseOut,
-          onDragStart: this.onDragStart,
           onDragOver: this.onDragOver,
-          onDragEnd: this.onDragEnd,
           onDrop: this.onDrop,
-          onKeyDown: this.onKeyDown,
+
+          // Apply non-root-specific props
+          ...!this.props.isRoot && {
+            draggable: true,
+            onDragStart: this.onDragStart,
+            onDragEnd: this.onDragEnd,
+            onKeyDown: this.onKeyDown,
+          },
         });
       };
 
