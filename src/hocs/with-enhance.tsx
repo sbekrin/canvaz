@@ -54,6 +54,7 @@ export default function enhanceWithCanvaz<P = {}>(
       };
 
       onDragStart = (event: React.DragEvent<DragEvent>) => {
+        if (event.isPropagationStopped()) return;
         event.stopPropagation();
         event.dataTransfer.setData('text/plain', this.props.children as string);
         event.dataTransfer.setData(DATA_FORMAT, this.props.id);
@@ -76,6 +77,7 @@ export default function enhanceWithCanvaz<P = {}>(
       };
 
       onMouseOver = (event: React.MouseEvent<MouseEvent>) => {
+        if (event.isPropagationStopped()) return;
         event.stopPropagation();
         this.setState({ hovered: true });
       };
@@ -85,9 +87,7 @@ export default function enhanceWithCanvaz<P = {}>(
       };
 
       onKeyDown = (event: React.KeyboardEvent<KeyboardEvent>) => {
-        if (event.isPropagationStopped()) {
-          return;
-        }
+        if (event.isPropagationStopped()) return;
 
         switch (event.key) {
           case 'Delete':
@@ -100,9 +100,7 @@ export default function enhanceWithCanvaz<P = {}>(
 
       enhance = (element: React.ReactElement<any>, overrides: {} = {}) => {
         // Do nothing if in view mode
-        if (!this.props.isEditing) {
-          return element;
-        }
+        if (!this.props.isEditing) return element;
 
         return React.cloneElement(element, {
           ...overrides,

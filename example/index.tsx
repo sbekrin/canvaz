@@ -3,6 +3,7 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import styled from 'styled-components';
 import YouTube from 'react-youtube';
+import styles from './styles';
 import withCanvaz, {
   RehydrationProvider,
   CanvazContainer,
@@ -108,16 +109,38 @@ class App extends React.Component<any> {
             data={{
               type: 'Article',
               props: {
-                title: 'Canvaz',
-                description: `
-                This is an example of Canvaz in action. 
-                Go ahead and change content around. 
-                You can also edit heading and this description by double click!
-                `,
+                title: 'Beautiful content starts with beautiful editor',
+                description: [
+                  'Everyone used to visual text editors.',
+                  'They exists for a long time, but we need to move forward.',
+                  'It should be easy and accessible for everyone to craft',
+                  'content without special knowledge, with just right tool.',
+                ].join(' '),
               },
               children: [
-                { type: 'Heading', children: 'Some sample heading' },
-                { type: 'Text', children: 'Sample paragraph in this article' },
+                { type: 'Heading', children: 'Switching to modular' },
+                {
+                  type: 'Text',
+                  children: [
+                    'Even though text-manipulation is intuitive,',
+                    'it is limited. User interfaces are built with',
+                    'component-based architecture nowadays, so why not adopt',
+                    'it for content we make?',
+                  ].join(' '),
+                },
+                {
+                  type: 'Text',
+                  children: [
+                    'Go ahead and play around with this content.',
+                    'You can edit any text with double click,',
+                    'remove block by Delete or Backspace and drag-and-drop',
+                    'components. Rollback your changes by Ctrl + Z or Cmd + Z.',
+                  ].join(' '),
+                },
+                {
+                  type: 'Heading',
+                  children: 'Below is stuff for testing',
+                },
                 {
                   type: 'Layout',
                   children: [
@@ -141,72 +164,7 @@ class App extends React.Component<any> {
   }
 }
 
-const StyledApp = styled(App)`
-  -webkit-font-smoothing: antialiased;
-  font-family: sans-serif;
-
-  input {
-    margin: 0;
-  }
-
-  article {
-    margin: 60px auto;
-    max-width: 700px;
-  }
-
-  hr {
-    border: none;
-    height: 1px;
-    background-color: #ddd;
-  }
-
-  header {
-    h1 {
-      font-size: 50px;
-      font-weight: bold;
-      margin: 0;
-    }
-
-    p {
-      font-size: 20px;
-      line-height: 1.5;
-      color: #999;
-    }
-  }
-
-  main {
-    h2 {
-      font-weight: bold;
-      padding: 10px;
-    }
-
-    p {
-      font-size: 20px;
-      padding: 10px;
-    }
-
-    .video {
-      text-align: center;
-    }
-
-    .layout {
-      margin: 30px 0;
-      display: flex;
-
-      .column {
-        flex: 1;
-
-        &:first-of-type {
-          margin-right: 10px;
-        }
-
-        &:last-of-type {
-          margin-left: 10px;
-        }
-      }
-    }
-  }
-`;
+const StyledApp = styled(App)`${styles}`;
 
 /**
  * Step 3:

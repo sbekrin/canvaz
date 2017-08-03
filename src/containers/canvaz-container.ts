@@ -4,23 +4,27 @@ import isValidMessage from '~/helpers/is-valid-message';
 import rehydrate from '~/tree/rehydrate';
 import assignKeys from '~/tree/assign-keys';
 import isValidNode from '~/tree/is-valid-node';
+import History from '~/models/history';
 import {
   CANVAZ_CONTEXT,
   COMPONENTS_CONTEXT,
   DND_START,
   DND_OVER,
   DND_END,
+  noop,
 } from '~/constants';
 
 interface ContainerProps {
   data: CanvazNode;
   onChange?: (newData: CanvazNode) => void;
   edit?: boolean;
+  history?: boolean;
   children?: any;
 }
 
 interface ContainerState {
   data: CanvazNode;
+  history: History<CanvazNode>;
 }
 
 export default class CanvazContainer extends React.Component<
@@ -29,6 +33,8 @@ export default class CanvazContainer extends React.Component<
 > {
   static defaultProps = {
     edit: false,
+    history: true,
+    setData: noop,
   };
 
   static contextTypes = {
@@ -42,9 +48,8 @@ export default class CanvazContainer extends React.Component<
 
   constructor(props: ContainerProps, context: {}) {
     super(props, context);
-    this.state = {
-      data: assignKeys(props.data),
-    };
+    const data = assignKeys(props.data);
+    this.state = { data, history: new History([data]) };
   }
 
   getChildContext() {
@@ -54,35 +59,77 @@ export default class CanvazContainer extends React.Component<
         data: this.state.data,
         editing: this.props.edit,
         setData: this.setData,
+        undo: this.undo,
+        redo: this.redo,
       },
     };
   }
 
   componentDidMount() {
+    // TODO: Mark global what canvaz is mounted
     window.addEventListener('message', this.onMessage, false);
+    window.addEventListener('keydown', this.onKeyDown, false);
   }
 
   componentWillUnmount() {
+    // TODO: Unmark global what canvaz is mounted
     window.removeEventListener('message', this.onMessage, false);
+    window.removeEventListener('keydown', this.onKeyDown, false);
   }
 
   onMessage = (event: MessageEvent) => {
-    if (!isValidMessage(event)) {
-      return;
-    }
+    if (!isValidMessage(event)) return;
 
     switch (event.data.type) {
       case DND_START:
-        // Cursor.setGrabbing();
         break;
 
       case DND_OVER:
         break;
 
       case DND_END:
-        // Cursor.reset();
         break;
     }
+  };
+
+  onKeyDown = (event: KeyboardEvent) => {
+    const isZKey = event.keyCode === 90;
+    const isYKey = event.keyCode === 89;
+    const isMacUndo = event.metaKey && isZKey;
+    const isWinUndo = event.ctrlKey && isZKey;
+    const isMacRedo = event.shiftKey && event.metaKey && isZKey;
+    const isWinRedo = event.ctrlKey && isYKey;
+
+    if (isMacRedo || isWinRedo) {
+      this.redo();
+    } else if (isMacUndo || isWinUndo) {
+      this.undo();
+    }
+  };
+
+  // Trigger callback with latest data
+  notifyDataChange = () => {
+    this.props.onChange(this.state.data);
+  };
+
+  // Check if history is eanbled and if can go back
+  undo = () => {
+    if (this.props.history && this.state.history.backward()) {
+      this.setDataUnsafe(this.state.history.getCurrent());
+    }
+  };
+
+  // Check if history is enabled and if can go forward
+  redo = () => {
+    if (this.props.history && this.state.history.forward()) {
+      this.setDataUnsafe(this.state.history.getCurrent());
+    }
+  };
+
+  // Sets data without node check and no history register
+  setDataUnsafe = (data: CanvazNode): CanvazNode => {
+    this.setState({ data }, this.notifyDataChange);
+    return data;
   };
 
   setData = (data: CanvazNode): CanvazNode => {
@@ -94,11 +141,15 @@ export default class CanvazContainer extends React.Component<
       }
     }
 
-    this.setState({ data }, () => {
-      if (typeof this.props.onChange === 'function') {
-        this.props.onChange(data);
-      }
-    });
+    // Keep change in history if enabled
+    if (this.props.history) {
+      this.state.history.push(data);
+    }
+
+    this.setState(
+      { data: this.state.history.getCurrent() },
+      this.notifyDataChange
+    );
 
     return data;
   };

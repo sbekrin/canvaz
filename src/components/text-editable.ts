@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components';
 import withCanvazData, { DataProps } from '~/hocs/with-data';
 import dropCanvazProps from '~/helpers/drop-canvaz-props';
 import chain from '~/helpers/chain';
+import { base, highlighted } from '~/media/component';
 
 interface TextEditableProps {
   onInput?: (event: any) => void;
@@ -47,12 +48,11 @@ class TextEditable extends React.Component<
     const currentText = this.nodeRef.innerText.trim();
     if (nextText === currentText) {
       // Check rest of props
-      const newProp = Object.keys(this.props)
-        .filter(prop => prop !== 'children')
-        .find(prop => this.props[prop] !== nextProps[prop]);
-      const hasNewProp = Boolean(newProp);
-
-      return hasNewProp;
+      return Boolean(
+        Object.keys(this.props)
+          .filter(prop => prop !== 'children')
+          .find(prop => this.props[prop] !== nextProps[prop])
+      );
     }
 
     return true;
@@ -61,6 +61,14 @@ class TextEditable extends React.Component<
   receiveRef = (ref: HTMLElement) => {
     this.nodeRef = ref;
   };
+
+  onMouseOver = chain((event: React.MouseEvent<MouseEvent>) => {
+    event.stopPropagation();
+  }, this.props.onMouseOver);
+
+  onDragStart = chain((event: React.DragEvent<DragEvent>) => {
+    event.stopPropagation();
+  }, this.props.onDragStart);
 
   onDoubleClick = chain((event: React.MouseEvent<MouseEvent>) => {
     this.setState({ edit: true }, () => {
@@ -119,6 +127,8 @@ class TextEditable extends React.Component<
           [isStyledComponent ? 'innerRef' : 'ref']: this.receiveRef,
           contentEditable: this.state.edit,
           suppressContentEditableWarning: true,
+          onMouseOver: this.onMouseOver,
+          onDragStart: this.onDragStart,
           onKeyDown: this.onKeyDown,
           onKeyPress: this.onKeyPress,
           onDoubleClick: this.onDoubleClick,
@@ -130,21 +140,11 @@ class TextEditable extends React.Component<
 }
 
 const StyledTextEditable = styled(TextEditable)`
-  ${props =>
-    props.isEditing &&
-    css`
-      transition-duration: 100ms;
-      transition-property: box-shadow; 
+  :hover {
+    ${highlighted}
+  }
 
-      :hover {
-        box-shadow: 0 0 0 2px rgba(59, 153, 252, 0.5);
-      }
-
-      :focus {
-        box-shadow: 0 0 0 2px rgb(59, 153, 252);
-        outline: none;
-      }
-  `}
+  ${props => props.isEditing && base}
 `;
 
 export default withCanvazData<TextEditableProps>(StyledTextEditable);
