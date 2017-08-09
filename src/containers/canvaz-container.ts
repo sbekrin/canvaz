@@ -5,6 +5,7 @@ import rehydrate from '~/tree/rehydrate';
 import assignKeys from '~/tree/assign-keys';
 import isValidNode from '~/tree/is-valid-node';
 import History from '~/models/history';
+import { HISTORY_CONTAINER } from '~/constants';
 import {
   CANVAZ_CONTEXT,
   COMPONENTS_CONTEXT,
@@ -66,15 +67,26 @@ export default class CanvazContainer extends React.Component<
   }
 
   componentDidMount() {
-    // TODO: Mark global what canvaz is mounted
+    if (global[HISTORY_CONTAINER]) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          'Canvaz: Keyboard control is disabled because another container already registered it.'
+        );
+      }
+      return;
+    }
+
     window.addEventListener('message', this.onMessage, false);
     window.addEventListener('keydown', this.onKeyDown, false);
+    global[HISTORY_CONTAINER] = this;
   }
 
   componentWillUnmount() {
-    // TODO: Unmark global what canvaz is mounted
-    window.removeEventListener('message', this.onMessage, false);
-    window.removeEventListener('keydown', this.onKeyDown, false);
+    if (global[HISTORY_CONTAINER] === this) {
+      window.removeEventListener('message', this.onMessage, false);
+      window.removeEventListener('keydown', this.onKeyDown, false);
+      delete global[HISTORY_CONTAINER];
+    }
   }
 
   onMessage = (event: MessageEvent) => {
