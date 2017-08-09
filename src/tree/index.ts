@@ -22,6 +22,27 @@ export function getNode(tree: CanvazNode, key: string) {
   return traverse(tree);
 }
 
+/** Get parent node */
+export function getParentNode(tree: CanvazNode, childKey: string) {
+  const traverse = (node: CanvazNode): CanvazNode => {
+    if (Array.isArray(node.children)) {
+      const hasChild = Boolean(
+        node.children.find(({ props }) => props.key === childKey)
+      );
+
+      if (hasChild) {
+        return node;
+      }
+
+      return node.children.map(traverse).find(Boolean);
+    }
+
+    return null;
+  };
+
+  return traverse(tree);
+}
+
 /** Returns index of node relative to parent's children array */
 export function getNodeIndex(tree: CanvazNode, key: string): number {
   // Check root node
@@ -118,22 +139,20 @@ export function removeNode(tree: CanvazNode, key: string) {
 /** Inserts node inside node with target key at specific index */
 export function insertNode(
   tree: CanvazNode,
-  key: string,
+  parentKey: string,
   nodeToInsert: CanvazNode,
-  index: number = -1
+  atIndex: number = -1
 ) {
   const traverse = (node: CanvazNode): CanvazNode => {
     if (Array.isArray(node.children)) {
-      const children = node.children;
-      const hasChild = Boolean(children.find(({ props }) => props.key === key));
-
       // Immutably modify children
-      if (hasChild) {
+      const children = node.children;
+      if (node.props.key === parentKey) {
         return mergeNodes(node, {
           children: [
-            ...children.slice(0, index),
+            ...children.slice(0, atIndex),
             nodeToInsert,
-            ...children.slice(index, children.length),
+            ...children.slice(atIndex, children.length),
           ],
         });
       }
@@ -152,13 +171,13 @@ export function insertNode(
 /** Insert node at specific position of node with provided key */
 export function insertNodeAtIndex(
   tree: CanvazNode,
-  key: string,
-  node: CanvazNode,
-  index: number
+  parentKey: string,
+  nodeToInsert: CanvazNode,
+  atIndex: number
 ) {
-  const targetNode = getNode(tree, key);
+  const targetNode = getNode(tree, parentKey);
   if (targetNode) {
-    return insertNode(tree, key, node, index);
+    return insertNode(tree, parentKey, nodeToInsert, atIndex);
   }
   return tree;
 }
@@ -166,17 +185,31 @@ export function insertNodeAtIndex(
 /** Insert node before one with provided key */
 export function insertNodeBefore(
   tree: CanvazNode,
-  key: string,
+  targetKey: string,
   node: CanvazNode
 ) {
-  return insertNodeAtIndex(tree, key, node, getNodeIndex(tree, key) - 1);
+  const parentNode = getParentNode(tree, targetKey);
+  if (!parentNode) {
+    return tree;
+  }
+
+  const parentKey = parentNode.props.key;
+  const childIndex = getNodeIndex(tree, targetKey) - 1;
+  return insertNodeAtIndex(tree, parentKey, node, childIndex);
 }
 
 /** Insert node after one with provided key */
 export function insertNodeAfter(
   tree: CanvazNode,
-  key: string,
+  targetKey: string,
   node: CanvazNode
 ) {
-  return insertNodeAtIndex(tree, key, node, getNodeIndex(tree, key) + 1);
+  const parentNode = getParentNode(tree, targetKey);
+  if (!parentNode) {
+    return tree;
+  }
+
+  const parentKey = parentNode.props.key;
+  const childIndex = getNodeIndex(tree, targetKey) + 1;
+  return insertNodeAtIndex(tree, parentKey, node, childIndex);
 }

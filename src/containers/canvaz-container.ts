@@ -26,6 +26,9 @@ interface ContainerProps {
 interface ContainerState {
   data: CanvazNode;
   history: History<CanvazNode>;
+  dndDraggedKey: string | null;
+  dndTargetKey: string | null;
+  dndDropIndex: number;
 }
 
 export default class CanvazContainer extends React.Component<
@@ -50,14 +53,24 @@ export default class CanvazContainer extends React.Component<
   constructor(props: ContainerProps, context: {}) {
     super(props, context);
     const data = assignKeys(props.data);
-    this.state = { data, history: new History([data]) };
+    this.state = {
+      data,
+      history: new History([data]),
+      dndDraggedKey: null,
+      dndTargetKey: null,
+      dndDropIndex: -1,
+    };
   }
 
   getChildContext() {
+    const { data, dndDraggedKey, dndTargetKey, dndDropIndex } = this.state;
     return {
       ...this.context,
       [CANVAZ_CONTEXT]: {
-        data: this.state.data,
+        data,
+        dndDraggedKey,
+        dndTargetKey,
+        dndDropIndex,
         editing: this.props.edit,
         setData: this.setData,
         undo: this.undo,
@@ -94,12 +107,18 @@ export default class CanvazContainer extends React.Component<
 
     switch (event.data.type) {
       case DND_START:
+        this.setState({ dndDraggedKey: event.data.key });
         break;
 
       case DND_OVER:
+        this.setState({
+          dndTargetKey: event.data.key,
+          dndDropIndex: event.data.index,
+        });
         break;
 
       case DND_END:
+        this.setState({ dndDraggedKey: null });
         break;
     }
   };

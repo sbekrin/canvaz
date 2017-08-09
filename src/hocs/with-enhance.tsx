@@ -5,11 +5,10 @@ import styled, { css } from 'styled-components';
 import convertToClassComponent from '~/helpers/convert-to-class-component';
 import broadcastMessage from '~/helpers/broadcast-message';
 import getDisplayName from '~/helpers/get-display-name';
+import canDropUnder from '~/helpers/can-drop-under';
 import chain from '~/helpers/chain';
 import withData, { DataProps } from '~/hocs/with-data';
 import { DND_START, DND_OVER, DND_END } from '~/constants';
-
-const DATA_FORMAT = 'text/x-canvaz=key';
 
 const configDefaults: CanvazConfig = {
   accept: [],
@@ -57,23 +56,50 @@ export default function enhanceWithCanvaz<P = {}>(
         if (event.isPropagationStopped()) return;
         event.stopPropagation();
         event.dataTransfer.setData('text/plain', this.props.children as string);
-        event.dataTransfer.setData(DATA_FORMAT, this.props.id);
         event.dataTransfer.effectAllowed = 'move';
-        broadcastMessage(DND_START, { id: this.props.id });
+        broadcastMessage(DND_START, { key: this.props.id });
       };
 
       onDragOver = (event: React.DragEvent<DragEvent>) => {
+        if (event.isPropagationStopped()) return;
         event.preventDefault();
-        event.dataTransfer.dropEffect = 'move';
-        broadcastMessage(DND_OVER, { id: this.props.id });
+
+        // Check if dragged element can be drop in there
+        if (canDropUnder(config.accept, this.props.getDndDragNode())) {
+          event.stopPropagation();
+          event.dataTransfer.dropEffect = 'move';
+          // TODO: Determine to drop before or after
+          return;
+        }
+
+        // Update container on last drag overed node
+        broadcastMessage(DND_OVER, {
+          index: this.props.getIndex(),
+          key: this.props.id,
+        });
       };
 
       onDragEnd = (event: React.DragEvent<DragEvent>) => {
-        broadcastMessage(DND_END, { id: this.props.id });
+        if (event.isPropagationStopped()) return;
+        broadcastMessage(DND_END, { key: this.props.id });
       };
 
       onDrop = (event: React.DragEvent<DragEvent>) => {
+        if (event.isPropagationStopped()) return;
         event.preventDefault();
+
+        // Check if dropped element can be placed in there
+        const dndTargetNode = this.props.getDndDragNode();
+        if (canDropUnder(config.accept, dndTargetNode)) {
+          // Stop bubbling
+          event.stopPropagation();
+
+          // Get index at which we should drop node
+          const index = this.props.getDndDropIndex();
+
+          // Proceed drop
+          this.props.insertNodeAt(dndTargetNode, index);
+        }
       };
 
       onMouseOver = (event: React.MouseEvent<MouseEvent>) => {
@@ -89,6 +115,7 @@ export default function enhanceWithCanvaz<P = {}>(
       onKeyDown = (event: React.KeyboardEvent<KeyboardEvent>) => {
         if (event.isPropagationStopped()) return;
 
+        // Delete node on delete or backspace
         switch (event.key) {
           case 'Delete':
           case 'Backspace':

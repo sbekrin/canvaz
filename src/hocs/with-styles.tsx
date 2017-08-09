@@ -28,7 +28,7 @@ export default function withStyles<P>(
         const { className: originalClassNames = '' } = element.props;
         const { enhance, className: injectedClassNames } = this.props;
         return enhance(element, {
-          className: `${originalClassNames} ${injectedClassNames}`,
+          className: [originalClassNames, injectedClassNames].join(' '),
         });
       }
 

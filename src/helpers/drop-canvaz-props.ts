@@ -5,10 +5,14 @@ export default function dropCanvazProps(props: any): {} {
     isRoot,
     isEditing,
     getNode,
+    getIndex,
+    getDndDragNode,
+    getDndTargetNode,
+    getDndDropIndex,
     updateNode,
     removeNode,
     duplicateNode,
-    moveNode,
+    insertNodeAt,
     ...filteredProps,
   } = props;
   return filteredProps;

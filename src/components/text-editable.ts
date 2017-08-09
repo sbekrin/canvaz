@@ -67,7 +67,7 @@ class TextEditable extends React.Component<
   }, this.props.onMouseOver);
 
   onDragStart = chain((event: React.DragEvent<DragEvent>) => {
-    event.stopPropagation();
+    if (this.state.edit) event.stopPropagation();
   }, this.props.onDragStart);
 
   onDoubleClick = chain((event: React.MouseEvent<MouseEvent>) => {

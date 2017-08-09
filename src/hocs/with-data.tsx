@@ -11,10 +11,13 @@ export interface DataProps {
   isRoot?: boolean;
   isEditing?: boolean;
   getNode: () => CanvazNode;
+  getDndDragNode: () => CanvazNode;
+  getDndTargetNode: () => CanvazNode;
+  getDndDropIndex: () => number;
   updateNode: (data: {}) => CanvazNode;
   removeNode: () => CanvazNode;
   duplicateNode: () => CanvazNode;
-  moveNode: () => CanvazNode;
+  moveNodeAfter: (after: string) => CanvazNode;
   [key: string]: any;
 }
 
@@ -31,8 +34,29 @@ export default function withData<P = {}>(
       [CANVAZ_CONTEXT]: object,
     };
 
+    getIndex = (): number => {
+      return Tree.getNodeIndex(
+        this.context[CANVAZ_CONTEXT].data,
+        this.props.id
+      );
+    };
+
     getNode = (): CanvazNode => {
       return Tree.getNode(this.context[CANVAZ_CONTEXT].data, this.props.id);
+    };
+
+    getDndDragNode = (): CanvazNode => {
+      const canvaz = this.context[CANVAZ_CONTEXT];
+      return Tree.getNode(canvaz.data, canvaz.dndDraggedKey);
+    };
+
+    getDndTargetNode = (): CanvazNode => {
+      const canvaz = this.context[CANVAZ_CONTEXT];
+      return Tree.getNode(canvaz.data, canvaz.dndTargetKey);
+    };
+
+    getDndDropIndex = (): number => {
+      return this.context[CANVAZ_CONTEXT].dndDropIndex;
     };
 
     updateNode = (nextNode: {}): CanvazNode => {
@@ -59,19 +83,29 @@ export default function withData<P = {}>(
       return canvaz.setData(nextData);
     };
 
-    moveNode = () => {};
+    insertNodeAt = (node: CanvazNode, index: number = 0) => {
+      const canvaz = this.context[CANVAZ_CONTEXT];
+      const cleanedData = Tree.removeNode(canvaz.data, node.props.id);
+      const key = this.props.id;
+      const nextData = Tree.insertNodeAtIndex(cleanedData, key, node, index);
+      return canvaz.setData(nextData);
+    };
 
     render() {
       const props = {
         isEditing: this.context[CANVAZ_CONTEXT].editing,
+        getIndex: this.getIndex,
         getNode: this.getNode,
+        getDndTargetNode: this.getDndTargetNode,
+        getDndDragNode: this.getDndDragNode,
+        getDndDropIndex: this.getDndDropIndex,
         updateNode: this.updateNode,
+        insertNodeAt: this.insertNodeAt,
 
         // Add non-root-specific props
         ...!this.props.isRoot && {
           removeNode: this.removeNode,
           duplicateNode: this.duplicateNode,
-          moveNode: this.moveNode,
         },
       };
 
