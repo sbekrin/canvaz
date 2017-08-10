@@ -9,6 +9,6 @@ interface CanvazNode {
 
 interface CanvazConfig {
   label?: string;
-  accept?: React.ComponentType<any>[];
+  accept?: { [key: string]: React.ComponentType<any> };
   void?: boolean;
 }

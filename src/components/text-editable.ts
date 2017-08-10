@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components';
 import withCanvazData, { DataProps } from '~/hocs/with-data';
 import dropCanvazProps from '~/helpers/drop-canvaz-props';
 import chain from '~/helpers/chain';
-import { base, highlighted } from '~/media/component';
+import { base, hovered } from '~/media/component';
 
 interface TextEditableProps {
   onInput?: (event: any) => void;
@@ -141,7 +141,7 @@ class TextEditable extends React.Component<
 
 const StyledTextEditable = styled(TextEditable)`
   :hover {
-    ${highlighted}
+    ${hovered}
   }
 
   ${props => props.isEditing && base}

@@ -51,6 +51,14 @@ export default css`
       margin: 1rem;
     }
 
+    ol, ul {
+      margin: 1rem;
+
+      li {
+        padding: 0.5rem;
+      }
+    }
+
     .video {
       text-align: center;
     }

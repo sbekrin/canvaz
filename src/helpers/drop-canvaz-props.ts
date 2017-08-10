@@ -1,7 +1,7 @@
 export default function dropCanvazProps(props: any): {} {
   const {
-    isHovered,
-    isSelected,
+    hovered,
+    selected,
     isRoot,
     isEditing,
     getNode,
@@ -9,6 +9,8 @@ export default function dropCanvazProps(props: any): {} {
     getDndDragNode,
     getDndTargetNode,
     getDndDropIndex,
+    canDrop,
+    proceedDrop,
     updateNode,
     removeNode,
     duplicateNode,

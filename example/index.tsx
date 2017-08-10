@@ -46,9 +46,33 @@ const Video = withCanvaz({
   </div>
 );
 
+const ListItem = withCanvaz({
+  label: 'List Item',
+})(({ children, id }) =>
+  <TextEditable id={id}>
+    <li>
+      {children}
+    </li>
+  </TextEditable>
+);
+
+const List = withCanvaz({
+  label: 'List',
+  accept: { ListItem },
+})(
+  ({ children, ordered = true }) =>
+    ordered
+      ? <ol>
+          {children}
+        </ol>
+      : <ul>
+          {children}
+        </ul>
+);
+
 const Column = withCanvaz({
   label: 'Column',
-  accept: [Heading, Text, Video],
+  accept: { Heading, Text, Video, List },
 })(({ children }) =>
   <div className="column">
     {children}
@@ -57,7 +81,7 @@ const Column = withCanvaz({
 
 const Layout = withCanvaz({
   label: 'Layout',
-  accept: [Column],
+  accept: { Column },
 })(({ children }) =>
   <div className="layout">
     {children}
@@ -66,7 +90,7 @@ const Layout = withCanvaz({
 
 const Article = withCanvaz({
   label: 'Article',
-  accept: [Heading, Text, Video, Layout],
+  accept: { Heading, Text, Video, Layout, List },
 })(({ id, title, description, children }) =>
   <article>
     <header>
@@ -101,7 +125,16 @@ class App extends React.Component<any> {
     return (
       <div className={this.props.className}>
         <RehydrationProvider
-          components={{ Article, Heading, Text, Video, Layout, Column }}
+          components={{
+            Article,
+            Heading,
+            Text,
+            Video,
+            Layout,
+            Column,
+            List,
+            ListItem,
+          }}
         >
           <CanvazContainer
             onChange={data => console.log(data)}
@@ -140,6 +173,17 @@ class App extends React.Component<any> {
                 {
                   type: 'Heading',
                   children: 'Below is stuff for testing',
+                },
+                {
+                  type: 'List',
+                  props: {
+                    ordered: true,
+                  },
+                  children: [
+                    { type: 'ListItem', children: 'First item' },
+                    { type: 'ListItem', children: 'Second item' },
+                    { type: 'ListItem', children: 'Third item' },
+                  ],
                 },
                 {
                   type: 'Layout',

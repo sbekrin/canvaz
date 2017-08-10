@@ -15,6 +15,19 @@ export default function dehydrate(
     (component.type as string) ||
     'Component';
   const props = { ...component.props };
+
+  // Security stuff
+  if (props.dangerouslySetInnerHTML) {
+    delete props.dangerouslySetInnerHTML;
+    if (process.env.NODE_ENV === 'development') {
+      console.error(
+        '`dangerouslySetInnerHTML` props is ignored due to security reasons. ' +
+          'Provide data in different prop and handle it in target component ' +
+          'if you need to display raw html.'
+      );
+    }
+  }
+
   const children = Boolean(component.props.children)
     ? React.Children.toArray(component.props.children).map(dehydrate)
     : [];

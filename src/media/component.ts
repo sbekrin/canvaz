@@ -35,7 +35,7 @@ export function base() {
   `;
 }
 
-export function highlighted() {
+export function hovered() {
   return css`
     // Visually show component boundary on hover
     box-shadow: 0 0 0 2px rgba(59, 153, 252, 0.5);
@@ -49,5 +49,11 @@ export function voided() {
     * {
       pointer-events: none;
     }
+  `;
+}
+
+export function grabbed() {
+  return css`
+    opacity: 0.5;
   `;
 }

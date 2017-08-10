@@ -2,23 +2,22 @@ import * as React from 'react';
 import { object, string } from 'prop-types';
 import hoistStatics = require('hoist-non-react-statics');
 import styled, { css } from 'styled-components';
+import CanvazContainer from '~/containers/canvaz-container';
 import convertToClassComponent from '~/helpers/convert-to-class-component';
-import broadcastMessage from '~/helpers/broadcast-message';
 import getDisplayName from '~/helpers/get-display-name';
-import canDropUnder from '~/helpers/can-drop-under';
 import chain from '~/helpers/chain';
 import withData, { DataProps } from '~/hocs/with-data';
 import { DND_START, DND_OVER, DND_END } from '~/constants';
 
 const configDefaults: CanvazConfig = {
-  accept: [],
+  accept: {},
   void: false,
 };
 
 export interface EnhanceProps {
-  isVoid: boolean;
-  isHovered: boolean;
-  isSelected: boolean;
+  void: boolean;
+  hovered: boolean;
+  selected: boolean;
   enhance: (
     element: React.ReactElement<any>,
     overrides?: {}
@@ -29,6 +28,7 @@ export interface EnhanceProps {
 interface CanvazState {
   hovered: boolean;
   selected: boolean;
+  grabbed: boolean;
 }
 
 export default function enhanceWithCanvaz<P = {}>(
@@ -44,12 +44,13 @@ export default function enhanceWithCanvaz<P = {}>(
       CanvazState
     > {
       static displayName = `withCanvaz(${displayName})`;
-      static canvazConfig = config;
       static WrappedComponent = WrappedComponent;
+      static canvaz = config;
 
       state = {
         hovered: false,
         selected: false,
+        grabbed: false,
       };
 
       onDragStart = (event: React.DragEvent<DragEvent>) => {
@@ -57,7 +58,8 @@ export default function enhanceWithCanvaz<P = {}>(
         event.stopPropagation();
         event.dataTransfer.setData('text/plain', this.props.children as string);
         event.dataTransfer.effectAllowed = 'move';
-        broadcastMessage(DND_START, { key: this.props.id });
+        CanvazContainer.broadcast(DND_START, { key: this.props.id });
+        this.setState({ grabbed: true, hovered: false });
       };
 
       onDragOver = (event: React.DragEvent<DragEvent>) => {
@@ -65,15 +67,14 @@ export default function enhanceWithCanvaz<P = {}>(
         event.preventDefault();
 
         // Check if dragged element can be drop in there
-        if (canDropUnder(config.accept, this.props.getDndDragNode())) {
+        if (this.props.canDrop()) {
           event.stopPropagation();
           event.dataTransfer.dropEffect = 'move';
-          // TODO: Determine to drop before or after
           return;
         }
 
         // Update container on last drag overed node
-        broadcastMessage(DND_OVER, {
+        CanvazContainer.broadcast(DND_OVER, {
           index: this.props.getIndex(),
           key: this.props.id,
         });
@@ -81,24 +82,18 @@ export default function enhanceWithCanvaz<P = {}>(
 
       onDragEnd = (event: React.DragEvent<DragEvent>) => {
         if (event.isPropagationStopped()) return;
-        broadcastMessage(DND_END, { key: this.props.id });
+        CanvazContainer.broadcast(DND_END, { key: this.props.id });
+        this.setState({ grabbed: false });
       };
 
       onDrop = (event: React.DragEvent<DragEvent>) => {
         if (event.isPropagationStopped()) return;
         event.preventDefault();
 
-        // Check if dropped element can be placed in there
-        const dndTargetNode = this.props.getDndDragNode();
-        if (canDropUnder(config.accept, dndTargetNode)) {
-          // Stop bubbling
+        // Drop target if allowed
+        if (this.props.canDrop()) {
           event.stopPropagation();
-
-          // Get index at which we should drop node
-          const index = this.props.getDndDropIndex();
-
-          // Proceed drop
-          this.props.insertNodeAt(dndTargetNode, index);
+          this.props.proceedDrop();
         }
       };
 
@@ -132,6 +127,8 @@ export default function enhanceWithCanvaz<P = {}>(
         return React.cloneElement(element, {
           ...overrides,
           'aria-label': element.props['aria-label'] || config.label,
+          'aria-dropeffect': 'move',
+          'aria-grabbed': this.state.grabbed.toString(),
           tabIndex: this.props.tabIndex || 0,
           onMouseOver: this.onMouseOver,
           onMouseOut: this.onMouseOut,
@@ -150,9 +147,10 @@ export default function enhanceWithCanvaz<P = {}>(
 
       render() {
         const propsForStyling = {
-          isVoid: config.void,
-          isHovered: this.state.hovered,
-          isSelected: this.state.selected,
+          void: config.void,
+          hovered: this.state.hovered,
+          selected: this.state.selected,
+          grabbed: this.state.grabbed,
         };
 
         return (

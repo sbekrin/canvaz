@@ -6,7 +6,7 @@ import dropCanvazProps from '~/helpers/drop-canvaz-props';
 import getDisplayName from '~/helpers/get-display-name';
 import { EnhanceProps } from '~/hocs/with-enhance';
 import { DataProps } from '~/hocs/with-data';
-import { base, voided, highlighted } from '~/media/component';
+import { base, voided, hovered, grabbed } from '~/media/component';
 
 export default function withStyles<P>(
   WrappedComponent
@@ -45,7 +45,8 @@ export default function withStyles<P>(
     }
 
     ${base}
-    ${props => props.isHovered && highlighted}
-    ${props => props.isVoid && voided}
+    ${props => props.hovered && hovered}
+    ${props => props.void && voided}
+    ${props => props.grabbed && grabbed}
   `;
 }

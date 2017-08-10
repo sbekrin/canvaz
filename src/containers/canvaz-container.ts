@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { object } from 'prop-types';
 import isValidMessage from '~/helpers/is-valid-message';
+import getCurrentOrigin from '~/helpers/get-current-origin';
 import rehydrate from '~/tree/rehydrate';
 import assignKeys from '~/tree/assign-keys';
 import isValidNode from '~/tree/is-valid-node';
@@ -50,6 +51,10 @@ export default class CanvazContainer extends React.Component<
     [CANVAZ_CONTEXT]: object.isRequired,
   };
 
+  static broadcast = (type, data) => {
+    window.postMessage({ ...data, type, canvaz: true }, getCurrentOrigin());
+  };
+
   constructor(props: ContainerProps, context: {}) {
     super(props, context);
     const data = assignKeys(props.data);
@@ -83,7 +88,8 @@ export default class CanvazContainer extends React.Component<
     if (global[HISTORY_CONTAINER]) {
       if (process.env.NODE_ENV === 'development') {
         console.warn(
-          'Canvaz: Keyboard control is disabled because another container already registered it.'
+          'Canvaz: Keyboard control is disabled because another container ' +
+            'already registered it.'
         );
       }
       return;
@@ -118,7 +124,11 @@ export default class CanvazContainer extends React.Component<
         break;
 
       case DND_END:
-        this.setState({ dndDraggedKey: null });
+        this.setState({
+          dndTargetKey: null,
+          dndDropIndex: -1,
+          dndDraggedKey: null,
+        });
         break;
     }
   };
@@ -189,7 +199,8 @@ export default class CanvazContainer extends React.Component<
     if (this.props.children) {
       if (process.env.NODE_ENV === 'development') {
         console.warn(
-          "CanvazContainer does't support children rendering, provide `data` prop instead"
+          "CanvazContainer does't support children rendering, provide `data` " +
+            'prop instead'
         );
       }
     }

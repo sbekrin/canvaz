@@ -4,7 +4,7 @@ import hoistStatics = require('hoist-non-react-statics');
 import getDisplayName from '~/helpers/get-display-name';
 import getRandomKey from '~/helpers/get-random-key';
 import * as Tree from '~/tree';
-import { CANVAZ_CONTEXT } from '~/constants';
+import { CANVAZ_CONTEXT, COMPONENTS_CONTEXT } from '~/constants';
 
 export interface DataProps {
   id?: string;
@@ -14,6 +14,8 @@ export interface DataProps {
   getDndDragNode: () => CanvazNode;
   getDndTargetNode: () => CanvazNode;
   getDndDropIndex: () => number;
+  canDrop: () => boolean;
+  proceedDrop: () => void;
   updateNode: (data: {}) => CanvazNode;
   removeNode: () => CanvazNode;
   duplicateNode: () => CanvazNode;
@@ -59,6 +61,18 @@ export default function withData<P = {}>(
       return this.context[CANVAZ_CONTEXT].dndDropIndex;
     };
 
+    canDrop = () => {
+      const config: CanvazConfig = (WithData as any).canvaz;
+      const node = this.getDndDragNode();
+      return Boolean(config.accept[node.type]);
+    };
+
+    proceedDrop = () => {
+      const node = this.getDndDragNode();
+      const index = this.getDndDropIndex();
+      this.insertNodeAt(node, index);
+    };
+
     updateNode = (nextNode: {}): CanvazNode => {
       const canvaz = this.context[CANVAZ_CONTEXT];
       const nextData = Tree.updateNode(canvaz.data, this.props.id, nextNode);
@@ -99,6 +113,8 @@ export default function withData<P = {}>(
         getDndTargetNode: this.getDndTargetNode,
         getDndDragNode: this.getDndDragNode,
         getDndDropIndex: this.getDndDropIndex,
+        canDrop: this.canDrop,
+        proceedDrop: this.proceedDrop,
         updateNode: this.updateNode,
         insertNodeAt: this.insertNodeAt,
 
