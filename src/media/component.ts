@@ -1,15 +1,21 @@
-import { css } from 'styled-components';
+import { css, keyframes } from 'styled-components';
+
+const pulseAnimation = keyframes`
+  0% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.025); }
+  100% { opacity: 0.2; transform: scale(1); }
+`;
 
 export function base() {
   return css`
     // Enable animations
     transition-duration: 100ms;
-    transition-property: box-shadow, background-color;
+    transition-property: outline-color, background-color;
+    outline: 2px solid transparent;
 
     // Highlight component on click
     :focus {
-      box-shadow: 0 0 0 2px rgb(59, 153, 252);
-      outline: none;
+      outline-color: rgb(59, 153, 252);
     }
 
     // Don't let empty components to collapse
@@ -38,7 +44,7 @@ export function base() {
 export function hovered() {
   return css`
     // Visually show component boundary on hover
-    box-shadow: 0 0 0 2px rgba(59, 153, 252, 0.5);
+    outline-color: rgba(59, 153, 252, 0.5);
     background-color: rgba(59, 153, 252, 0.1);
   `;
 }
@@ -54,6 +60,6 @@ export function voided() {
 
 export function grabbed() {
   return css`
-    opacity: 0.5;
+    animation: ${pulseAnimation} 1s ease infinite;
   `;
 }
