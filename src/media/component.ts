@@ -37,7 +37,10 @@ export function base() {
 
     // Set cursor depending on contenteditable attr
     &:not([contenteditable="true"]) { cursor: pointer; }
-    &[contenteditable="true"] { cursor: text; }
+    &[contenteditable="true"] {
+      user-select: text;
+      cursor: text;
+    }
   `;
 }
 
