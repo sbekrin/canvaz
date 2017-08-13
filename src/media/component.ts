@@ -1,9 +1,9 @@
 import { css, keyframes } from 'styled-components';
 
-const pulseAnimation = keyframes`
-  0% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.025); }
-  100% { opacity: 0.2; transform: scale(1); }
+const blinkAnimation = keyframes`
+  0% { opacity: 0.2; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.2; }
 `;
 
 export function base() {
@@ -60,6 +60,6 @@ export function voided() {
 
 export function grabbed() {
   return css`
-    animation: ${pulseAnimation} 1s ease infinite;
+    animation: ${blinkAnimation} 1s ease infinite;
   `;
 }

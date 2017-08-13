@@ -29,6 +29,7 @@ interface CanvazState {
   hovered: boolean;
   selected: boolean;
   grabbed: boolean;
+  droppable: boolean;
 }
 
 export default function enhanceWithCanvaz<P = {}>(
@@ -51,54 +52,70 @@ export default function enhanceWithCanvaz<P = {}>(
         hovered: false,
         selected: false,
         grabbed: false,
+        droppable: false,
       };
 
       onDragStart = (event: React.DragEvent<DragEvent>) => {
-        if (event.isPropagationStopped()) return;
         event.stopPropagation();
         event.dataTransfer.setData('text/plain', this.props.children as string);
         event.dataTransfer.effectAllowed = 'move';
+        CanvazContainer.createPlaceholder(this);
         CanvazContainer.broadcast(DND_START, { key: this.props.id });
-        this.setState({ grabbed: true, hovered: false });
+        this.setState({ grabbed: true });
       };
 
-      onDragOver = (event: React.DragEvent<DragEvent>) => {
-        if (event.isPropagationStopped()) return;
+      onDragEnter = (event: React.DragEvent<DragEvent>) => {
         event.preventDefault();
 
         // Check if dragged element can be drop in there
-        if (this.props.canDrop()) {
+        const droppable = this.props.canDrop();
+        this.setState({ droppable, hovered: false });
+        if (droppable) {
           event.stopPropagation();
           event.dataTransfer.dropEffect = 'move';
           return;
         }
 
-        // Update container on last drag overed node
+        // Update placeholder on last drag overed node
         CanvazContainer.broadcast(DND_OVER, {
           index: this.props.getIndex(),
           key: this.props.id,
         });
       };
 
+      onDragOver = (event: React.DragEvent<DragEvent>) => {
+        event.preventDefault();
+
+        // Display placeholder
+        // TODO: Display placeholder in actual allowed place to drop
+        if (this.state.droppable) {
+          const box = (event.target as HTMLElement).getBoundingClientRect();
+          const width = Math.floor(box.width);
+          const height = Math.floor(box.height);
+          const top = Math.floor(box.top + window.scrollY);
+          const left = Math.floor(box.left + window.scrollX);
+          const shouldDropAfter = event.pageY - height / 2 > top;
+          const calculatedTop = top + (shouldDropAfter ? height : 0);
+          CanvazContainer.movePlaceholder(calculatedTop, left, width);
+        }
+      };
+
       onDragEnd = (event: React.DragEvent<DragEvent>) => {
-        if (event.isPropagationStopped()) return;
+        CanvazContainer.destroyPlaceholder();
         CanvazContainer.broadcast(DND_END, { key: this.props.id });
         this.setState({ grabbed: false });
       };
 
       onDrop = (event: React.DragEvent<DragEvent>) => {
-        if (event.isPropagationStopped()) return;
         event.preventDefault();
-
-        // Drop target if allowed
-        if (this.props.canDrop()) {
+        if (this.state.droppable) {
           event.stopPropagation();
           this.props.proceedDrop();
+          CanvazContainer.destroyPlaceholder();
         }
       };
 
       onMouseOver = (event: React.MouseEvent<MouseEvent>) => {
-        if (event.isPropagationStopped()) return;
         event.stopPropagation();
         this.setState({ hovered: true });
       };
@@ -108,8 +125,6 @@ export default function enhanceWithCanvaz<P = {}>(
       };
 
       onKeyDown = (event: React.KeyboardEvent<KeyboardEvent>) => {
-        if (event.isPropagationStopped()) return;
-
         // Delete node on delete or backspace
         switch (event.key) {
           case 'Delete':
@@ -124,22 +139,27 @@ export default function enhanceWithCanvaz<P = {}>(
         // Do nothing if in view mode
         if (!this.props.isEditing) return element;
 
-        return React.cloneElement(element, {
-          ...overrides,
-          'aria-label': element.props['aria-label'] || config.label,
+        const ariaProps = {
+          'aria-label': config.label,
           'aria-dropeffect': 'move',
           'aria-grabbed': this.state.grabbed.toString(),
+        };
+
+        return React.cloneElement(element, {
+          ...overrides,
+          ...ariaProps,
           tabIndex: this.props.tabIndex || 0,
           onMouseOver: this.onMouseOver,
           onMouseOut: this.onMouseOut,
+          onDragEnter: this.onDragEnter,
           onDragOver: this.onDragOver,
+          onDragEnd: this.onDragEnd,
           onDrop: this.onDrop,
 
           // Apply non-root-specific props
           ...!this.props.isRoot && {
             draggable: true,
             onDragStart: this.onDragStart,
-            onDragEnd: this.onDragEnd,
             onKeyDown: this.onKeyDown,
           },
         });

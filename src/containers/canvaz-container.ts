@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { object } from 'prop-types';
+import DropPlaceholder from '~/components/drop-placeholder';
 import isValidMessage from '~/helpers/is-valid-message';
 import getCurrentOrigin from '~/helpers/get-current-origin';
 import rehydrate from '~/tree/rehydrate';
 import assignKeys from '~/tree/assign-keys';
 import isValidNode from '~/tree/is-valid-node';
+import Portal from '~/models/Portal';
 import History from '~/models/history';
 import { HISTORY_CONTAINER } from '~/constants';
 import {
@@ -36,6 +38,7 @@ export default class CanvazContainer extends React.Component<
   ContainerProps,
   ContainerState
 > {
+  static placeholder: Portal = null;
   static defaultProps = {
     edit: false,
     history: true,
@@ -53,6 +56,25 @@ export default class CanvazContainer extends React.Component<
 
   static broadcast = (type, data) => {
     window.postMessage({ ...data, type, canvaz: true }, getCurrentOrigin());
+  };
+
+  static createPlaceholder = instance => {
+    if (!CanvazContainer.placeholder) {
+      CanvazContainer.placeholder = new Portal(instance);
+    }
+  };
+
+  static movePlaceholder = (top: number, left: number, width: number) => {
+    CanvazContainer.placeholder.render(
+      React.createElement(DropPlaceholder, { top, left, width })
+    );
+  };
+
+  static destroyPlaceholder = () => {
+    if (CanvazContainer.placeholder) {
+      CanvazContainer.placeholder.unmount();
+      CanvazContainer.placeholder = null;
+    }
   };
 
   constructor(props: ContainerProps, context: {}) {
