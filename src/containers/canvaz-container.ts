@@ -65,9 +65,11 @@ export default class CanvazContainer extends React.Component<
   };
 
   static movePlaceholder = (top: number, left: number, width: number) => {
-    CanvazContainer.placeholder.render(
-      React.createElement(DropPlaceholder, { top, left, width })
-    );
+    if (CanvazContainer.placeholder) {
+      CanvazContainer.placeholder.render(
+        React.createElement(DropPlaceholder, { top, left, width })
+      );
+    }
   };
 
   static destroyPlaceholder = () => {

@@ -64,7 +64,7 @@ export default function withData<P = {}>(
     canDrop = () => {
       const config: CanvazConfig = (WithData as any).canvaz;
       const node = this.getDndDragNode();
-      return Boolean(config.accept[node.type]);
+      return node ? Boolean(config.accept[node.type]) : false;
     };
 
     proceedDrop = () => {
