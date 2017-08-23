@@ -11,7 +11,7 @@ export function base() {
     // Enable animations
     transition-duration: 100ms;
     transition-property: outline-color, background-color;
-    outline: 2px solid transparent;
+    outline: 1px solid transparent;
 
     // Highlight component on click
     :focus {
@@ -30,7 +30,7 @@ export function base() {
       width: 100%;
       align-items: center;
       justify-content: center;
-      box-shadow: inset 0 0 0 2px #666;
+      box-shadow: inset 0 0 0 1px #666;
       font-family: sans-serif;
       opacity: 0.25;
     }

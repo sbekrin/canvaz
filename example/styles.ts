@@ -52,10 +52,13 @@ export default css`
     }
 
     ol, ul {
+      list-style-position: inside;
       margin: 1rem;
+      padding: 0;
 
       li {
         padding: 0.5rem;
+        line-height: 1.25;
       }
     }
 
