@@ -48,5 +48,6 @@ export default function withStyles<P>(
     ${props => props.hovered && hovered}
     ${props => props.void && voided}
     ${props => props.grabbed && grabbed}
+    ${props => props.droppable && droppable}
   `;
 }

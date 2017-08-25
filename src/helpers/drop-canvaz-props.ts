@@ -8,6 +8,7 @@ export default function dropCanvazProps(props: any): {} {
     getIndex,
     getDndDragNode,
     getDndTargetNode,
+    getDndDropNode,
     getDndDropIndex,
     canDrop,
     proceedDrop,

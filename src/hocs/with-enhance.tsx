@@ -29,7 +29,6 @@ interface CanvazState {
   hovered: boolean;
   selected: boolean;
   grabbed: boolean;
-  droppable: boolean;
 }
 
 export default function enhanceWithCanvaz<P = {}>(
@@ -52,7 +51,6 @@ export default function enhanceWithCanvaz<P = {}>(
         hovered: false,
         selected: false,
         grabbed: false,
-        droppable: false,
       };
 
       onDragStart = (event: React.DragEvent<DragEvent>) => {
@@ -67,10 +65,7 @@ export default function enhanceWithCanvaz<P = {}>(
       onDragEnter = (event: React.DragEvent<DragEvent>) => {
         event.preventDefault();
 
-        // Check if dragged element can be drop in there
-        const droppable = this.props.canDrop();
-        this.setState({ droppable, hovered: false });
-        if (droppable) {
+        if (this.props.canDrop()) {
           event.stopPropagation();
           event.dataTransfer.dropEffect = 'move';
           return;
@@ -86,17 +81,29 @@ export default function enhanceWithCanvaz<P = {}>(
       onDragOver = (event: React.DragEvent<DragEvent>) => {
         event.preventDefault();
 
-        // Display placeholder
-        // TODO: Display placeholder in actual allowed place to drop
-        if (this.state.droppable) {
-          const box = (event.target as HTMLElement).getBoundingClientRect();
-          const width = Math.floor(box.width);
-          const height = Math.floor(box.height);
-          const top = Math.floor(box.top + window.scrollY);
-          const left = Math.floor(box.left + window.scrollX);
-          const shouldDropAfter = event.pageY - height / 2 > top;
-          const calculatedTop = top + (shouldDropAfter ? height : 0);
-          CanvazContainer.movePlaceholder(calculatedTop, left, width);
+        if (this.props.canDrop()) {
+          event.stopPropagation();
+
+          // Use less hacky way of getting current node?
+          const targetNode = this.props.getDndDropNode();
+          const hasChildren = targetNode.children.length > 0;
+
+          // Render placeholder
+          if (hasChildren) {
+            const target = document.querySelector(
+              `[data-canvaz-id="${targetNode.props.id}"]`
+            );
+            const box = target.getBoundingClientRect();
+            const width = Math.floor(box.width);
+            const height = Math.floor(box.height);
+            const top = Math.floor(box.top + window.scrollY);
+            const left = Math.floor(box.left + window.scrollX);
+            const shouldDropAfter = event.pageY - height / 2 > top;
+            const calculatedTop = top + (shouldDropAfter ? height : 0);
+            CanvazContainer.movePlaceholder(calculatedTop, left, width);
+          } else {
+            // TODO: Highlight node as dropzone
+          }
         }
       };
 
@@ -108,7 +115,7 @@ export default function enhanceWithCanvaz<P = {}>(
 
       onDrop = (event: React.DragEvent<DragEvent>) => {
         event.preventDefault();
-        if (this.state.droppable) {
+        if (this.props.canDrop()) {
           event.stopPropagation();
           this.props.proceedDrop();
           CanvazContainer.destroyPlaceholder();
@@ -141,8 +148,9 @@ export default function enhanceWithCanvaz<P = {}>(
 
         const ariaProps = {
           'aria-label': config.label,
-          'aria-dropeffect': 'move',
+          'aria-dropeffect': this.props.canDrop() ? 'move' : 'none',
           'aria-grabbed': this.state.grabbed.toString(),
+          'data-canvaz-id': this.props.id,
         };
 
         return React.cloneElement(element, {

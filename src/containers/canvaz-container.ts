@@ -67,7 +67,7 @@ export default class CanvazContainer extends React.Component<
   static movePlaceholder = (top: number, left: number, width: number) => {
     if (CanvazContainer.placeholder) {
       CanvazContainer.placeholder.render(
-        React.createElement(DropPlaceholder, { top, left, width })
+        React.createElement(DropPlaceholder, { style: { top, left, width } })
       );
     }
   };
@@ -78,6 +78,12 @@ export default class CanvazContainer extends React.Component<
       CanvazContainer.placeholder = null;
     }
   };
+
+  schema: {
+    [key: string]: {
+      [key: string]: boolean;
+    };
+  } = {};
 
   constructor(props: ContainerProps, context: {}) {
     super(props, context);
@@ -93,9 +99,11 @@ export default class CanvazContainer extends React.Component<
 
   getChildContext() {
     const { data, dndDraggedKey, dndTargetKey, dndDropIndex } = this.state;
+    const { schema } = this;
     return {
       ...this.context,
       [CANVAZ_CONTEXT]: {
+        schema,
         data,
         dndDraggedKey,
         dndTargetKey,
@@ -219,6 +227,17 @@ export default class CanvazContainer extends React.Component<
     return data;
   };
 
+  setSchema = (type: string, map: { [key: string]: boolean }) => {
+    if (this.schema[type]) {
+      return;
+    }
+
+    this.schema = {
+      ...this.schema,
+      [type]: map,
+    };
+  };
+
   render() {
     if (this.props.children) {
       if (process.env.NODE_ENV === 'development') {
@@ -229,8 +248,10 @@ export default class CanvazContainer extends React.Component<
       }
     }
 
-    return rehydrate(this.state.data, this.context[COMPONENTS_CONTEXT], {
-      isRoot: true,
-    });
+    return rehydrate(
+      this.state.data,
+      this.context[COMPONENTS_CONTEXT],
+      this.setSchema
+    );
   }
 }

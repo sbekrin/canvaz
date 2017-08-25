@@ -57,14 +57,26 @@ export default function withData<P = {}>(
       return Tree.getNode(canvaz.data, canvaz.dndTargetKey);
     };
 
+    getDndDropNode = (): CanvazNode => {
+      const canvaz = this.context[CANVAZ_CONTEXT];
+      const node = Tree.getParentNode(canvaz.data, canvaz.dndTargetKey);
+      const index = this.getDndDropIndex();
+      return node ? node.children[index] : canvaz.data;
+    };
+
     getDndDropIndex = (): number => {
       return this.context[CANVAZ_CONTEXT].dndDropIndex;
     };
 
     canDrop = () => {
-      const config: CanvazConfig = (WithData as any).canvaz;
-      const node = this.getDndDragNode();
-      return node ? Boolean(config.accept[node.type]) : false;
+      const canvaz = this.context[CANVAZ_CONTEXT];
+      const currentNode = this.getNode();
+      const draggedNode = this.getDndDragNode();
+      return Boolean(
+        currentNode &&
+          draggedNode &&
+          canvaz.schema[currentNode.type][draggedNode.type]
+      );
     };
 
     proceedDrop = () => {
@@ -112,6 +124,7 @@ export default function withData<P = {}>(
         getNode: this.getNode,
         getDndTargetNode: this.getDndTargetNode,
         getDndDragNode: this.getDndDragNode,
+        getDndDropNode: this.getDndDropNode,
         getDndDropIndex: this.getDndDropIndex,
         canDrop: this.canDrop,
         proceedDrop: this.proceedDrop,
