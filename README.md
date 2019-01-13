@@ -4,7 +4,7 @@ Canvaz works with component tree instead of text. It provides extensibility
 and great visual control of output.
 
 ## Demo
-![](https://github.com/sergeybekrin/spectro/raw/master/.github/example.gif)
+![](https://github.com/sbekrin/spectro/raw/master/.github/example.gif)
 
 ## Development
 It's recomended to develop while running example.
@@ -15,4 +15,4 @@ npm run example
 To build UMD library, run `npm run build`.
 
 ## License
-MIT © [Sergey Bekrin](https://github.com/sergeybekrin)
+MIT © [Sergey Bekrin](https://github.com/sbekrin)
