@@ -20,7 +20,7 @@
     "example": "cross-env NODE_ENV=development webpack-dev-server --config webpack/example.js"
   },
   "author": "Sergey Bekrin <sergey@bekrin.me> http://bekrin.me",
-  "repository": "sergeybekrin/spectro",
+  "repository": "sbekrin/spectro",
   "keywords": [
     "react",
     "canvaz",
